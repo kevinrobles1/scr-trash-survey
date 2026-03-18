@@ -36,26 +36,32 @@ SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito","Other"]
 SEG_COLORS = {"North Reach":"#2980b9","Central Reach":"#27ae60","South Reach":"#e67e22","Rillito":"#8e44ad","Other":"#7f8c8d"}
 SEG_LIGHT  = {"North Reach":"#d6eaf8","Central Reach":"#d5f5e3","South Reach":"#fdebd0","Rillito":"#e8daef","Other":"#f0f0f0"}
 
+# Keys match EXACTLY what the migration stored in Supabase (title-cased via pretty())
 TRASH_GROUPS = {
-    "Cups":          ["Styrofoam (Polar Pop)","Styrofoam (Qt)","Styrofoam (other)","Plastic","Paper"],
-    "Beer":          ["Bottles","Cans"],
-    "Liquor":        ["Plastic bottles","Glass"],
-    "Soda":          ["Bottles","Cans"],
-    "Water":         ["Bottles"],
-    "Sports drinks": ["Bottles","Cans"],
-    "Juice":         ["Bottles","Cans"],
-    "Food packaging":["Food wrappers (candy, etc.)","Non-cup styrofoam","Non-cup plastic","Non-cup paper (bags, boxes)","Straws","6-pack rings","Plates and bowls plastic","Cans, milk jugs, mixes","Plates, styrofoam","Utensils","Misc"],
-    "Nicotine":      ["cigs, cigars, lighters, dip, packs"],
-    "Toiletries":    ["Toiletries","Packaging"],
-    "Rx, drugs":     ["Rx and drug packaging","Syringes, paraphernalia"],
-    "Toys, games":   ["Balls, games","CD, DVD, electronic packaging","School/office supplies","ID cards, credit cards","Batteries"],
-    "Paper litter":  ["News, books, magazines","Advertising, signs, cards"],
-    "Clothing":      ["Clothes, shoes, hats","PPE","Misc. fabric"],
-    "Auto":          ["Car parts (small)","Car parts (large)","Tires"],
-    "Construction":  ["Small items","Large items"],
-    "Appliances":    ["Bikes, bike parts","Furniture/cushions/pillows","Shopping carts","Carpet","Rope/line","Buckets","Appliances"],
-    "Plastic bags":  ["Plastic bags"],
-    "Misc":          ["Sm. debris (ex. metal, plastic scraps)","Lg. debris (ex. garbage cans)"],
+    "Cups":           ["Styrofoam (Polar Pop)","Styrofoam (Qt)","Styrofoam (Other)","Plastic","Paper"],
+    "Beer":           ["Bottles","Cans"],
+    "Liquor":         ["Plastic Bottles","Glass"],
+    "Soda":           ["Bottles","Cans"],
+    "Water":          ["Bottles"],
+    "Sports Drinks":  ["Bottles","Cans"],
+    "Juice":          ["Bottles","Cans"],
+    "Food Packaging": ["Food Wrappers (Candy, Etc.)","Non-Cup Styrofoam","Non-Cup Plastic",
+                       "Non-Cup Paper (Bags, Boxes)","Straws","6-Pack Rings",
+                       "Plates And Bowls Plastic","Cans, Milk Jugs, Mixes",
+                       "Plates, Styrofoam","Utensils","Misc"],
+    "Nicotine":       ["Cigs, Cigars, Lighters, Dip, Packs"],
+    "Toiletries":     ["Toiletries","Packaging"],
+    "Rx, Drugs":      ["Rx And Drug Packaging","Syringes, Paraphernalia"],
+    "Toys, Games":    ["Balls, Games","Cd, Dvd, Electronic Packaging","School/Office Supplies",
+                       "Id Cards, Credit Cards","Batteries"],
+    "Paper Litter":   ["News, Books, Magazines","Advertising, Signs, Cards"],
+    "Clothing":       ["Clothes, Shoes, Hats","Ppe","Misc. Fabric"],
+    "Auto":           ["Car Parts (Small)","Car Parts (Large)","Tires"],
+    "Construction":   ["Small Items","Large Items"],
+    "Appliances":     ["Bikes, Bike Parts","Furniture/Cushions/Pillows","Shopping Carts",
+                       "Carpet","Rope/Line","Buckets","Appliances"],
+    "Plastic Bags":   ["Plastic Bags"],
+    "Misc":           ["Sm. Debris (Ex. Metal, Plastic Scraps)","Lg. Debris (Ex. Garbage Cans)"],
 }
 
 TEAM = [
@@ -119,47 +125,41 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
 
 /* ── NAV — native Streamlit radio styled as nav bar ── */
 .nav-wrap{{background:{C["forest"]};position:sticky;top:0;z-index:200;
-           border-bottom:1px solid rgba(255,255,255,.06);}}
-.nav-wrap > div > div > div[data-testid="stHorizontalBlock"]{{
-    max-width:1480px!important;margin:0 auto!important;padding:0 40px!important;
-    gap:0!important;
+           border-bottom:1px solid rgba(255,255,255,.1);
+           box-shadow:0 2px 12px rgba(0,0,0,.3);}}
+/* Radio group container */
+div[role="radiogroup"]{{
+    display:flex!important;gap:0!important;flex-wrap:nowrap!important;
+    background:transparent!important;padding:0!important;border:none!important;
+    max-width:1480px;margin:0 auto;padding-left:40px!important;
 }}
-div[role="radiogroup"]{{display:flex;gap:0;flex-wrap:nowrap;background:{C["forest"]};
-                        padding:0!important;border:none!important;}}
+/* Each radio option label */
 div[role="radiogroup"] label{{
-    padding:13px 18px!important;font-size:11px!important;font-weight:600!important;
-    letter-spacing:1px!important;text-transform:uppercase!important;
-    color:rgba(255,255,255,.45)!important;border-bottom:3px solid transparent!important;
-    cursor:pointer!important;white-space:nowrap!important;transition:all .18s!important;
-    font-family:'DM Sans',sans-serif!important;background:transparent!important;
-    border-radius:0!important;margin:0!important;
+    padding:14px 20px!important;
+    font-size:11.5px!important;font-weight:700!important;
+    letter-spacing:1.2px!important;text-transform:uppercase!important;
+    color:rgba(255,255,255,.75)!important;
+    border-bottom:3px solid transparent!important;
+    cursor:pointer!important;white-space:nowrap!important;
+    transition:all .15s!important;
+    font-family:'DM Sans',sans-serif!important;
+    background:transparent!important;border-radius:0!important;margin:0!important;
 }}
 div[role="radiogroup"] label:hover{{
-    color:rgba(255,255,255,.85)!important;
-    background:rgba(255,255,255,.04)!important;
-    border-bottom-color:rgba(255,255,255,.2)!important;
+    color:white!important;
+    background:rgba(255,255,255,.07)!important;
+    border-bottom-color:rgba(255,255,255,.3)!important;
 }}
-div[role="radiogroup"] label[data-selected="true"],
-div[role="radiogroup"] [aria-checked="true"] ~ label,
-div[role="radiogroup"] input:checked + label,
-div[role="radiogroup"] input[type=radio]:checked + div {{
-    color:{C["mint"]}!important;
-    border-bottom-color:{C["mint"]}!important;
-    background:rgba(93,168,50,.08)!important;
+/* Selected state — Streamlit adds p tag with the selected text */
+div[role="radiogroup"] label[data-baseweb="radio"] p{{
+    color:white!important;font-weight:700!important;
 }}
-div[role="radiogroup"] [data-baseweb="radio"] > label{{
-    color:rgba(255,255,255,.45)!important;
-}}
-div[role="radiogroup"] input{{display:none!important;}}
-div[role="radiogroup"] [data-baseweb="radio"]{{background:transparent!important;}}
-/* hide the radio dot */
-div[role="radiogroup"] span[data-testid="stMarkdownContainer"]{{display:none!important;}}
-div[role="radiogroup"] > label > div:first-child{{display:none!important;}}
-/* active state via Streamlit's selection */
-div[role="radiogroup"] label[aria-pressed="true"]{{
-    color:{C["mint"]}!important;
-    border-bottom-color:{C["mint"]}!important;
-    background:rgba(93,168,50,.08)!important;
+/* Hide the actual radio circle */
+div[role="radiogroup"] input[type="radio"]{{display:none!important;}}
+div[role="radiogroup"] [data-baseweb="radio"] > div:first-child{{display:none!important;}}
+/* The selected radio item gets a different background from Streamlit */
+div[role="radiogroup"] [data-testid="stMarkdownContainer"]{{
+    display:flex!important;align-items:center!important;
 }}
 
 /* ── BODY ── */
@@ -589,20 +589,74 @@ with st.spinner("Loading from database…"):
 
 et = ev_totals(long)
 
+# ──────────────────────────────────────────────────────────────────
+# SHARED FILTER WIDGET — used on most pages
+# ──────────────────────────────────────────────────────────────────
+def render_filters(df, key_prefix="", show_category=True):
+    """Returns filtered dataframe. Call inside an expander or directly."""
+    all_segs   = sorted([s for s in df["seg"].dropna().unique() if s != "Other"]) if "seg" in df.columns else []
+    all_sites  = sorted(df["site_label"].dropna().unique().tolist()) if "site_label" in df.columns else []
+    all_groups = sorted(df["trash_group"].dropna().unique().tolist()) if "trash_group" in df.columns else []
+    mn = df["date"].min(); mx = df["date"].max()
+
+    cols = st.columns(4) if show_category else st.columns(3)
+    with cols[0]:
+        sel_segs = st.multiselect("River Segment", all_segs, default=all_segs, key=f"{key_prefix}_segs")
+    with cols[1]:
+        sel_sites = st.multiselect("Location", all_sites, default=all_sites, key=f"{key_prefix}_sites")
+    if show_category:
+        with cols[2]:
+            sel_groups = st.multiselect("Category", all_groups, default=all_groups, key=f"{key_prefix}_grps")
+    with cols[-1]:
+        if pd.notna(mn) and pd.notna(mx):
+            dr = st.date_input("Date Range", value=(mn.date(), mx.date()), key=f"{key_prefix}_dr")
+        else:
+            dr = None
+
+    f = df.copy()
+    if sel_segs and "seg" in f.columns:
+        # include "Other" always + selected segments
+        f = f[f["seg"].isin(sel_segs + ["Other"])]
+    if sel_sites and "site_label" in f.columns:
+        f = f[f["site_label"].isin(sel_sites)]
+    if show_category and sel_groups and "trash_group" in f.columns:
+        f = f[f["trash_group"].isin(sel_groups)]
+    if dr and isinstance(dr,(tuple,list)) and len(dr)==2:
+        s,e = dr
+        f = f[f["date"].notna()&(f["date"].dt.date>=s)&(f["date"].dt.date<=e)]
+    return f
+
+def filter_banner(df_orig, df_filtered):
+    """Show a small stat strip after filtering."""
+    pct = 100*len(df_filtered)/max(len(df_orig),1)
+    n_items = int(df_filtered["n"].sum()) if "n" in df_filtered.columns else 0
+    n_events = df_filtered["event_id"].nunique() if "event_id" in df_filtered.columns else 0
+    n_sites = df_filtered["site_label"].nunique() if "site_label" in df_filtered.columns else 0
+    st.markdown(f"""<div class="stat-strip">
+    <div class="stat-item"><span class="stat-v">{n_items:,}</span><span class="stat-l">Items in View</span></div>
+    <div class="stat-item"><span class="stat-v">{n_events:,}</span><span class="stat-l">Events</span></div>
+    <div class="stat-item"><span class="stat-v">{n_sites:,}</span><span class="stat-l">Locations</span></div>
+    <div class="stat-item"><span class="stat-v">{pct:.0f}%</span><span class="stat-l">Of All Data</span></div>
+    </div>""", unsafe_allow_html=True)
+
 # ══════════════════════════════════════════════════════════════════
-# ── OVERVIEW ──────────────────────────────────────────────────────
+# ── OVERVIEW ──────────────────────────════════════════════════════
 # ══════════════════════════════════════════════════════════════════
 if page == PAGES[0]:
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Santa Cruz River Trash Monitoring</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="pg-lead">Longitudinal trash survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across {long["site_label"].nunique()} recorded locations. Program directed by <strong>Luke Cole</strong>, Sonoran Institute.</div>', unsafe_allow_html=True)
 
-    # KPI strip
-    total_n = int(long["n"].sum())
-    n_events = long["event_id"].nunique()
-    n_sites = long["site_label"].nunique()
-    n_groups = long["trash_group"].nunique()
-    d_min, d_max = long["date"].min(), long["date"].max()
+    with st.expander("🔍 Filter Data", expanded=False):
+        long_f = render_filters(long, key_prefix="ov")
+    filter_banner(long, long_f)
+
+    # KPI strip — uses filtered data
+    total_n = int(long_f["n"].sum())
+    n_events = long_f["event_id"].nunique()
+    n_sites = long_f["site_label"].nunique()
+    n_groups = long_f["trash_group"].nunique()
+    d_min, d_max = long_f["date"].min(), long_f["date"].max()
     span = f"{d_min.strftime('%b %Y')} – {d_max.strftime('%b %Y')}" if pd.notna(d_min) and pd.notna(d_max) else "—"
     st.markdown(f"""<div class="kpi-grid">
     <div class="kpi"><div class="kpi-lbl">Total Items Recorded</div><div class="kpi-val">{total_n:,}</div><div class="kpi-note">all surveys combined</div></div>
@@ -617,7 +671,7 @@ if page == PAGES[0]:
     with c1:
         card("Items Recorded Over Time", "Monthly totals — gray bars = no survey that month")
         if "date" in long.columns:
-            ts = long.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
+            ts = long_f.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
             full = pd.date_range(ts["date"].min(), ts["date"].max(), freq="MS")
             ts = ts.set_index("date").reindex(full).reset_index().rename(columns={"index":"date"})
             ts["gap"] = ts["n"].isna(); ts["n"] = ts["n"].fillna(0)
@@ -630,9 +684,10 @@ if page == PAGES[0]:
     with c2:
         card("Trash by Category", "Share of all recorded items")
         if "trash_group" in long.columns:
-            grp = long.groupby("trash_group")["n"].sum().sort_values(ascending=False).head(10).reset_index()
-            fig = px.pie(grp,values="n",names="trash_group",hole=.46,color_discrete_sequence=PAL)
-            fig.update_traces(textposition="outside",textinfo="percent+label",textfont_size=10,pull=[.04]+[0]*9)
+            grp = long_f.groupby("trash_group")["n"].sum().sort_values(ascending=False).reset_index()
+            fig = px.pie(grp,values="n",names="trash_group",hole=.44,color_discrete_sequence=PAL)
+            fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=10,
+                              pull=[.04]+[0]*(len(grp)-1))
             fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,margin=dict(l=10,r=10,t=10,b=10),font=dict(family="DM Sans"))
             show(fig,"ov_pie")
         card_end()
@@ -641,14 +696,14 @@ if page == PAGES[0]:
     c3, c4 = st.columns([2, 3])
     with c3:
         card("Top 15 Most Common Items", "All-time total count")
-        top = long.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
+        top = long_f.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
         fig = px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["water"]])
         fig_base(fig,"Count",None,h=400); show(fig,"ov_top")
         card_end()
     with c4:
         card("Items by River Segment", "Total items stacked by category across known reaches")
         if "seg" in long.columns and "trash_group" in long.columns:
-            sg2 = long[long["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
+            sg2 = long_f[long_f["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
             sg2["seg"] = pd.Categorical(sg2["seg"],SEG_ORDER,ordered=True)
             fig = px.bar(sg2,x="seg",y="n",color="trash_group",barmode="stack",
                 color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER})
@@ -658,8 +713,8 @@ if page == PAGES[0]:
     # Summary table
     st.markdown("---")
     st.markdown('<div class="sec-title" style="margin-bottom:12px;">📋 Quick Summary Table — Items by Category</div>', unsafe_allow_html=True)
-    summary = long.groupby("trash_group")["n"].agg(Total="sum", Events=("count"), Avg=("mean")).reset_index()
-    summary.columns = ["Category","Total Items","# Records","Avg per Record"]
+    summary = long_f.groupby("trash_group")["n"].agg(Total="sum", Count="count", Avg="mean").reset_index()
+    summary.columns = ["Category","Total Items","# Records","Avg Count per Record"]
     summary = summary.sort_values("Total Items",ascending=False).round(1)
     summary.index = range(1, len(summary)+1)
     st.dataframe(summary, use_container_width=True, height=360)
@@ -718,7 +773,11 @@ elif page == PAGES[2]:
     st.markdown('<div class="pg-title">Temporal Trends</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">How trash levels have changed over time — monthly, yearly, and seasonal patterns across the full survey record.</div>', unsafe_allow_html=True)
 
-    df = long.copy()
+    with st.expander("🔍 Filter Data", expanded=False):
+        long_tr = render_filters(long, key_prefix="tr", show_category=False)
+    filter_banner(long, long_tr)
+
+    df = long_tr.copy()
     df["n"] = pd.to_numeric(df["n"],errors="coerce").fillna(0)
     df["year"] = df["date"].dt.year
     df["month"] = df["date"].dt.month
@@ -800,7 +859,11 @@ elif page == PAGES[3]:
     st.markdown('<div class="pg-title">Trash Categories</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Breakdown of all recorded items by category group and individual item type. Use the tables to explore totals, rankings, and proportions.</div>', unsafe_allow_html=True)
 
-    df = long.copy()
+    with st.expander("🔍 Filter Data", expanded=False):
+        long_cat = render_filters(long, key_prefix="cat", show_category=False)
+    filter_banner(long, long_cat)
+
+    df = long_cat.copy()
     df["n"] = pd.to_numeric(df["n"],errors="coerce").fillna(0)
 
     # Row 1
@@ -813,7 +876,7 @@ elif page == PAGES[3]:
         card_end()
     with c2:
         card("Top 25 Individual Items", "Ranked by total count across all events")
-        top = df.groupby("trash_item")["n"].sum().nlargest(25).reset_index().sort_values("n")
+        top = df.groupby("trash_item")["n"].sum().sort_values(ascending=False).head(30).reset_index().sort_values("n")
         fig = px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["sky"]])
         fig_base(fig,"Count",None,h=max(500,24*len(top))); show(fig,"cat_top")
         card_end()
@@ -842,10 +905,10 @@ elif page == PAGES[3]:
     # Full breakdown table
     st.markdown("---")
     st.markdown('<div class="sec-title" style="margin-bottom:12px;">📋 Full Item-Level Breakdown Table</div>', unsafe_allow_html=True)
-    item_tbl = df.groupby(["trash_group","trash_item"])["n"].agg(
-        Total="sum", Pct=lambda x: round(100*x.sum()/df["n"].sum(),2) if df["n"].sum()>0 else 0
-    ).reset_index()
-    item_tbl.columns = ["Category","Item","Total Count","% of All Items"]
+    total_for_pct = df["n"].sum()
+    item_tbl = df.groupby(["trash_group","trash_item"])["n"].sum().reset_index()
+    item_tbl["pct"] = (100*item_tbl["n"]/max(total_for_pct,1)).round(2)
+    item_tbl.columns = ["Category","Item","Total Count","% of Filtered Items"]
     item_tbl = item_tbl.sort_values("Total Count",ascending=False).reset_index(drop=True)
     item_tbl.index = range(1,len(item_tbl)+1)
     st.dataframe(item_tbl, use_container_width=True, height=500)
@@ -860,7 +923,11 @@ elif page == PAGES[4]:
     st.markdown('<div class="pg-title">Locations & Sites</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Survey site performance — which locations have the most trash, how often they are surveyed, and how they compare across river segments.</div>', unsafe_allow_html=True)
 
-    df = long.copy()
+    with st.expander("🔍 Filter Data", expanded=False):
+        long_loc = render_filters(long, key_prefix="loc", show_category=False)
+    filter_banner(long, long_loc)
+
+    df = long_loc.copy()
     df["n"] = pd.to_numeric(df["n"],errors="coerce").fillna(0)
 
     # Site stats
