@@ -347,13 +347,60 @@ def auth_gate():
     st.markdown(f"""<style>
     .stApp {{ background:{C["forest"]} !important; }}
     .block-container {{ padding:0 !important; }}
-    /* right form panel */
-    .auth-right-wrap {{
-        background:{C["sand"]};
+
+    /* ── Right column: cream background ── */
+    [data-testid="column"]:last-of-type,
+    [data-testid="column"]:last-of-type > div,
+    [data-testid="column"]:last-of-type > div > div {{
+        background:{C["sand"]} !important;
         min-height:100vh;
-        padding:64px 56px;
-        border-left:1px solid rgba(255,255,255,0.06);
     }}
+    [data-testid="column"]:last-of-type {{
+        padding:64px 52px !important;
+    }}
+
+    /* Text colors on light bg */
+    [data-testid="column"]:last-of-type label {{
+        color:{C["med"]} !important;
+        font-size:12.5px !important; font-weight:600 !important;
+    }}
+    [data-testid="column"]:last-of-type p,
+    [data-testid="column"]:last-of-type div {{
+        color:{C["text"]};
+    }}
+
+    /* Inputs */
+    [data-testid="column"]:last-of-type input {{
+        background:white !important;
+        color:{C["text"]} !important;
+        border:1.5px solid {C["sand3"]} !important;
+        border-radius:6px !important;
+    }}
+    [data-testid="column"]:last-of-type input:focus {{
+        border-color:{C["sage"]} !important;
+        box-shadow:0 0 0 3px {C["mint"]}22 !important;
+    }}
+
+    /* Sign In button — dark green, full width */
+    [data-testid="column"]:last-of-type .stButton > button {{
+        background:{C["green"]} !important;
+        color:white !important;
+        border:none !important;
+        border-radius:6px !important;
+        font-size:13.5px !important;
+        font-weight:600 !important;
+        letter-spacing:0.4px !important;
+        padding:11px 24px !important;
+        box-shadow:0 4px 16px {C["green"]}40 !important;
+        transition:all 0.18s !important;
+    }}
+    [data-testid="column"]:last-of-type .stButton > button:hover {{
+        background:{C["sage"]} !important;
+        transform:translateY(-1px) !important;
+        box-shadow:0 8px 24px {C["green"]}50 !important;
+    }}
+
+    /* Eyebrow / title / sub text classes */
     .auth-eyebrow {{
         font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;
         text-transform:uppercase;color:{C["mint"]};margin-bottom:14px;
@@ -366,15 +413,16 @@ def auth_gate():
         font-size:13px;color:{C["muted"]};line-height:1.7;margin-bottom:32px;
     }}
     .auth-footer {{
-        margin-top:28px;padding-top:18px;border-top:1px solid {C["sand3"]};
+        margin-top:24px;padding-top:16px;border-top:1px solid {C["sand3"]};
         font-size:11px;color:{C["muted"]};font-family:'DM Mono',monospace;
         display:flex;align-items:center;gap:8px;
     }}
-    /* tab styles */
+
+    /* Tab bar */
     div[data-testid="stTabs"] > div:first-child {{
         background:transparent !important;
         border-bottom:1px solid {C["sand3"]} !important;
-        padding:0 !important; gap:0 !important; margin-bottom:24px !important;
+        padding:0 !important;gap:0 !important;margin-bottom:24px !important;
     }}
     div[data-testid="stTabs"] button[role="tab"] {{
         font-family:'DM Sans',sans-serif !important;
@@ -383,7 +431,7 @@ def auth_gate():
         color:{C["muted"]} !important;border-radius:0 !important;
         padding:12px 20px 12px 0 !important;
         border-bottom:2px solid transparent !important;
-        background:transparent !important;margin-right:4px !important;
+        background:transparent !important;
     }}
     div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {{
         color:{C["green"]} !important;
@@ -470,11 +518,10 @@ def auth_gate():
 
     with right_col:
         st.markdown(f"""
-        <div class="auth-right-wrap">
-          <div class="auth-eyebrow">Authorized Personnel Only</div>
-          <div class="auth-form-title">Sign in to<br>your account</div>
-          <div class="auth-form-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>
-        </div>""", unsafe_allow_html=True)
+        <div class="auth-eyebrow">Authorized Personnel Only</div>
+        <div class="auth-form-title">Sign in to<br>your account</div>
+        <div class="auth-form-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>
+        """, unsafe_allow_html=True)
 
         t1, t2 = st.tabs(["Sign In", "Create Account"])
         with t1:
