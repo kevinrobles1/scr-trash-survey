@@ -348,98 +348,88 @@ def auth_gate():
     .stApp {{ background:{C["forest"]} !important; }}
     .block-container {{ padding:0 !important; }}
 
-    /* ── Right column: cream background ── */
+    /* Right column — clean cream */
     [data-testid="column"]:last-of-type,
     [data-testid="column"]:last-of-type > div,
     [data-testid="column"]:last-of-type > div > div {{
-        background:{C["sand"]} !important;
+        background:{C["cream"]} !important;
         min-height:100vh;
     }}
-    [data-testid="column"]:last-of-type {{
-        padding:64px 52px !important;
-    }}
+    [data-testid="column"]:last-of-type {{ padding:72px 56px !important; }}
 
-    /* Text colors on light bg */
+    /* Labels */
     [data-testid="column"]:last-of-type label {{
         color:{C["med"]} !important;
         font-size:12.5px !important; font-weight:600 !important;
     }}
-    [data-testid="column"]:last-of-type p,
-    [data-testid="column"]:last-of-type div {{
-        color:{C["text"]};
-    }}
 
-    /* Inputs */
+    /* Inputs — white, subtle border */
     [data-testid="column"]:last-of-type input {{
         background:white !important;
         color:{C["text"]} !important;
         border:1.5px solid {C["sand3"]} !important;
-        border-radius:6px !important;
-    }}
-    [data-testid="column"]:last-of-type input:focus {{
-        border-color:{C["sage"]} !important;
-        box-shadow:0 0 0 3px {C["mint"]}22 !important;
+        border-radius:5px !important;
+        font-size:14px !important;
     }}
 
-    /* Sign In button — dark green, full width */
+    /* Button — keep it simple, dark text on white */
     [data-testid="column"]:last-of-type .stButton > button {{
-        background:{C["green"]} !important;
-        color:white !important;
-        border:none !important;
-        border-radius:6px !important;
-        font-size:13.5px !important;
+        background:white !important;
+        color:{C["text"]} !important;
+        border:1.5px solid {C["sand3"]} !important;
+        border-radius:5px !important;
+        font-size:13px !important;
         font-weight:600 !important;
-        letter-spacing:0.4px !important;
-        padding:11px 24px !important;
-        box-shadow:0 4px 16px {C["green"]}40 !important;
-        transition:all 0.18s !important;
+        letter-spacing:0.3px !important;
+        padding:10px 24px !important;
+        transition:all 0.15s !important;
     }}
     [data-testid="column"]:last-of-type .stButton > button:hover {{
-        background:{C["sage"]} !important;
-        transform:translateY(-1px) !important;
-        box-shadow:0 8px 24px {C["green"]}50 !important;
+        background:{C["green"]} !important;
+        color:white !important;
+        border-color:{C["green"]} !important;
     }}
 
-    /* Eyebrow / title / sub text classes */
+    /* Eyebrow / title classes */
     .auth-eyebrow {{
-        font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;
-        text-transform:uppercase;color:{C["mint"]};margin-bottom:14px;
+        font-family:'DM Mono',monospace; font-size:9.5px; letter-spacing:3px;
+        text-transform:uppercase; color:{C["mint"]}; margin-bottom:16px;
     }}
     .auth-form-title {{
-        font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;
-        color:{C["text"]};letter-spacing:-.02em;line-height:1.1;margin-bottom:8px;
+        font-family:'Cormorant Garamond',serif; font-size:2.4rem; font-weight:700;
+        color:{C["text"]}; letter-spacing:-.02em; line-height:1.1; margin-bottom:8px;
     }}
     .auth-form-sub {{
-        font-size:13px;color:{C["muted"]};line-height:1.7;margin-bottom:32px;
+        font-size:13px; color:{C["muted"]}; line-height:1.75; margin-bottom:36px;
     }}
     .auth-footer {{
-        margin-top:24px;padding-top:16px;border-top:1px solid {C["sand3"]};
-        font-size:11px;color:{C["muted"]};font-family:'DM Mono',monospace;
-        display:flex;align-items:center;gap:8px;
+        margin-top:24px; padding-top:16px; border-top:1px solid {C["sand3"]};
+        font-size:11px; color:{C["muted"]}; font-family:'DM Mono',monospace;
+        display:flex; align-items:center; gap:8px;
     }}
 
-    /* Tab bar */
+    /* Tabs */
     div[data-testid="stTabs"] > div:first-child {{
         background:transparent !important;
         border-bottom:1px solid {C["sand3"]} !important;
-        padding:0 !important;gap:0 !important;margin-bottom:24px !important;
+        padding:0 !important; gap:0 !important; margin-bottom:24px !important;
     }}
     div[data-testid="stTabs"] button[role="tab"] {{
         font-family:'DM Sans',sans-serif !important;
-        font-size:11.5px !important;font-weight:600 !important;
-        text-transform:uppercase !important;letter-spacing:1px !important;
-        color:{C["muted"]} !important;border-radius:0 !important;
+        font-size:11.5px !important; font-weight:600 !important;
+        text-transform:uppercase !important; letter-spacing:1px !important;
+        color:{C["muted"]} !important; border-radius:0 !important;
         padding:12px 20px 12px 0 !important;
         border-bottom:2px solid transparent !important;
         background:transparent !important;
     }}
     div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {{
-        color:{C["green"]} !important;
-        border-bottom-color:{C["mint"]} !important;
+        color:{C["text"]} !important;
+        border-bottom-color:{C["sand3"]} !important;
     }}
     div[data-testid="stTabs"] div[role="tabpanel"] {{
         background:transparent !important;
-        border:none !important;padding:0 !important;box-shadow:none !important;
+        border:none !important; padding:0 !important; box-shadow:none !important;
     }}
     </style>""", unsafe_allow_html=True)
 
@@ -506,10 +496,8 @@ def auth_gate():
             <div class="eyebrow-text">Tucson, Arizona</div>
           </div>
           <div class="headline">Santa Cruz River<br><em>Trash Survey</em></div>
-          <div class="desc">Longitudinal monitoring of litter and debris along the Santa Cruz River corridor. Triplicate 10×10m plots across 14 sites from Camino del Cerro to Drexel Road.</div>
+          <div class="desc">Longitudinal monitoring of litter and debris along the Santa Cruz River corridor and tributaries, Tucson, Arizona. Triplicate 10×10m plots surveyed across multiple sites.</div>
           <div class="stats">
-            <div class="stat"><div class="stat-num">14</div><div class="stat-lbl">Survey Sites</div></div>
-            <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">River Reaches</div></div>
             <div class="stat"><div class="stat-num">395+</div><div class="stat-lbl">Events Logged</div></div>
           </div>
         </div>
