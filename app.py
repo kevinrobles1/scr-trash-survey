@@ -260,9 +260,8 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
  
 /* ── HIDE PHANTOM NAV ── */
 .stTabs [data-baseweb="tab-list"]{{display:none!important;}}
-div[data-testid="stHorizontalBlock"]{{margin:0!important;padding:0!important;
+.nav-btn-row{{margin:0!important;padding:0!important;
   height:0!important;overflow:hidden!important;}}
-div[data-testid="stHorizontalBlock"]>div{{height:0!important;overflow:hidden!important;}}
  
 /* ── FOOTER ── */
 .ftr{{background:{C["forest"]};padding:24px 44px;margin-top:80px;
@@ -570,6 +569,7 @@ ncols=st.columns(len(PAGES))
 for i,p in enumerate(PAGES):
     with ncols[i]:
         if st.button(p,key=f"_n{p}",help=p): st.session_state["page"]=p; st.rerun()
+st.markdown('<style>div[data-testid="stHorizontalBlock"]:has(button[title="Overview"]){height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}</style>', unsafe_allow_html=True)
 components.html("""<script>(function(){function go(){window.parent.document.querySelectorAll('.nav-btn')
 .forEach(el=>el.addEventListener('click',()=>{const p=el.getAttribute('data-p');
 window.parent.document.querySelectorAll('button').forEach(b=>{if(b.title===p)b.click();});}));}
