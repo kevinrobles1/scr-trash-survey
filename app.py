@@ -755,11 +755,18 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
 pg=st.session_state["page"]
 nav="".join(f'<span class="nav-btn{"  on" if p==pg else ""}" data-p="{p}">{p}</span>' for p in PAGES)
 st.markdown(f'<div class="nav"><div class="nav-in">{nav}</div></div>', unsafe_allow_html=True)
+st.markdown('<div style="position:absolute;opacity:0;pointer-events:none;height:0;overflow:hidden;">',unsafe_allow_html=True)
 ncols=st.columns(len(PAGES))
 for i,p in enumerate(PAGES):
     with ncols[i]:
         if st.button(p,key=f"_n{p}",help=p): st.session_state["page"]=p; st.rerun()
-st.markdown('<style>div[data-testid="stHorizontalBlock"]:has(button[title="Overview"]){height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;}</style>', unsafe_allow_html=True)
+st.markdown('</div>',unsafe_allow_html=True)
+st.markdown("""<style>
+div[data-testid="stHorizontalBlock"]:has(button[title="Overview"]) {
+    position:absolute!important;opacity:0!important;pointer-events:none!important;
+    height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;
+}
+</style>""",unsafe_allow_html=True)
 components.html("""<script>(function(){function go(){window.parent.document.querySelectorAll('.nav-btn')
 .forEach(el=>el.addEventListener('click',()=>{const p=el.getAttribute('data-p');
 window.parent.document.querySelectorAll('button').forEach(b=>{if(b.title===p)b.click();});}));}
@@ -933,18 +940,16 @@ elif page=="Figures":
 
     FCAT={
         "⏱ Temporal":[
-            "Items Over Time","Rolling Average","Yearly Totals","Monthly Comparison",
-            "Seasonal Patterns","Cumulative Total","Average Per Event","Items Per m²",
-            "Weight Over Time","Events Per Month",
+            "Items Over Time",
+            "Yearly Totals",
+            "Monthly Comparison",
+            "Average Per Event",
+            "Weight Over Time",
         ],
         "📦 Categories":[
-            "Top 25 Items","Category Totals","Category Trends","Segment × Category",
-            "Items vs Weight","Category Heatmap",
-        ],
-        "📍 Sites":[
-            "Sites — Mean (N→S)","Sites — Variability","Sites — CV","Sites — Range",
-            "Sites — Total","Top 10 Cleanest","Top 10 Highest","Segment Comparison",
-            "All Sites Ranked","Per-m² by Site",
+            "Top 15 Items",
+            "Category Totals",
+            "Items by Location",
         ],
     }
 
@@ -1059,10 +1064,17 @@ elif page=="Figures":
             fig_base(fig,"Month","Survey Events",h=400); show(fig,"f_epm")
 
         # ── CATEGORIES ────────────────────────────────────────────
-        elif sel=="Top 25 Items":
-            top=df.groupby("trash_item")["n"].sum().nlargest(25).reset_index().sort_values("n")
+        elif sel=="Top 15 Items":
+            top=df.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
             fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["green"]])
-            fig_base(fig,"Count",None,h=max(520,26*len(top))); show(fig,"f_t25")
+            fig_base(fig,"Count",None,h=max(440,28*len(top))); show(fig,"f_t15")
+
+        elif sel=="Items by Location":
+            if "site_label" in df.columns:
+                loc=df.groupby("site_label")["n"].sum().sort_values(ascending=False).head(25).reset_index().sort_values("n")
+                fig=px.bar(loc,x="n",y="site_label",orientation="h",color_discrete_sequence=[C["sky"]])
+                fig_base(fig,"Total Items",None,h=max(500,22*len(loc))); show(fig,"f_loc")
+            else: empty_notice("No location data.")
 
         elif sel=="Category Totals":
             ct=df.groupby("trash_group")["n"].sum().sort_values().reset_index()
@@ -1183,7 +1195,23 @@ elif page=="Statistics":
     st.markdown('<div class="pg-lead">Site-level analysis. Where multiple events share the same location and date they are treated as replicates and summarized as mean ± SD. Plot sizes vary across events.</div>',unsafe_allow_html=True)
 
     if len(ss)==0:
-        st.warning("Statistical summaries require point_id and replicate_no in site_events.")
+        # Fallback: show location-level stats from raw long data even without point_id
+        st.info("Replicate-level stats not available (no point_id data). Showing location summaries instead.")
+        if "site_label" in long.columns and "n" in long.columns:
+            loc_stats = long.groupby("site_label")["n"].agg(
+                total="sum", mean="mean", count="count"
+            ).reset_index().sort_values("total", ascending=False)
+            loc_stats.columns = ["Location","Total Items","Avg per Event","# Events"]
+            loc_stats = loc_stats.round(1)
+            c1,c2 = st.columns(2)
+            with c1:
+                st.markdown('<div class="card"><div class="sec-title">Top Locations by Total Items</div></div>',unsafe_allow_html=True)
+                top20 = loc_stats.head(20).sort_values("Total Items")
+                fig=px.bar(top20,x="Total Items",y="Location",orientation="h",color_discrete_sequence=[C["green"]])
+                fig_base(fig,"Total Items",None,h=500); show(fig,"stat_loc")
+            with c2:
+                st.markdown('<div class="card"><div class="sec-title">All Locations Summary</div></div>',unsafe_allow_html=True)
+                st.dataframe(loc_stats,use_container_width=True,height=500)
     else:
         # Summary strip
         n_trip=int(ss["three_plots"].sum()); pct_trip=n_trip/max(len(ss),1)*100
