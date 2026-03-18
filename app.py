@@ -369,14 +369,20 @@ def auth_gate():
     .stApp {{ background:{C["forest"]} !important; }}
     .block-container {{ padding:0 !important; }}
 
-    /* Right column — clean cream */
-    [data-testid="column"]:last-of-type,
-    [data-testid="column"]:last-of-type > div,
-    [data-testid="column"]:last-of-type > div > div {{
+    /* Right column — force cream, nuke every layer of green */
+    [data-testid="column"]:last-of-type {{
         background:{C["cream"]} !important;
-        min-height:100vh;
+        min-height:100vh !important;
+        padding:72px 56px !important;
     }}
-    [data-testid="column"]:last-of-type {{ padding:72px 56px !important; }}
+    [data-testid="column"]:last-of-type > div,
+    [data-testid="column"]:last-of-type > div > div,
+    [data-testid="column"]:last-of-type > div > div > div,
+    [data-testid="column"]:last-of-type section,
+    [data-testid="column"]:last-of-type [data-testid="stVerticalBlock"],
+    [data-testid="column"]:last-of-type [data-testid="stVerticalBlock"] > div {{
+        background:{C["cream"]} !important;
+    }}
 
     /* Labels */
     [data-testid="column"]:last-of-type label {{
