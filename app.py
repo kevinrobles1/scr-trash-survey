@@ -27,13 +27,15 @@ def get_sb() -> Client:
 # ──────────────────────────────────────────────────────────────────
 LOGO_W = "https://sonoraninstitute.org/wp-content/themes/sonoran-institute-2016/assets/img/si_logo_white_2018.png"
 
+# RIVER_SEGMENTS: working geographic groupings for a subset of SCR core sites only.
+# Sites not listed here will show as "Other". This grouping is not authoritative.
 RIVER_SEGMENTS = {
-    "North Reach":   ["Santa Cruz River North of CoCerro","Between an outfall and Camino del Cerro","Santa Cruz River at Camino del Cerro","Silverlake Bridge on Santa Cruz"],
-    "Central Reach": ["W side of Cushing St. bridge, north of the bridge at outfall","outfall CW Cushing, North side","Midway between Cushing and Congress, northern site","Midway between Cushing and Congress, southern site","South of Trail's end wash"],
-    "South Reach":   ["South of Speedway (St. Mary's) (West)","Speedway and St. Mary","Santa Cruz river, Drexel and Irvington"],
-    "Rillito":       ["Rillito at Country Club","Arcadia wash"],
+    "North Reach":   ["Santa Cruz River North of CoCerro","Between an outfall and Camino del Cerro","between an outfall and Camino del Cerro","Santa Cruz River at Camino del Cerro","Silverlake Bridge on Santa Cruz"],
+    "Central Reach": ["W side of Cushing St. bridge, north of the bridge at outfall","outfall CW Cushing, North side","Midway between Cushing and Congress, northern site","Midway between Cushing and Congress, southern site","Midway Curshing and congress","South of Trail's end wash"],
+    "South Reach":   ["South of Speedway (St. Mary's) (West)","Speedway and St. Mary","Santa Cruz river, Drexel and Irvington","Santa Cruz river, Drexel and irvington","drexel"],
+    "Rillito":       ["Rillito at Country Club","Arcadia wash","Arcadia Wash between speedway"],
 }
-SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito"]
+SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito","Other"]
 SEG_COLORS = {"North Reach":"#2980b9","Central Reach":"#27ae60","South Reach":"#e67e22","Rillito":"#8e44ad","Other":"#7f8c8d"}
 SEG_LIGHT  = {"North Reach":"#d6eaf8","Central Reach":"#d5f5e3","South Reach":"#fdebd0","Rillito":"#e8daef","Other":"#eaecee"}
 
@@ -59,9 +61,13 @@ TRASH_GROUPS = {
     "Misc":          ["Sm. debris (ex. metal, plastic scraps)","Lg. debris (ex. garbage cans)"],
 }
 
-TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset",
-        "Soroush Hedayah","Vata Aflatoone","Kimberly Baeza","Joan Woodward",
-        "Mark Krieski","Jamie Irby","Marsha Colbert","Axhel Munoz","Christine Hehenga"]
+TEAM = [
+    "Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset",
+    "Soroush Hedayah","Vata Aflatoone","Kimberly Baeza","Joan Woodward",
+    "Mark Krieski","Jamie Irby","Marsha Colbert","Axhel Munoz","Christine Hehenga",
+    "Saige Thompson","Stephanie Winick","Damon Shorty","Julia Olson",
+    "Isabella Feldmann","KyeongHee Kim","Joe Cuffori","Brian Jones",
+]
 
 SEASONS = {1:"Winter",2:"Winter",3:"Spring",4:"Spring",5:"Spring",6:"Summer",
            7:"Summer",8:"Summer",9:"Fall",10:"Fall",11:"Fall",12:"Winter"}
@@ -496,7 +502,7 @@ def auth_gate():
             <div class="eyebrow-text">Tucson, Arizona</div>
           </div>
           <div class="headline">Santa Cruz River<br><em>Trash Survey</em></div>
-          <div class="desc">Longitudinal monitoring of litter and debris along the Santa Cruz River corridor and tributaries, Tucson, Arizona. Triplicate 10×10m plots surveyed across multiple sites.</div>
+          <div class="desc">Longitudinal monitoring of litter and debris along the Santa Cruz River corridor and tributaries, Tucson, Arizona. Plot sizes and survey structures vary across events.</div>
           <div class="stats">
             <div class="stat"><div class="stat-num">395+</div><div class="stat-lbl">Events Logged</div></div>
           </div>
@@ -617,7 +623,7 @@ def site_stats(long):
     ss=pp.groupby("point_id")["plot_total"].agg(n_plots="count",mean="mean",
         mn="min",mx="max",sd="std",total="sum").reset_index()
     ss["range"]=ss["mx"]-ss["mn"]; ss["cv"]=ss["sd"]/ss["mean"].replace(0,np.nan)*100
-    ss["triplicate"]=(ss["n_plots"]==3)
+    ss["three_plots"]=(ss["n_plots"]==3)
     meta=long.groupby("point_id",dropna=False).agg(
         site_label=("site_label","first"),lat=("lat","mean"),lon=("lon","mean"),
         seg=("seg","first")).reset_index()
@@ -755,7 +761,7 @@ ss=site_stats(long) if all(c in long.columns for c in ["point_id","replicate_no"
 if page=="Overview":
     st.markdown('<div class="body fade-up">',unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Santa Cruz River Trash Monitoring</div>',unsafe_allow_html=True)
-    st.markdown(f'<div class="pg-lead">Longitudinal trash survey data collected along the Santa Cruz River corridor, Tucson, AZ. Triplicate 10×10 m plots sampled at {long["site_label"].nunique()} sites across four river segments. Program directed by <strong>Luke Cole</strong>, Sonoran Institute.</div>',unsafe_allow_html=True)
+    st.markdown(f'<div class="pg-lead">Longitudinal trash survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across {long["site_label"].nunique()} recorded locations spanning the Santa Cruz River, Rillito River, and tributaries. Program directed by <strong>Luke Cole</strong>, Sonoran Institute.</div>',unsafe_allow_html=True)
 
     total_n   = int(long["n"].sum())
     n_events  = long["event_id"].nunique()
@@ -871,7 +877,7 @@ elif page=="Map":
             c1,c2,c3,c4=st.columns(4)
             c1.metric("Sites",len(ss_m))
             c2.metric("Avg Items/Plot",f"{ss_m['mean'].mean():.1f}" if len(ss_m)>0 else "—")
-            c3.metric("Full Triplicates",int(ss_m["triplicate"].sum()))
+            c3.metric("3-Plot Events",int(ss_m["three_plots"].sum()))
             c4.metric("Segments",ss_m["seg"].nunique() if "seg" in ss_m.columns else "—")
             leaflet_map(ss_m,"lat","lon","display",
                 ["site_label","seg","n_plots","mean","sd","total"],"mean",seg_col="seg")
@@ -1152,17 +1158,17 @@ elif page=="Figures":
 elif page=="Statistics":
     st.markdown('<div class="body fade-up">',unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Statistical Summary</div>',unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Replicate-based analysis. Each site has three 10×10 m plots (triplicates) surveyed per event. These are treated as replicates — not independent observations — and summarized as mean ± SD per plot.</div>',unsafe_allow_html=True)
+    st.markdown('<div class="pg-lead">Site-level analysis. Where multiple events share the same location and date they are treated as replicates and summarized as mean ± SD. Plot sizes vary across events.</div>',unsafe_allow_html=True)
 
     if len(ss)==0:
         st.warning("Statistical summaries require point_id and replicate_no in site_events.")
     else:
         # Summary strip
-        n_trip=int(ss["triplicate"].sum()); pct_trip=n_trip/max(len(ss),1)*100
+        n_trip=int(ss["three_plots"].sum()); pct_trip=n_trip/max(len(ss),1)*100
         grand_mean=float(ss["mean"].mean()); grand_sd=float(ss["mean"].std())
         st.markdown(f"""<div class="stat-strip">
 <div class="stat-item"><span class="stat-v">{len(ss)}</span><span class="stat-l">Survey Sites</span></div>
-<div class="stat-item"><span class="stat-v">{n_trip} ({pct_trip:.0f}%)</span><span class="stat-l">Full Triplicates</span></div>
+<div class="stat-item"><span class="stat-v">{n_trip} ({pct_trip:.0f}%)</span><span class="stat-l">3-Plot Events</span></div>
 <div class="stat-item"><span class="stat-v">{grand_mean:.1f}</span><span class="stat-l">Grand Mean (items/plot)</span></div>
 <div class="stat-item"><span class="stat-v">±{grand_sd:.1f}</span><span class="stat-l">SD Across Sites</span></div>
 <div class="stat-item"><span class="stat-v">{ss['mean'].median():.1f}</span><span class="stat-l">Median Site Mean</span></div>
@@ -1208,7 +1214,7 @@ elif page=="Statistics":
 
         # Full stats table
         st.markdown('<div class="card"><div class="sec-title">Full Site Statistics Table</div><div class="sec-sub">N→S order. Mean and SD are computed across replicate plots within each site.</div>',unsafe_allow_html=True)
-        cols=[c for c in ["display","site_label","seg","n_plots","mean","sd","cv","range","mn","mx","total","triplicate"] if c in ss.columns]
+        cols=[c for c in ["display","site_label","seg","n_plots","mean","sd","cv","range","mn","mx","total","three_plots"] if c in ss.columns]
         disp=ss[cols].copy()
         for c in ["mean","sd","cv","range"]:
             if c in disp.columns: disp[c]=disp[c].round(1)
@@ -1342,7 +1348,7 @@ elif page=="Export":
          et_exp,"SCR_trash_events.csv"),
     ]
     if len(ss)>0:
-        ss_exp=ss[[c for c in ["display","site_label","seg","n_plots","mean","sd","cv","range","total","triplicate","lat","lon"] if c in ss.columns]].copy()
+        ss_exp=ss[[c for c in ["display","site_label","seg","n_plots","mean","sd","cv","range","total","three_plots","lat","lon"] if c in ss.columns]].copy()
         for c in ["mean","sd","cv","range"]:
             if c in ss_exp.columns: ss_exp[c]=ss_exp[c].round(2)
         exports.append(("Site Statistics (N→S)","Mean ± SD, CV, range per site. Ordered north to south.",
