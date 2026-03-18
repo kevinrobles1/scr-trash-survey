@@ -551,23 +551,28 @@ def auth_gate():
 @st.cache_data(ttl=300, show_spinner=False)
 def load_data():
     sb=get_sb()
-    tc=pd.DataFrame(sb.table("trash_counts").select("event_id,trash_group,trash_item,count_value").execute().data or [])
-    se=pd.DataFrame(sb.table("site_events").select("*").execute().data or [])
-    wt=pd.DataFrame(sb.table("weights_data").select("event_id,date_recorded,total_weight_oz").execute().data or [])
+    # CRITICAL: Supabase PostgREST caps every query at 1,000 rows by default.
+    # trash_counts has ~9,000 rows — without .limit() only 11% of data loads.
+    tc=pd.DataFrame(sb.table("trash_counts").select("event_id,trash_group,trash_item,count_value").limit(100000).execute().data or [])
+    se=pd.DataFrame(sb.table("site_events").select("*").limit(10000).execute().data or [])
+    wt=pd.DataFrame(sb.table("weights_data").select("event_id,date_recorded,total_weight_oz").limit(10000).execute().data or [])
 
     if tc.empty: tc=pd.DataFrame(columns=["event_id","trash_group","trash_item","count_value"])
     tc.rename(columns={"count_value":"n"},inplace=True)
     tc["n"]=pd.to_numeric(tc["n"],errors="coerce").fillna(0)
 
     # ── CRITICAL: strip phantom rows from bad migration ──────────
-    # 1. Remove rows where trash_item is a spreadsheet column header, not a real item
+    # 1. Remove rows where trash_item is a spreadsheet column header
     tc=tc[~tc["trash_item"].isin(PHANTOM_ITEMS)].copy()
-    # 2. Remap Plastic Bags from "Ungrouped" (no header in Excel) to its own group
-    pb_mask=(tc["trash_group"].isin(PHANTOM_GROUPS))&(tc["trash_item"]=="Plastic Bags")
-    tc.loc[pb_mask,"trash_group"]="Plastic Bags"
-    # 3. Drop any remaining Ungrouped rows (Event Id / Date / Surveyed M2 leftovers)
+    # 2. Remap Plastic Bags: stored with group=NULL or group='Ungrouped' 
+    #    (no group header in Excel for col 3)
+    pb_null  = tc["trash_group"].isna() & (tc["trash_item"]=="Plastic Bags")
+    pb_ungrp = tc["trash_group"].isin(PHANTOM_GROUPS) & (tc["trash_item"]=="Plastic Bags")
+    tc.loc[pb_null | pb_ungrp, "trash_group"] = "Plastic Bags"
+    # 3. Drop any remaining Ungrouped / NULL group rows
     tc=tc[~tc["trash_group"].isin(PHANTOM_GROUPS)].copy()
-    # 4. Strip phantom items that ended up in Misc group
+    tc=tc[tc["trash_group"].notna()].copy()
+    # 4. Strip any other phantom items that slipped through
     tc=tc[~tc["trash_item"].isin({"Complete?","Total Items","Total Items/M2","Total Items/m2"})].copy()
     # ─────────────────────────────────────────────────────────────
 
@@ -902,13 +907,14 @@ if page == "Overview":
     stat_strip(long, lf)
 
     total_n=int(lf["n"].sum()); n_ev=lf["event_id"].nunique(); n_si=lf["site_label"].nunique()
-    n_gr=lf["trash_group"].nunique(); d_min,d_max=lf["date"].min(),lf["date"].max()
+    n_gr=lf["trash_group"].nunique()  # After query fix: should be 19
+    d_min,d_max=lf["date"].min(),lf["date"].max()
     span=f"{d_min.strftime('%b %Y')} – {d_max.strftime('%b %Y')}" if pd.notna(d_min) and pd.notna(d_max) else "—"
     st.markdown(f"""<div class="kpi-grid">
     <div class="kpi"><div class="kpi-lbl">Total Items Recorded</div><div class="kpi-val">{total_n:,}</div><div class="kpi-note">across all survey events</div></div>
     <div class="kpi"><div class="kpi-lbl">Survey Events</div><div class="kpi-val">{n_ev:,}</div><div class="kpi-note">individual field visits</div></div>
     <div class="kpi"><div class="kpi-lbl">Unique Locations</div><div class="kpi-val">{n_si:,}</div><div class="kpi-note">recorded site names</div></div>
-    <div class="kpi"><div class="kpi-lbl">Trash Categories</div><div class="kpi-val">{n_gr}</div><div class="kpi-note">item groups tracked</div></div>
+    <div class="kpi"><div class="kpi-lbl">Trash Categories</div><div class="kpi-val">{n_gr}</div><div class="kpi-note">of 19 groups · 56 items</div></div>
     <div class="kpi"><div class="kpi-lbl">Survey Period</div><div class="kpi-val sm">{span}</div><div class="kpi-note">date range</div></div>
     </div>""", unsafe_allow_html=True)
 
