@@ -551,13 +551,26 @@ def auth_gate():
 @st.cache_data(ttl=300, show_spinner=False)
 def load_data():
     sb=get_sb()
-    # CRITICAL: Supabase PostgREST caps every query at 1,000 rows by default.
-    # trash_counts has ~9,000 rows — without .limit() only 11% of data loads.
-    tc=pd.DataFrame(sb.table("trash_counts").select("event_id,trash_group,trash_item,count_value").limit(100000).execute().data or [])
-    se=pd.DataFrame(sb.table("site_events").select("*").limit(10000).execute().data or [])
-    wt=pd.DataFrame(sb.table("weights_data").select("event_id,date_recorded,total_weight_oz").limit(10000).execute().data or [])
+    # ── PAGINATED FETCH — Supabase caps at 1,000 rows per call ──────
+    # We must paginate to get ALL rows. .limit() alone is unreliable
+    # across supabase-py versions. Pagination always works.
+    def fetch_all(table, cols):
+        rows=[]; offset=0; page=1000
+        while True:
+            batch=sb.table(table).select(cols).range(offset,offset+page-1).execute().data or []
+            rows.extend(batch)
+            if len(batch)<page: break
+            offset+=page
+        return rows
+
+    tc=pd.DataFrame(fetch_all("trash_counts","event_id,trash_group,trash_item,count_value"))
+    se=pd.DataFrame(fetch_all("site_events","*"))
+    wt=pd.DataFrame(fetch_all("weights_data","event_id,date_recorded,total_weight_oz"))
 
     if tc.empty: tc=pd.DataFrame(columns=["event_id","trash_group","trash_item","count_value"])
+    if se.empty: se=pd.DataFrame()
+    if wt.empty: wt=pd.DataFrame(columns=["event_id","date_recorded","total_weight_oz"])
+
     tc.rename(columns={"count_value":"n"},inplace=True)
     tc["n"]=pd.to_numeric(tc["n"],errors="coerce").fillna(0)
 
