@@ -648,7 +648,7 @@ if page == "Overview":
             fig=go.Figure()
             fig.add_bar(x=ts["date"],y=ts["n"],marker_color=[C["sand3"] if g else C["green"] for g in ts["gap"]],name="Monthly",opacity=.88)
             fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Month Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
-            fb(fig,"Month","Total Items",h=300); show(fig,"ov_ts")
+            fb(fig,"Month","Total Items",h=300,title="Monthly Items Recorded"); show(fig,"ov_ts")
         card_close()
     with c2:
         card_open("Share by Trash Category",
@@ -667,7 +667,7 @@ if page == "Overview":
                   "Ranked by cumulative count across all survey events and locations.")
         top=lf.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
         fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["water"]])
-        fb(fig,"Total Count",None,h=420); show(fig,"ov_top")
+        fb(fig,"Total Count",None,h=420,title="Top 15 Items by Total Count"); show(fig,"ov_top")
         card_close()
     with c4:
         card_open("Items by River Segment and Category",
@@ -676,7 +676,7 @@ if page == "Overview":
             sg=lf[lf["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
             sg["seg"]=pd.Categorical(sg["seg"],SEG_ORDER,ordered=True); sg=sg.sort_values("seg")
             fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER})
-            fb(fig,"River Segment","Total Items",h=420); show(fig,"ov_seg")
+            fb(fig,"River Segment","Total Items",h=420,title="Items by Segment and Category"); show(fig,"ov_seg")
         card_close()
 
     section_title("Category Summary Table")
@@ -763,7 +763,7 @@ elif page == "Trends":
         fig=go.Figure()
         fig.add_bar(x=ts["date"],y=ts["n"],marker_color=[C["sand3"] if g else C["green"] for g in ts["gap"]],name="Monthly")
         fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Mo Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
-        fb(fig,"Month","Total Items",h=320); show(fig,"tr_ts")
+        fb(fig,"Month","Total Items",h=320,title="Monthly Item Count — Full Record"); show(fig,"tr_ts")
         card_close()
     with c2:
         card_open("Annual Totals by Survey Year",
@@ -771,7 +771,7 @@ elif page == "Trends":
         yr=df.dropna(subset=["year"]).groupby("year")["n"].sum().reset_index(); yr["year"]=yr["year"].astype(str)
         fig=px.bar(yr,x="year",y="n",color_discrete_sequence=[C["green"]],text="n")
         fig.update_traces(texttemplate="%{text:,}",textposition="outside")
-        fb(fig,"Year","Total Items",h=320); show(fig,"tr_yr")
+        fb(fig,"Year","Total Items",h=320,title="Annual Totals by Survey Year"); show(fig,"tr_yr")
         card_close()
 
     c3,c4=st.columns(2)
@@ -783,7 +783,7 @@ elif page == "Trends":
         fig=px.bar(md,x="month_name",y="n",color="year_str",barmode="group",
             category_orders={"month_name":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},
             color_discrete_sequence=PAL)
-        fb(fig,"Month","Total Items",h=320); show(fig,"tr_mby")
+        fb(fig,"Month","Total Items",h=320,title="Month-by-Month Comparison Across Years"); show(fig,"tr_mby")
         card_close()
     with c4:
         card_open("Average Items Per Survey Event Over Time",
@@ -793,7 +793,7 @@ elif page == "Trends":
             ev2=ef.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["total"].mean().reset_index(name="avg")
             fig=px.line(ev2,x="date",y="avg",markers=True,color_discrete_sequence=[C["water"]])
             fig.add_hline(y=ev2["avg"].mean(),line_dash="dot",line_color=C["earth"],annotation_text=f"Grand mean: {ev2['avg'].mean():.0f}",annotation_font_size=11)
-            fb(fig,"Month","Avg Items / Event",h=320); show(fig,"tr_avg")
+            fb(fig,"Month","Avg Items / Event",h=320,title="Average Items Per Survey Event"); show(fig,"tr_avg")
         card_close()
 
     c5,c6=st.columns(2)
@@ -803,7 +803,7 @@ elif page == "Trends":
         if "seg" in df.columns:
             sg=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(sg,x="date",y="n",color="seg",markers=True,color_discrete_map=SEG_COLORS)
-            fb(fig,"Quarter","Items",h=320); show(fig,"tr_seg")
+            fb(fig,"Quarter","Items",h=320,title="Items by River Segment — Quarterly"); show(fig,"tr_seg")
         card_close()
     with c6:
         if not wt.empty and "weight_oz" in wt.columns:
@@ -813,7 +813,7 @@ elif page == "Trends":
             if len(dated)>0:
                 wtrend=dated.groupby(pd.Grouper(key="date",freq="MS"))["weight_oz"].sum().reset_index()
                 fig=px.bar(wtrend,x="date",y="weight_oz",color_discrete_sequence=[C["earth"]])
-                fb(fig,"Month","Weight (oz)",h=320); show(fig,"tr_wt")
+                fb(fig,"Month","Weight (oz)",h=320,title="Weight of Trash Collected Over Time"); show(fig,"tr_wt")
             card_close()
 
     section_title("Annual Summary Table")
@@ -862,14 +862,14 @@ elif page == "Categories":
         ct=df.groupby("trash_group")["n"].sum().sort_values().reset_index()
         fig=px.bar(ct,x="n",y="trash_group",orientation="h",color_discrete_sequence=[C["green"]],text="n")
         fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-        fb(fig,"Total Items",None,h=max(400,28*len(ct))); show(fig,"cat_ct")
+        fb(fig,"Total Items",None,h=max(400,28*len(ct)),title="Total Items by Category Group"); show(fig,"cat_ct")
         card_close()
     with c2:
         card_open("Top 30 Individual Items — Ranked by Total Count",
                   "Every recorded item type ranked by cumulative count. Items near the bottom are rarely found; items near the top appear most consistently across surveys.")
         top=df.groupby("trash_item")["n"].sum().sort_values(ascending=False).head(30).reset_index().sort_values("n")
         fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["sky"]])
-        fb(fig,"Total Count",None,h=max(540,22*len(top))); show(fig,"cat_top")
+        fb(fig,"Total Count",None,h=max(540,22*len(top)),title="Top 30 Individual Items — All Time"); show(fig,"cat_top")
         card_close()
 
     c3,c4=st.columns(2)
@@ -889,7 +889,7 @@ elif page == "Categories":
             top6=df.groupby("trash_group")["n"].sum().nlargest(6).index.tolist()
             ct3=df[df["trash_group"].isin(top6)].groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(ct3,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
-            fb(fig,"Quarter","Items",h=380); show(fig,"cat_trend")
+            fb(fig,"Quarter","Items",h=380,title="Category Trends Over Time (Top 6 Groups)"); show(fig,"cat_trend")
         card_close()
 
     c5,c6=st.columns(2)
@@ -899,7 +899,7 @@ elif page == "Categories":
         if "seg" in df.columns:
             sc=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
             fig=px.bar(sc,x="n",y="seg",color="trash_group",orientation="h",barmode="stack",color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER[::-1]})
-            fb(fig,"Items","Segment",h=320); show(fig,"cat_sxc")
+            fb(fig,"Items","Segment",h=320,title="Category Mix by River Segment"); show(fig,"cat_sxc")
         card_close()
     with c6:
         card_open("Items per Survey Event by Category",
@@ -908,7 +908,7 @@ elif page == "Categories":
         avg_cat["avg_per_event"]=(avg_cat["total"]/avg_cat["events"]).round(2)
         avg_cat=avg_cat.sort_values("avg_per_event")
         fig=px.bar(avg_cat,x="avg_per_event",y="trash_group",orientation="h",color_discrete_sequence=[C["brick"]])
-        fb(fig,"Avg Items / Event",None,h=max(360,26*len(avg_cat))); show(fig,"cat_avg")
+        fb(fig,"Avg Items / Event",None,h=max(360,26*len(avg_cat)),title="Average Items per Event by Category"); show(fig,"cat_avg")
         card_close()
 
     section_title("Full Item-Level Breakdown")
@@ -966,21 +966,21 @@ elif page == "Locations":
                   "Horizontal bar chart colored by river segment assignment. Locations labeled 'Other' are not assigned to a named segment.")
         t30=site_st.head(30).sort_values("total")
         fig=px.bar(t30,x="total",y="site_label",orientation="h",color="seg" if "seg" in t30.columns else None,color_discrete_map=SEG_COLORS)
-        fb(fig,"Total Items",None,h=max(520,22*len(t30))); show(fig,"loc_top")
+        fb(fig,"Total Items",None,h=max(520,22*len(t30)),title="Top 30 Locations by Total Items Recorded"); show(fig,"loc_top")
         card_close()
     with c2:
         card_open("Total Items by River Segment",
                   "Aggregate comparison of total items across the four named river segments. Sites not assigned to a segment are excluded.")
         seg_tot=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["n"].sum().reset_index()
         fig=px.bar(seg_tot,x="seg",y="n",color="seg",color_discrete_map=SEG_COLORS,category_orders={"seg":SEG_ORDER})
-        fb(fig,"Segment","Total Items",h=260,leg=False); show(fig,"loc_seg")
+        fb(fig,"Segment","Total Items",h=260,leg=False,title="Total Items by River Segment"); show(fig,"loc_seg")
         card_close()
 
         card_open("Survey Frequency by Segment",
                   "Number of distinct survey events conducted within each named river segment.")
         seg_ev=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["event_id"].nunique().reset_index(name="events")
         fig=px.bar(seg_ev,x="seg",y="events",color="seg",color_discrete_map=SEG_COLORS)
-        fb(fig,"Segment","# Events",h=240,leg=False); show(fig,"loc_segev")
+        fb(fig,"Segment","# Events",h=240,leg=False,title="Survey Events by River Segment"); show(fig,"loc_segev")
         card_close()
 
     c3,c4=st.columns(2)
@@ -989,14 +989,14 @@ elif page == "Locations":
                   "Ranks locations by their per-event average rather than cumulative total. A site visited only once with 200 items ranks higher than a site visited 10 times with 50 items each.")
         top20_avg=site_st.nlargest(20,"avg_per_event").sort_values("avg_per_event")
         fig=px.bar(top20_avg,x="avg_per_event",y="site_label",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
-        fb(fig,"Avg Items / Event",None,h=max(420,22*len(top20_avg))); show(fig,"loc_avg")
+        fb(fig,"Avg Items / Event",None,h=max(420,22*len(top20_avg)),title="Average Items Per Event — Top 20 Locations"); show(fig,"loc_avg")
         card_close()
     with c4:
         card_open("Events per Location — Survey Coverage Distribution",
                   "Histogram showing how many survey events each location has received. Most locations are visited only 1–3 times; a few core sites are surveyed repeatedly.")
         fig=px.histogram(site_st,x="events",nbins=20,color_discrete_sequence=[C["sage"]])
         fig.add_vline(x=site_st["events"].mean(),line_dash="dot",line_color=C["brick"],annotation_text=f"Mean: {site_st['events'].mean():.1f}",annotation_font_size=11)
-        fb(fig,"# Events per Location","# Locations",h=320); show(fig,"loc_hist")
+        fb(fig,"# Events per Location","# Locations",h=320,title="Survey Coverage — Events per Location Distribution"); show(fig,"loc_hist")
         card_close()
 
     seg_filter=st.selectbox("Filter table by River Segment",["All"]+SEG_ORDER[:-1])
