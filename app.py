@@ -37,6 +37,12 @@ SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito","Other"]
 SEG_COLORS = {"North Reach":"#2980b9","Central Reach":"#27ae60","South Reach":"#e67e22","Rillito":"#8e44ad","Other":"#7f8c8d"}
 SEG_LIGHT  = {"North Reach":"#d6eaf8","Central Reach":"#d5f5e3","South Reach":"#fdebd0","Rillito":"#e8daef","Other":"#f0f0f0"}
 
+# Phantom items accidentally migrated as trash — excluded at load time
+PHANTOM_ITEMS = {"Event Id","Date","Surveyed M2","Complete?",
+    "Total Items","Total Items/M2","Total Items/m2"}
+PHANTOM_GROUPS = {"Ungrouped"}
+
+# Every group:item pair exactly as stored in Supabase (title-cased by migration)
 TRASH_GROUPS = {
     "Cups":           ["Styrofoam (Polar Pop)","Styrofoam (Qt)","Styrofoam (Other)","Plastic","Paper"],
     "Beer":           ["Bottles","Cans"],
@@ -47,19 +53,43 @@ TRASH_GROUPS = {
     "Juice":          ["Bottles","Cans"],
     "Food Packaging": ["Food Wrappers (Candy, Etc.)","Non-Cup Styrofoam","Non-Cup Plastic",
                        "Non-Cup Paper (Bags, Boxes)","Straws","6-Pack Rings",
-                       "Plates And Bowls Plastic","Cans, Milk Jugs, Mixes","Plates, Styrofoam","Utensils","Misc"],
+                       "Plates And Bowls Plastic","Cans, Milk Jugs, Mixes",
+                       "Plates, Styrofoam","Utensils","Misc"],
     "Nicotine":       ["Cigs, Cigars, Lighters, Dip, Packs"],
     "Toiletries":     ["Toiletries","Packaging"],
     "Rx, Drugs":      ["Rx And Drug Packaging","Syringes, Paraphernalia"],
-    "Toys, Games":    ["Balls, Games","Cd, Dvd, Electronic Packaging","School/Office Supplies","Id Cards, Credit Cards","Batteries"],
+    "Toys, Games":    ["Balls, Games","Cd, Dvd, Electronic Packaging","School/Office Supplies",
+                       "Id Cards, Credit Cards","Batteries"],
     "Paper Litter":   ["News, Books, Magazines","Advertising, Signs, Cards"],
     "Clothing":       ["Clothes, Shoes, Hats","Ppe","Misc. Fabric"],
     "Auto":           ["Car Parts (Small)","Car Parts (Large)","Tires"],
     "Construction":   ["Small Items","Large Items"],
-    "Appliances":     ["Bikes, Bike Parts","Furniture/Cushions/Pillows","Shopping Carts","Carpet","Rope/Line","Buckets","Appliances"],
+    "Appliances":     ["Bikes, Bike Parts","Furniture/Cushions/Pillows","Shopping Carts",
+                       "Carpet","Rope/Line","Buckets","Appliances"],
     "Plastic Bags":   ["Plastic Bags"],
     "Misc":           ["Sm. Debris (Ex. Metal, Plastic Scraps)","Lg. Debris (Ex. Garbage Cans)"],
 }
+
+# ── ENVIRONMENTAL CLASSIFICATIONS (from Excel analysis tabs) ──
+# Recyclable per City of Tucson recycling program
+RECYCLABLE_GROUPS  = {"Beer","Liquor","Soda","Water","Sports Drinks","Juice","Paper Litter"}
+NON_RECYCLABLE_GROUPS = {"Plastic Bags","Cups","Food Packaging","Nicotine","Toiletries",
+    "Rx, Drugs","Toys, Games","Clothing","Auto","Construction","Appliances","Misc"}
+# Items that enter waterways during rain events — river health relevance
+FLOATABLE_GROUPS   = {"Plastic Bags","Cups","Soda","Water","Sports Drinks","Juice",
+    "Food Packaging","Paper Litter"}
+NON_FLOATABLE_GROUPS = {"Beer","Liquor","Nicotine","Toiletries","Rx, Drugs","Toys, Games",
+    "Clothing","Auto","Construction","Appliances","Misc"}
+# Direct public health risk
+HEALTH_HAZARD_GROUPS = {"Rx, Drugs","Nicotine","Toiletries"}
+# Single-use beverage containers — policy relevance
+BEVERAGE_GROUPS    = {"Beer","Liquor","Soda","Water","Sports Drinks","Juice","Cups"}
+# Bulk/large debris — removal requires equipment
+BULK_DEBRIS_GROUPS = {"Appliances","Construction","Auto"}
+# Display order for charts (most to least by real totals)
+GROUP_ORDER = ["Food Packaging","Clothing","Plastic Bags","Cups","Misc","Water","Nicotine",
+    "Construction","Beer","Liquor","Soda","Toys, Games","Paper Litter","Toiletries",
+    "Appliances","Sports Drinks","Juice","Rx, Drugs","Auto"]
 
 TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset",
         "Soroush Hedayah","Vata Aflatoone","Kimberly Baeza","Joan Woodward",
@@ -528,6 +558,27 @@ def load_data():
     if tc.empty: tc=pd.DataFrame(columns=["event_id","trash_group","trash_item","count_value"])
     tc.rename(columns={"count_value":"n"},inplace=True)
     tc["n"]=pd.to_numeric(tc["n"],errors="coerce").fillna(0)
+
+    # ── CRITICAL: strip phantom rows from bad migration ──────────
+    # 1. Remove rows where trash_item is a spreadsheet column header, not a real item
+    tc=tc[~tc["trash_item"].isin(PHANTOM_ITEMS)].copy()
+    # 2. Remap Plastic Bags from "Ungrouped" (no header in Excel) to its own group
+    pb_mask=(tc["trash_group"].isin(PHANTOM_GROUPS))&(tc["trash_item"]=="Plastic Bags")
+    tc.loc[pb_mask,"trash_group"]="Plastic Bags"
+    # 3. Drop any remaining Ungrouped rows (Event Id / Date / Surveyed M2 leftovers)
+    tc=tc[~tc["trash_group"].isin(PHANTOM_GROUPS)].copy()
+    # 4. Strip phantom items that ended up in Misc group
+    tc=tc[~tc["trash_item"].isin({"Complete?","Total Items","Total Items/M2","Total Items/m2"})].copy()
+    # ─────────────────────────────────────────────────────────────
+
+    # Add environmental classification columns
+    tc["recyclable"]=tc["trash_group"].map(lambda g:
+        "Recyclable" if g in RECYCLABLE_GROUPS else "Non-Recyclable")
+    tc["floatable"]=tc["trash_group"].map(lambda g:
+        "Floatable" if g in FLOATABLE_GROUPS else "Non-Floatable")
+    tc["beverage"]=tc["trash_group"].isin(BEVERAGE_GROUPS)
+    tc["health_hazard"]=tc["trash_group"].isin(HEALTH_HAZARD_GROUPS)
+    tc["bulk_debris"]=tc["trash_group"].isin(BULK_DEBRIS_GROUPS)
 
     long=tc.copy()
     if not se.empty and not long.empty:
@@ -1120,106 +1171,490 @@ elif page == "Trends":
 elif page == "Categories":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Trash Categories</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Detailed breakdown of all recorded items by category group and individual type. Food Packaging is consistently the dominant category, followed by Clothing and Misc debris.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="pg-lead">Deep analysis of all 19 category groups and 56 individual item types recorded along the Santa Cruz River. Select any figure from the menu — each includes a full description, environmental classification context, and interpretation guide.</div>', unsafe_allow_html=True)
 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="cat")
     stat_strip(long,lf)
 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
-    total_all=df["n"].sum()
+    total_all=max(df["n"].sum(),1)
 
-    c1,c2=st.columns([2,3])
-    with c1:
-        card_open("Total Items by Category Group",
-                  "Horizontal bar chart of cumulative totals per category, sorted ascending. Food Packaging is typically the largest group due to the high number of item subtypes it contains.")
-        ct=df.groupby("trash_group")["n"].sum().sort_values().reset_index()
-        fig=px.bar(ct,x="n",y="trash_group",orientation="h",color_discrete_sequence=[C["green"]],text="n")
-        fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-        fb(fig,"Total Items",None,h=max(400,28*len(ct)),title="Total Items by Category Group"); show(fig,"cat_ct")
-        last_updated_insight(df, chart_type="general")
-        fig_note("Cumulative total of all recorded items within each material category across all events.",
-            "Identifies the dominant waste types driving the overall litter burden.",
-            "Longer bars = more total items in that category. Food Packaging typically dominates due to its many sub-items.",
-            "These are raw totals and do not adjust for the number of sub-items within each category group.")
-        card_close()
-    with c2:
-        card_open("Top 30 Individual Items — Ranked by Total Count",
-                  "Every recorded item type ranked by cumulative count. Items near the bottom are rarely found; items near the top appear most consistently across surveys.")
-        top=df.groupby("trash_item")["n"].sum().sort_values(ascending=False).head(30).reset_index().sort_values("n")
-        fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["sky"]])
-        fb(fig,"Total Count",None,h=max(540,22*len(top)),title="Top 30 Individual Items — All Time"); show(fig,"cat_top")
-        last_updated_insight(df, chart_type="general")
-        fig_note("Individual item types ranked by total cumulative count across all survey events and locations.",
-            "Pinpoints the specific items most frequently found — useful for targeted prevention and messaging.",
-            "Items near the top appear most consistently and in the highest quantities. Items near the bottom are rare.",
-            "High-count items are often packaging from common beverages or fast food — useful for identifying source patterns.")
-        card_close()
+    CAT_FIGS = {
+        "All 19 Categories — Total Items Ranked":               ("Totals & Overview",  "Every trash category ranked by cumulative item count. Colors encode environmental classification.", "The most important summary figure — use it to explain which categories drive the problem to any audience."),
+        "All 56 Individual Items — Total Count Ranked":         ("Totals & Overview",  "Every recorded item type ranked by total count from most to least common across all survey events.", "Pinpoints specific items for prevention campaigns, source identification, and partnership messaging."),
+        "Category Share — Proportional Breakdown":              ("Totals & Overview",  "Donut chart showing each category as a percentage of all recorded items.", "Easy to present in reports — shows visually that Food Packaging dominates the composition."),
+        "Top 10 Heaviest vs Bottom 9 Lightest Categories":      ("Totals & Overview",  "Side-by-side comparison of the 10 heaviest and 9 lightest categories.", "Shows the skewed distribution — a small number of categories account for the vast majority of items."),
+        "Average Items per Survey Event by Category":           ("Totals & Overview",  "Mean items per event for each category, adjusting for number of surveys conducted.", "More meaningful than raw totals when comparing categories with different recording frequencies."),
+        "Beverage Containers — Full Breakdown":                 ("Food & Beverage",    "All beverage categories (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Cups) with sub-item detail.", "Beverage containers are a major single-use plastics source. Understanding their composition supports policy work."),
+        "Cups — Styrofoam vs Plastic vs Paper":                 ("Food & Beverage",    "Breakdown of Cups into Styrofoam (Polar Pop), Styrofoam (Qt), Styrofoam (Other), Plastic, and Paper.", "Styrofoam cups are non-recyclable, non-biodegradable, and fragment into microplastics in waterways."),
+        "Food Packaging — All 11 Sub-Items":                    ("Food & Beverage",    "The largest category broken into 11 sub-types including wrappers, straws, 6-pack rings, plates, utensils.", "Food Packaging is the single largest category (10,694 items). Understanding its composition is critical."),
+        "Alcohol Containers — Beer vs Liquor Over Time":        ("Food & Beverage",    "Quarterly time series comparing Beer and Liquor item counts across the survey record.", "Alcohol containers are associated with encampments and chronic littering — useful for community context."),
+        "Recyclable vs Non-Recyclable — Item Counts":           ("Environmental Risk", "All categories split into Recyclable vs Non-Recyclable per City of Tucson recycling guidelines.", "~16% of items are technically recyclable but none are being recycled — a clear intervention target."),
+        "Floatable vs Non-Floatable — River Health Risk":       ("Environmental Risk", "Categories classified by whether they float and enter waterways during rain or flooding events.", "~63% of items are floatable — directly relevant to ADEQ stormwater permits and EPA Section 319 reporting."),
+        "Health Hazard Items — Rx, Drugs, Nicotine, Toiletries":("Environmental Risk", "Items with direct public health risk: syringes, drug packaging, cigarettes, lighters, and toiletries.", "Syringes create needle-stick hazard for field staff. These require special handling protocols."),
+        "Bulk & Large Debris — Appliances, Construction, Auto": ("Environmental Risk", "Large items requiring equipment: appliances, furniture, tires, car parts, construction debris.", "By item count modest, but by weight and removal cost they far exceed smaller categories."),
+        "Category Risk Profile — Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk — the priority removal targets."),
+        "Category Trends Over Time — Top 6 Quarterly":         ("Trends by Category", "Quarterly time series for the 6 highest-volume categories.", "Shows whether category composition is stable or shifting over the program period."),
+        "Year-over-Year Change by Category":                    ("Trends by Category", "Grouped bars showing each category's annual total across all survey years.", "Reveals which categories are increasing, decreasing, or stable year over year."),
+        "Category Composition — How Mix Changed by Year":       ("Trends by Category", "100% stacked bars showing each category's share per year — removes total survey size effect.", "More ecologically meaningful than raw totals for detecting true composition shifts."),
+        "Category Mix by River Segment":                        ("Geographic",         "Stacked bars showing category composition across North, Central, South, and Rillito reaches.", "Different segments may have different dominant categories due to adjacent land use patterns."),
+        "Segment Specialization — Top Categories per Reach":    ("Geographic",         "One tab per segment showing the top 10 categories and their share of that segment's total.", "Identifies segment-specific waste profiles for targeted cleanup planning."),
+        "Full Item-Level Statistics Table":                     ("Data Tables",        "Every item with total, % of all items, records, mean, recyclable, floatable flags.", "The authoritative reference table for reporting, grant writing, and agency submissions."),
+        "Category Group Summary Table":                         ("Data Tables",        "All 19 groups with total, rank, %, records, mean, and all environmental classifications.", "Use as the primary summary table in any report or presentation."),
+    }
 
-    c3,c4=st.columns(2)
-    with c3:
-        card_open("Category Proportions — Percentage of All Items",
-                  "Each slice shows that category's share of total items recorded. Hover for exact percentages.")
+    sel_cat = st.selectbox("Select a figure to display", list(CAT_FIGS.keys()), key="cat_fig_sel")
+    grp_label, desc, why = CAT_FIGS[sel_cat]
+
+    # Description card
+    st.markdown(
+        f'<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};'
+        f'border-radius:0 8px 8px 0;padding:14px 20px;margin:12px 0 20px;">'
+        f'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};'
+        f'font-family:DM Mono,monospace;margin-bottom:4px;">{grp_label}</div>'
+        f'<div style="font-weight:700;font-size:14px;color:{C["text"]};margin-bottom:4px;">{sel_cat}</div>'
+        f'<p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>What it shows:</strong> {desc}</p>'
+        f'<p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>Why it matters:</strong> {why}</p>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+
+    # ── RENDER SELECTED FIGURE ─────────────────────────────────────────────
+
+    if sel_cat == "All 19 Categories — Total Items Ranked":
+        grp_ord=[g for g in GROUP_ORDER if g in df["trash_group"].unique()]
+        ct=df.groupby("trash_group")["n"].sum().reindex(grp_ord).dropna().reset_index()
+        ct["pct"]=(100*ct["n"]/total_all).round(1)
+        ct["color"]=ct["trash_group"].map(lambda g:
+            C["water"] if g in RECYCLABLE_GROUPS else
+            C["brick"] if g in HEALTH_HAZARD_GROUPS else
+            C["amber"] if g in FLOATABLE_GROUPS else C["green"])
+        fig=go.Figure(go.Bar(x=ct["n"],y=ct["trash_group"],orientation="h",
+            marker_color=ct["color"],
+            text=[f"{int(v):,} ({p}%)" for v,p in zip(ct["n"],ct["pct"])],
+            textposition="outside"))
+        fb(fig,"Total Items","Category",h=max(560,32*len(ct)),leg=False,
+            title="All 19 Trash Categories — Total Items Recorded, Ranked"); show(fig,"cat_all19")
+        st.markdown(
+            f'<div style="font-size:12px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};border-radius:6px;margin:8px 0;">'
+            f'Color guide: <span style="color:{C["water"]};font-weight:700;">Blue</span> = Recyclable (per City of Tucson) &nbsp;|&nbsp;'
+            f'<span style="color:{C["brick"]};font-weight:700;">Red</span> = Health Hazard &nbsp;|&nbsp;'
+            f'<span style="color:{C["amber"]};font-weight:700;">Amber</span> = Floatable &nbsp;|&nbsp;'
+            f'<span style="color:{C["green"]};font-weight:700;">Green</span> = Other Non-Recyclable'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+        last_updated_insight(df,"general")
+        fig_note(
+            "Cumulative total of every recorded item in each of the 19 category groups across all survey events.",
+            "Food Packaging dominates because it has 11 sub-types — but Clothing at #2 is a strong signal of encampment activity. Plastic Bags is technically its own group.",
+            "Longer bars = more total items. Color encodes environmental risk classification.",
+            "Raw totals are not adjusted for number of sub-items per category. A category with 11 items will naturally accumulate more than one with 1 item, all else being equal."
+        )
+
+    elif sel_cat == "All 56 Individual Items — Total Count Ranked":
+        top=df.groupby(["trash_group","trash_item"])["n"].sum().reset_index()
+        top=top[top["n"]>0].sort_values("n",ascending=True)
+        top["pct"]=(100*top["n"]/total_all).round(2)
+        colors=[C["water"] if g in RECYCLABLE_GROUPS else C["brick"] if g in HEALTH_HAZARD_GROUPS else C["green"]
+                for g in top["trash_group"]]
+        fig=go.Figure(go.Bar(x=top["n"],y=top["trash_item"],orientation="h",
+            marker_color=colors,
+            customdata=top[["trash_group","pct"]].values,
+            hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Count: %{x:,}<br>Share: %{customdata[1]}%<extra></extra>"))
+        fb(fig,"Total Count","Item",h=max(900,20*len(top)),leg=False,
+            title="All 56 Individual Item Types — Ranked by Total Count"); show(fig,"cat_all56")
+        fig_note(
+            "Every item type in the 56-item survey protocol, ranked from rarest to most common.",
+            "Food Wrappers lead at 5,471 items. Syringes and drug paraphernalia appear low in count but are high in health significance.",
+            "Hover for category and percentage. Items near the bottom may still matter for ecological or health risk beyond their count.",
+            "Items recorded as zero across all events are excluded. A long tail of low-count items is scientifically important — presence/absence matters for biodiversity and pollution assessments."
+        )
+
+    elif sel_cat == "Category Share — Proportional Breakdown":
         ct2=df.groupby("trash_group")["n"].sum().sort_values(ascending=False).reset_index()
-        fig=px.pie(ct2,values="n",names="trash_group",color_discrete_sequence=PAL,hole=.42)
-        fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=9.5)
-        fig.update_layout(height=380,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
-        show(fig,"cat_pie")
-        card_close()
-    with c4:
-        card_open("Category Trends — Quarterly Totals (Top 6 Groups)",
-                  "Line chart showing how the top 6 trash categories have changed over time by quarter. Reveals shifts in composition — e.g. whether Food Packaging is growing relative to other types.")
-        if "date" in df.columns:
-            top6=df.groupby("trash_group")["n"].sum().nlargest(6).index.tolist()
-            ct3=df[df["trash_group"].isin(top6)].groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
-            fig=px.line(ct3,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
-            fb(fig,"Quarter","Items",h=380,title="Category Trends Over Time (Top 6 Groups)"); show(fig,"cat_trend")
-        card_close()
+        ct2=ct2[ct2["n"]>0]
+        fig=px.pie(ct2,values="n",names="trash_group",hole=.42,color_discrete_sequence=PAL)
+        fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=10)
+        fig.update_layout(height=540,paper_bgcolor="rgba(0,0,0,0)",font=dict(family="DM Sans"),
+            margin=dict(l=8,r=8,t=36,b=8),
+            title=dict(text="Category Composition — Share of All Recorded Items",
+                font=dict(family="Cormorant Garamond, serif",size=16,color=C["green"]),x=0))
+        show(fig,"cat_pie2")
+        last_updated_insight(df,"general")
+        fig_note("Proportional breakdown — each slice shows one category as a percentage of the total.",
+            "Food Packaging at ~33% means 1 in 3 items found is food-related packaging.",
+            "Hover for exact percentages. Small slices are not unimportant — Rx/Drugs at under 1% still carries major health risk.",
+            "Always pair with the ranked bar chart — proportions hide absolute scale.")
 
-    c5,c6=st.columns(2)
-    with c5:
-        card_open("Category Mix by River Segment",
-                  "Stacked horizontal bars showing how category composition differs across river segments. Highlights whether certain segments have distinctly different waste profiles.")
-        if "seg" in df.columns:
-            sc=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
-            fig=px.bar(sc,x="n",y="seg",color="trash_group",orientation="h",barmode="stack",color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER[::-1]})
-            fb(fig,"Items","Segment",h=320,title="Category Mix by River Segment"); show(fig,"cat_sxc")
-        card_close()
-    with c6:
-        card_open("Items per Survey Event by Category",
-                  "Average number of items recorded per survey event for each category. Higher values indicate items that tend to appear in large numbers when present.")
+    elif sel_cat == "Top 10 Heaviest vs Bottom 9 Lightest Categories":
+        ct3=df.groupby("trash_group")["n"].sum().reset_index().sort_values("n",ascending=False)
+        top10=ct3.head(10); bot9=ct3.tail(9)
+        c1c,c2c=st.columns(2)
+        with c1c:
+            fig=px.bar(top10.sort_values("n"),x="n",y="trash_group",orientation="h",
+                color_discrete_sequence=[C["brick"]],text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total Items","",h=380,leg=False,title="Top 10 Heaviest Categories"); show(fig,"cat_top10")
+        with c2c:
+            fig=px.bar(bot9.sort_values("n"),x="n",y="trash_group",orientation="h",
+                color_discrete_sequence=[C["sage"]],text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total Items","",h=380,leg=False,title="Bottom 9 Categories"); show(fig,"cat_bot9")
+        fig_note("The top 10 categories account for over 95% of all recorded items.",
+            "Shows the skewed distribution — a few categories drive the problem while many others are present but minor.",
+            "Left = heaviest. Right = lightest. Even the lightest categories — Rx/Drugs (189) and Auto (167) — have outsized ecological or safety impact.",
+            "The top 3 alone (Food Packaging + Clothing + Plastic Bags) represent approximately 53% of all items.")
+
+    elif sel_cat == "Average Items per Survey Event by Category":
         avg_cat=df.groupby("trash_group").agg(total=("n","sum"),events=("event_id","nunique")).reset_index()
-        avg_cat["avg_per_event"]=(avg_cat["total"]/avg_cat["events"]).round(2)
-        avg_cat=avg_cat.sort_values("avg_per_event")
-        fig=px.bar(avg_cat,x="avg_per_event",y="trash_group",orientation="h",color_discrete_sequence=[C["brick"]])
-        fb(fig,"Avg Items / Event",None,h=max(360,26*len(avg_cat)),title="Average Items per Event by Category"); show(fig,"cat_avg")
-        card_close()
+        avg_cat["avg"]=(avg_cat["total"]/avg_cat["events"]).round(2)
+        avg_cat=avg_cat.sort_values("avg",ascending=True)
+        avg_cat["color"]=avg_cat["trash_group"].map(lambda g: C["brick"] if g in HEALTH_HAZARD_GROUPS else C["green"])
+        fig=go.Figure(go.Bar(x=avg_cat["avg"],y=avg_cat["trash_group"],orientation="h",
+            marker_color=avg_cat["color"],text=avg_cat["avg"].round(1),textposition="outside"))
+        fb(fig,"Avg Items per Event","",h=max(560,32*len(avg_cat)),leg=False,
+            title="Average Items per Survey Event — All 19 Categories"); show(fig,"cat_avg2")
+        fig_note("Mean total items per survey event for each category.",
+            "Adjusts for recording frequency — a category recorded across 100 events is compared fairly to one recorded across 20.",
+            "Higher = more items found per visit. Red = health hazard categories.",
+            "Food Packaging will top this chart too — its high average is partly structural (11 sub-items) but also reflects genuine prevalence.")
 
-    section_title("Full Item-Level Breakdown")
-    st.markdown('<div class="sec-sub">Every individual item type in the database with its total count, percentage of all items, and average per record. Use this table to identify rare vs. common items.</div>', unsafe_allow_html=True)
-    item_tbl=df.groupby(["trash_group","trash_item"])["n"].agg(Total="sum",Records="count",Average="mean").reset_index()
-    item_tbl["% of Total"]=(100*item_tbl["Total"]/max(total_all,1)).round(2)
-    item_tbl=item_tbl.sort_values("Total",ascending=False).round(2).reset_index(drop=True)
-    item_tbl.index=range(1,len(item_tbl)+1)
-    item_tbl.columns=["Category","Item","Total Count","# Records","Avg per Record","% of Total"]
-    st.dataframe(item_tbl, use_container_width=True, height=520)
-    tbl_note("'Records' = number of data entries for that specific item. 'Avg per Record' = mean count when that item is recorded (including zeros only if explicitly entered). '% of Total' is relative to the current filter's total item count.")
+    elif sel_cat == "Beverage Containers — Full Breakdown":
+        bev=df[df["trash_group"].isin(BEVERAGE_GROUPS)].copy()
+        c1c,c2c=st.columns([2,3])
+        with c1c:
+            bt=bev.groupby("trash_group")["n"].sum().sort_values(ascending=True).reset_index()
+            fig=px.bar(bt,x="n",y="trash_group",orientation="h",
+                color_discrete_sequence=[C["water"]],text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total","Category",h=380,leg=False,title="Beverage Categories — Totals"); show(fig,"bev_grp")
+        with c2c:
+            bi=bev.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
+            fig=px.bar(bi,x="n",y="trash_item",color="trash_group",orientation="h",
+                color_discrete_sequence=PAL,text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total","Item",h=500,title="Beverage Items — All Sub-Types"); show(fig,"bev_items")
+        last_updated_insight(df,"general")
+        fig_note("All beverage container categories and their sub-type breakdown.",
+            "Beverage containers represent single-use plastics and recyclables that ended up in the river corridor.",
+            "Water bottles (1,635) are the most common single beverage item — many from encampments. Beer bottles lead alcohol.",
+            "The presence of large quantities of Styrofoam cups is environmentally significant — Styrofoam does not biodegrade and fragments into microplastics.")
 
-    section_title("Category Group Summary")
-    st.markdown('<div class="sec-sub">Rollup of item-level data to category group level. Ranks each group by total items, showing its relative importance in the survey record.</div>', unsafe_allow_html=True)
-    grp_tbl=df.groupby("trash_group")["n"].agg(Total="sum",Records="count",Avg="mean").reset_index()
-    grp_tbl["% of Total"]=(100*grp_tbl["Total"]/max(total_all,1)).round(1)
-    grp_tbl["Rank"]=grp_tbl["Total"].rank(ascending=False).astype(int)
-    grp_tbl=grp_tbl.sort_values("Total",ascending=False).round(2).reset_index(drop=True)
-    grp_tbl.index=range(1,len(grp_tbl)+1)
-    grp_tbl.columns=["Category","Total Items","# Records","Avg per Record","% of Total","Rank"]
-    st.dataframe(grp_tbl, use_container_width=True, height=400)
-    tbl_note("Rank 1 = most commonly recorded category by total item count.")
+    elif sel_cat == "Cups — Styrofoam vs Plastic vs Paper":
+        cups=df[df["trash_group"]=="Cups"].groupby("trash_item")["n"].sum().reset_index().sort_values("n",ascending=False)
+        cups["pct"]=(100*cups["n"]/max(cups["n"].sum(),1)).round(1)
+        c1c,c2c=st.columns(2)
+        with c1c:
+            fig=px.bar(cups.sort_values("n",ascending=True),x="n",y="trash_item",orientation="h",
+                color="trash_item",color_discrete_sequence=PAL,text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total","Cup Type",h=340,leg=False,title="Cups — Sub-Type Breakdown"); show(fig,"cups_bar")
+        with c2c:
+            fig=px.pie(cups,values="n",names="trash_item",color_discrete_sequence=PAL,hole=.4)
+            fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=11)
+            fig.update_layout(height=340,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,
+                margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
+            show(fig,"cups_pie")
+        fig_note("The Cups category broken into 5 sub-types.",
+            "Styrofoam cups are particularly problematic — they fragment into microplastics, clog drainage, and are excluded from recycling.",
+            "Polar Pop cups are the large convenience store cups associated with Circle K — useful for source attribution and retailer partnership conversations.",
+            "Styrofoam (Other) is the most common sub-type — these are generic foam cups from a wide range of food service sources.")
+
+    elif sel_cat == "Food Packaging — All 11 Sub-Items":
+        fp=df[df["trash_group"]=="Food Packaging"].groupby("trash_item")["n"].sum().reset_index().sort_values("n",ascending=True)
+        fp["pct"]=(100*fp["n"]/max(fp["n"].sum(),1)).round(1)
+        fig=px.bar(fp,x="n",y="trash_item",orientation="h",color="trash_item",
+            color_discrete_sequence=PAL,
+            text=[f"{int(v):,} ({p}%)" for v,p in zip(fp["n"],fp["pct"])])
+        fig.update_traces(textposition="outside")
+        fb(fig,"Total Items","Item Type",h=max(440,36*len(fp)),leg=False,
+            title="Food Packaging — All 11 Sub-Types Ranked"); show(fig,"fp_items")
+        last_updated_insight(df,"category","Food Packaging")
+        fig_note("Food Packaging is the single largest category at 10,694 items — spanning 11 distinct sub-types.",
+            "Food Wrappers alone account for 51% of all Food Packaging (5,471 items). Straws are #3 at 860.",
+            "6-pack rings and straws pose direct entanglement risk to birds and reptiles in the riparian corridor.",
+            "Non-cup styrofoam (805) is especially harmful — it breaks into small beads that are indistinguishable from food particles to wildlife.")
+
+    elif sel_cat == "Alcohol Containers — Beer vs Liquor Over Time":
+        alc=df[df["trash_group"].isin(["Beer","Liquor"])].copy()
+        if "date" in alc.columns and alc["date"].notna().any():
+            ts_alc=alc.groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
+            fig=px.line(ts_alc,x="date",y="n",color="trash_group",markers=True,
+                color_discrete_map={"Beer":C["amber"],"Liquor":C["brick"]})
+            fb(fig,"Quarter","Items",h=440,title="Alcohol Containers — Beer vs Liquor Quarterly"); show(fig,"alc_ts")
+            fig_note("Quarterly counts of Beer and Liquor items across the survey record.",
+                "Alcohol containers are associated with encampments, informal gatherings, and chronic littering. Understanding their trajectory helps community engagement planning.",
+                "Amber = Beer, Red = Liquor. Rising lines indicate increasing alcohol-related litter.",
+                "Beer bottles (789 total) and Liquor glass (598) are heavy items that persist in the environment for decades.")
+        else:
+            st.info("No date data available for this figure.")
+
+    elif sel_cat == "Recyclable vs Non-Recyclable — Item Counts":
+        rec_df=df.copy()
+        rec_df["recyclable"]=rec_df["trash_group"].map(lambda g:
+            "Recyclable" if g in RECYCLABLE_GROUPS else "Non-Recyclable")
+        r_tot=rec_df.groupby("recyclable")["n"].sum().reset_index()
+        r_tot["pct"]=(100*r_tot["n"]/max(r_tot["n"].sum(),1)).round(1)
+        r_grp=rec_df.groupby(["recyclable","trash_group"])["n"].sum().reset_index()
+        c1c,c2c=st.columns([1,2])
+        with c1c:
+            fig=px.pie(r_tot,values="n",names="recyclable",hole=.5,
+                color_discrete_map={"Recyclable":C["water"],"Non-Recyclable":C["brick"]})
+            fig.update_traces(textinfo="percent+label",textfont_size=12)
+            fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,
+                margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
+            show(fig,"rec_pie")
+        with c2c:
+            r_grp_s=r_grp.sort_values("n",ascending=True)
+            fig=px.bar(r_grp_s,x="n",y="trash_group",color="recyclable",orientation="h",
+                color_discrete_map={"Recyclable":C["water"],"Non-Recyclable":C["brick"]},text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total Items","",h=max(540,30*len(r_grp_s)),title="Recyclable vs Non-Recyclable by Category"); show(fig,"rec_bar")
+        st.markdown(
+            f'<div style="font-size:12px;padding:8px 14px;background:{C["sand"]};border-radius:6px;margin:8px 0;color:{C["muted"]};">'
+            f'Classification based on <strong>City of Tucson recycling guidelines</strong>. '
+            f'<span style="color:{C["water"]};font-weight:700;">Blue = Recyclable</span> (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Paper Litter) &nbsp;|&nbsp; '
+            f'<span style="color:{C["brick"]};font-weight:700;">Red = Non-Recyclable</span>'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+        fig_note("All 19 categories classified by City of Tucson recycling eligibility.",
+            "Approximately 16% of items by count are technically recyclable — but none are being recycled because they end up in the river corridor.",
+            "Blue = recyclable (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Paper Litter). These represent a missed diversion opportunity.",
+            "A beverage container deposit program (bottle bill) would directly target the recyclable fraction. This data can directly support such policy advocacy.")
+
+    elif sel_cat == "Floatable vs Non-Floatable — River Health Risk":
+        fl_df=df.copy()
+        fl_df["floatable"]=fl_df["trash_group"].map(lambda g:
+            "Floatable" if g in FLOATABLE_GROUPS else "Non-Floatable")
+        f_tot=fl_df.groupby("floatable")["n"].sum().reset_index()
+        f_tot["pct"]=(100*f_tot["n"]/max(f_tot["n"].sum(),1)).round(1)
+        f_grp=fl_df.groupby(["floatable","trash_group"])["n"].sum().reset_index()
+        c1c,c2c=st.columns([1,2])
+        with c1c:
+            fig=px.pie(f_tot,values="n",names="floatable",hole=.5,
+                color_discrete_map={"Floatable":"#2471a3","Non-Floatable":"#7f8c8d"})
+            fig.update_traces(textinfo="percent+label",textfont_size=12)
+            fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,
+                margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
+            show(fig,"flt_pie")
+        with c2c:
+            f_grp_s=f_grp.sort_values("n",ascending=True)
+            fig=px.bar(f_grp_s,x="n",y="trash_group",color="floatable",orientation="h",
+                color_discrete_map={"Floatable":"#2471a3","Non-Floatable":"#7f8c8d"},text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total Items","",h=max(540,30*len(f_grp_s)),title="Floatable vs Non-Floatable by Category"); show(fig,"flt_bar")
+        st.markdown(
+            f'<div style="font-size:12px;padding:8px 14px;background:{C["sand"]};border-radius:6px;margin:8px 0;color:{C["muted"]};">'
+            f'Floatable items travel downstream during rain events and reach waterways. '
+            f'<span style="color:#2471a3;font-weight:700;">Blue = Floatable</span> &nbsp;|&nbsp; '
+            f'<span style="color:#7f8c8d;font-weight:700;">Gray = Non-Floatable</span> &nbsp;|&nbsp; '
+            f'Based on Sonoran Institute field classification.'
+            f'</div>',
+            unsafe_allow_html=True
+        )
+        fig_note("Items classified by ability to float and travel downstream during storm events.",
+            "Approximately 63% of all recorded items are floatable — meaning the majority of Santa Cruz River litter is at risk of entering the water column during monsoon events.",
+            "Blue = enters waterways during rain. Food Packaging, Plastic Bags, Cups, and all beverage bottles are floatable.",
+            "This analysis directly supports ADEQ stormwater permit compliance, EPA Section 319 nonpoint source pollution reporting, and conservation grant applications.")
+
+    elif sel_cat == "Health Hazard Items — Rx, Drugs, Nicotine, Toiletries":
+        hh=df[df["trash_group"].isin(HEALTH_HAZARD_GROUPS)].copy()
+        c1c,c2c=st.columns(2)
+        with c1c:
+            ht=hh.groupby("trash_group")["n"].sum().sort_values(ascending=True).reset_index()
+            fig=px.bar(ht,x="n",y="trash_group",orientation="h",
+                color="trash_group",
+                color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]},
+                text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total","Category",h=280,leg=False,title="Health Hazard Categories — Totals"); show(fig,"hh_grp")
+        with c2c:
+            hi=hh.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
+            fig=px.bar(hi,x="n",y="trash_item",color="trash_group",orientation="h",
+                color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]},
+                text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total","Item",h=280,title="Health Hazard Items — Sub-Types"); show(fig,"hh_items")
+        if "date" in hh.columns and hh["date"].notna().any():
+            ts_hh=hh.groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
+            fig=px.line(ts_hh,x="date",y="n",color="trash_group",markers=True,
+                color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]})
+            fb(fig,"Quarter","Items",h=320,title="Health Hazard Items Over Time"); show(fig,"hh_ts")
+        fig_note("Three categories with direct public health risk: Rx/Drugs, Nicotine, and Toiletries.",
+            "Syringes (101 recorded) and drug paraphernalia (88) create needle-stick hazard for field staff and community volunteers. Nicotine (1,255) is the most numerically prevalent hazard.",
+            "All three require special handling protocols and personal protective equipment during removal events.",
+            "These numbers should be treated as minimums — syringes are likely underreported due to safety concerns and incomplete detection during surveys.")
+
+    elif sel_cat == "Bulk & Large Debris — Appliances, Construction, Auto":
+        bk=df[df["trash_group"].isin(BULK_DEBRIS_GROUPS)].copy()
+        c1c,c2c=st.columns(2)
+        with c1c:
+            bt2=bk.groupby("trash_group")["n"].sum().sort_values(ascending=True).reset_index()
+            fig=px.bar(bt2,x="n",y="trash_group",orientation="h",
+                color="trash_group",
+                color_discrete_map={"Appliances":C["earth"],"Construction":C["sage"],"Auto":C["muted"]},
+                text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total","",h=260,leg=False,title="Bulk Debris — Category Totals"); show(fig,"bk_grp")
+        with c2c:
+            bi2=bk.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
+            fig=px.bar(bi2,x="n",y="trash_item",color="trash_group",orientation="h",
+                color_discrete_map={"Appliances":C["earth"],"Construction":C["sage"],"Auto":C["muted"]},
+                text="n")
+            fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
+            fb(fig,"Total","Item",h=400,title="Bulk Debris — All Sub-Types"); show(fig,"bk_items")
+        fig_note("Appliances (550), Construction (1,147), and Auto (167) are large items requiring equipment to remove.",
+            "Construction debris — particularly Small Items (1,104) — indicates illegal dumping of building waste along the corridor.",
+            "By item count these seem modest, but by weight and volunteer-hours required for removal they represent a disproportionate burden.",
+            "Tires (48) create standing water that breeds mosquitoes. Shopping carts signal commercial area drainage. These require coordinated heavy equipment removal.")
+
+    elif sel_cat == "Category Risk Profile — Composite View":
+        risk_data=[]
+        for g in GROUP_ORDER:
+            if g not in df["trash_group"].unique(): continue
+            total=df[df["trash_group"]==g]["n"].sum()
+            risk_data.append({"Category":g,"Total Items":int(total),
+                "Recyclable": "Yes" if g in RECYCLABLE_GROUPS else "No",
+                "Floatable":  "Yes" if g in FLOATABLE_GROUPS else "No",
+                "Health Hazard": "Yes" if g in HEALTH_HAZARD_GROUPS else "No",
+                "Bulk Debris": "Yes" if g in BULK_DEBRIS_GROUPS else "No"})
+        risk_df=pd.DataFrame(risk_data)
+        risk_melt=risk_df.melt(id_vars=["Category","Total Items"],
+            value_vars=["Recyclable","Floatable","Health Hazard","Bulk Debris"],
+            var_name="Risk Dimension",value_name="Flag")
+        risk_melt=risk_melt[risk_melt["Flag"]=="Yes"].copy()
+        fig=px.scatter(risk_melt,x="Total Items",y="Category",color="Risk Dimension",size="Total Items",
+            size_max=30,
+            color_discrete_map={"Recyclable":C["water"],"Floatable":"#2471a3","Health Hazard":C["brick"],"Bulk Debris":C["earth"]},
+            category_orders={"Category":list(reversed(GROUP_ORDER))})
+        fb(fig,"Total Items","",h=max(540,30*len(risk_df)),
+            title="Category Risk Profile — Volume vs Environmental Risk Dimensions"); show(fig,"risk_scatter")
+        fig_note("Each dot = a category flagged with a risk dimension. Larger and further right = more items.",
+            "Shows which categories combine high volume with high environmental or health risk.",
+            "Food Packaging is Floatable. Rx/Drugs is a Health Hazard. Construction is Bulk Debris. Beer is Recyclable.",
+            "Categories that are BOTH high-volume AND high-risk are priority targets — e.g. Plastic Bags (3,649 items, Floatable, Non-Recyclable).")
+
+    elif sel_cat == "Category Trends Over Time — Top 6 Quarterly":
+        top6=df.groupby("trash_group")["n"].sum().nlargest(6).index.tolist()
+        if "date" in df.columns and df["date"].notna().any():
+            ct6=df[df["trash_group"].isin(top6)].groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
+            fig=px.line(ct6,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
+            fb(fig,"Quarter","Items",h=480,title="Top 6 Categories — Quarterly Item Counts"); show(fig,"cat_trend2")
+            last_updated_insight(df,"general")
+            fig_note("Quarterly trends for the 6 highest-volume categories.",
+                "Reveals whether the category composition is stable or if specific categories are increasing.",
+                "Lines diverging upward = that category is growing. Parallel lines = uniform change across categories.",
+                "A declining Food Packaging trend would signal intervention success. An increasing Clothing trend may reflect changing encampment patterns along the corridor.")
+        else:
+            st.info("No date data available.")
+
+    elif sel_cat == "Year-over-Year Change by Category":
+        if "year" in df.columns and df["year"].notna().any():
+            yoy=df.groupby(["year","trash_group"])["n"].sum().reset_index()
+            yoy["year_str"]=yoy["year"].astype(int).astype(str)
+            ord_cats=[g for g in GROUP_ORDER if g in yoy["trash_group"].unique()]
+            fig=px.bar(yoy,x="year_str",y="n",color="trash_group",barmode="group",
+                color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
+            fb(fig,"Year","Total Items",h=500,title="Annual Category Totals — Year-over-Year Comparison"); show(fig,"yoy_cat")
+            fig_note("Each cluster of bars = one year, broken into all categories.",
+                "Reveals long-term trends by category — whether specific waste types are growing or declining.",
+                "Colors are consistent across years. A growing bar = more items in that category that year.",
+                "Be cautious comparing years with very different survey effort — more events in a year will produce higher counts regardless of actual litter density.")
+        else:
+            st.info("No year data available.")
+
+    elif sel_cat == "Category Composition — How Mix Changed by Year":
+        if "year" in df.columns and df["year"].notna().any():
+            yp=df.groupby(["year","trash_group"])["n"].sum().reset_index()
+            yp_tot=yp.groupby("year")["n"].sum().reset_index(name="yr_total")
+            yp=yp.merge(yp_tot,on="year")
+            yp["share"]=100*yp["n"]/yp["yr_total"]
+            yp["year_str"]=yp["year"].astype(int).astype(str)
+            ord_cats=[g for g in GROUP_ORDER if g in yp["trash_group"].unique()]
+            fig=px.bar(yp,x="year_str",y="share",color="trash_group",barmode="stack",
+                color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
+            fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year — 100% Stacked Shares"); show(fig,"comp_yr")
+            fig_note("100% stacked bars — each bar totals 100%, showing category SHARE each year.",
+                "Removes the effect of varying survey effort and shows whether the MIX of items is changing.",
+                "A growing color slice = that category is increasing as a proportion of all litter.",
+                "This is more ecologically meaningful than raw totals for detecting genuine composition shifts independent of survey frequency.")
+        else:
+            st.info("No year data available.")
+
+    elif sel_cat == "Category Mix by River Segment":
+        if "seg" in df.columns:
+            sg2=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
+            ord_cats=[g for g in GROUP_ORDER if g in sg2["trash_group"].unique()]
+            fig=px.bar(sg2,x="n",y="seg",color="trash_group",orientation="h",barmode="stack",
+                color_discrete_sequence=PAL,
+                category_orders={"seg":list(reversed(SEG_ORDER[:-1])),"trash_group":ord_cats})
+            fb(fig,"Total Items","Segment",h=400,title="Category Composition by River Segment"); show(fig,"seg_cat")
+            color_legend("Segment Colors", mode="segments")
+            fig_note("Stacked bars showing category composition across the four named river reaches.",
+                "Reveals whether certain reaches have distinctly different waste profiles due to adjacent land use.",
+                "A segment with unusually high Clothing indicates encampments. High Construction suggests illegal dumping nearby.",
+                "Only sites with confirmed segment labels are included. Unlabeled sites appear under 'Other' which is excluded here.")
+        else:
+            st.info("No segment data.")
+
+    elif sel_cat == "Segment Specialization — Top Categories per Reach":
+        if "seg" in df.columns:
+            named_segs=[s for s in SEG_ORDER if s != "Other"]
+            seg_tabs=st.tabs(named_segs)
+            for i,seg in enumerate(named_segs):
+                with seg_tabs[i]:
+                    seg_df=df[df["seg"]==seg].groupby("trash_group")["n"].sum().reset_index()
+                    seg_tot=max(seg_df["n"].sum(),1)
+                    seg_df["pct"]=(100*seg_df["n"]/seg_tot).round(1)
+                    seg_df=seg_df[seg_df["n"]>0].sort_values("n",ascending=True)
+                    if len(seg_df)==0:
+                        st.info(f"No data for {seg} segment.")
+                        continue
+                    fig=px.bar(seg_df,x="n",y="trash_group",orientation="h",
+                        color_discrete_sequence=[SEG_COLORS.get(seg,C["green"])],
+                        text=[f"{int(v):,} ({p}%)" for v,p in zip(seg_df["n"],seg_df["pct"])])
+                    fig.update_traces(textposition="outside")
+                    seg_tot_n=int(df[df["seg"]==seg]["n"].sum())
+                    fb(fig,"Total Items","",h=max(380,30*len(seg_df)),leg=False,
+                        title=f"{seg} — All Categories ({seg_tot_n:,} total items)"); show(fig,f"seg_spec_{i}")
+            fig_note("Top categories for each river segment shown in individual tabs.",
+                "Identifies segment-specific waste profiles — useful for targeted cleanup events and reporting to local jurisdictions.",
+                "Compare the relative share of each category across segments — a category dominant in one segment but minor in another points to local source patterns.",
+                "Use alongside the Map page to connect geographic patterns with specific land uses, outfalls, or encampment locations along each reach.")
+        else:
+            st.info("No segment data.")
+
+    elif sel_cat == "Full Item-Level Statistics Table":
+        item_tbl=df.groupby(["trash_group","trash_item"])["n"].agg(Total="sum",Records="count",Mean="mean").reset_index()
+        item_tbl["% of All Items"]=(100*item_tbl["Total"]/total_all).round(2)
+        item_tbl["Recyclable"]=item_tbl["trash_group"].map(lambda g: "Yes" if g in RECYCLABLE_GROUPS else "No")
+        item_tbl["Floatable"]=item_tbl["trash_group"].map(lambda g: "Yes" if g in FLOATABLE_GROUPS else "No")
+        item_tbl["Health Hazard"]=item_tbl["trash_group"].map(lambda g: "Yes" if g in HEALTH_HAZARD_GROUPS else "No")
+        item_tbl=item_tbl[item_tbl["Total"]>0].sort_values("Total",ascending=False).round(2).reset_index(drop=True)
+        item_tbl.index=range(1,len(item_tbl)+1)
+        item_tbl.columns=["Category","Item","Total Count","# Records","Mean per Record","% of All Items","Recyclable","Floatable","Health Hazard"]
+        st.dataframe(item_tbl, use_container_width=True, height=580)
+        tbl_note("Every individual item type with cumulative statistics. Records = number of data entries. Mean per Record = average count per entry (not per event). % is relative to the current filter. Recyclable = City of Tucson standard. Floatable = river health risk. Health Hazard = direct human contact risk.")
+
+    elif sel_cat == "Category Group Summary Table":
+        grp_tbl=df.groupby("trash_group")["n"].agg(Total="sum",Records="count",Mean="mean").reset_index()
+        grp_tbl["% of Total"]=(100*grp_tbl["Total"]/total_all).round(1)
+        grp_tbl["Rank"]=grp_tbl["Total"].rank(ascending=False).astype(int)
+        grp_tbl["Recyclable"]=grp_tbl["trash_group"].map(lambda g: "Yes" if g in RECYCLABLE_GROUPS else "No")
+        grp_tbl["Floatable"]=grp_tbl["trash_group"].map(lambda g: "Yes" if g in FLOATABLE_GROUPS else "No")
+        grp_tbl["Health Hazard"]=grp_tbl["trash_group"].map(lambda g: "Yes" if g in HEALTH_HAZARD_GROUPS else "No")
+        grp_tbl=grp_tbl[grp_tbl["Total"]>0].sort_values("Total",ascending=False).round(2).reset_index(drop=True)
+        grp_tbl.index=range(1,len(grp_tbl)+1)
+        grp_tbl.columns=["Category","Total Items","# Records","Mean per Record","% of Total","Rank","Recyclable","Floatable","Health Hazard"]
+        st.dataframe(grp_tbl, use_container_width=True, height=500)
+        tbl_note("All 19 categories with rank, statistics, and environmental classifications. Rank 1 = most items recorded. Recyclable = City of Tucson standard. Floatable = river health classification. Health Hazard = direct human exposure risk. Use this table in any report, grant application, or agency submission.")
+
     st.markdown('</div>', unsafe_allow_html=True)
 
-# ══════════════════════════════════════════════════════════════════
-# LOCATIONS
-# ══════════════════════════════════════════════════════════════════
+
 elif page == "Locations":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Locations & Sites</div>', unsafe_allow_html=True)
@@ -1456,59 +1891,163 @@ elif page == "Data Table":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Entry":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">New Survey Entry</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Submit a completed field survey directly into the cloud database. Data is saved immediately and reflected in all charts and tables. Double-check all values before submitting — entries cannot be deleted from this interface.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="pg-title">Survey Data Entry & Management</div>', unsafe_allow_html=True)
+    st.markdown('<div class="pg-lead">Submit new survey entries and manage existing ones. Entries can be deleted by Event ID. All changes are reflected immediately in charts and tables.</div>', unsafe_allow_html=True)
 
-    with st.form("survey_form", clear_on_submit=False):
-        st.markdown('<div class="form-sec"><div class="form-sec-title">Event Information</div>', unsafe_allow_html=True)
-        ec1,ec2,ec3,ec4=st.columns(4)
-        event_id=ec1.text_input("Event ID",placeholder="e.g. 396")
-        survey_date=ec2.date_input("Survey Date",value=date.today())
-        area_m2=ec3.number_input("Plot Area (m²)",min_value=0.0,value=10.0,step=0.5)
-        recorder=ec4.selectbox("Recorder",[""] + TEAM + ["Other — type below"])
-        ec5,ec6=st.columns([2,2])
-        existing=sorted(long["site_label"].dropna().astype(str).unique().tolist())
-        site_sel=ec5.selectbox("Survey Location (existing)",[""] + existing)
-        site_new=ec6.text_input("Or enter a new location name")
-        rec_other=""
-        if recorder=="Other — type below": rec_other=st.text_input("Recorder full name")
-        st.markdown('</div>', unsafe_allow_html=True)
+    entry_tab, manage_tab = st.tabs(["Add New Entry", "Manage / Delete Entries"])
 
-        recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
-        site_final=site_new.strip() if site_new.strip() else site_sel
+    # ── TAB 1: ADD NEW ENTRY ─────────────────────────────────────
+    with entry_tab:
+        with st.form("survey_form", clear_on_submit=False):
+            st.markdown('<div class="form-sec"><div class="form-sec-title">Event Information</div>', unsafe_allow_html=True)
+            ec1,ec2,ec3,ec4=st.columns(4)
+            event_id=ec1.text_input("Event ID",placeholder="e.g. 396")
+            survey_date=ec2.date_input("Survey Date",value=date.today())
+            area_m2=ec3.number_input("Plot Area (m²)",min_value=0.0,value=10.0,step=0.5)
+            recorder=ec4.selectbox("Recorder",[""] + TEAM + ["Other — type below"])
+            ec5,ec6=st.columns([2,2])
+            existing=sorted(long["site_label"].dropna().astype(str).unique().tolist())
+            site_sel=ec5.selectbox("Survey Location (existing)",[""] + existing)
+            site_new=ec6.text_input("Or enter a new location name")
+            rec_other=""
+            if recorder=="Other — type below": rec_other=st.text_input("Recorder full name")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        st.markdown('<div class="form-sec"><div class="form-sec-title">Trash Item Counts — Enter the count for each item found. Leave at 0 if not present.</div>', unsafe_allow_html=True)
-        counts={}
-        for grp_name,items in TRASH_GROUPS.items():
-            st.markdown(f'<div class="grp-hdr">{grp_name}</div>', unsafe_allow_html=True)
-            n=min(4,len(items)); cols=st.columns(n)
-            for i,item in enumerate(items):
-                with cols[i%n]: counts[item]=st.number_input(item,min_value=0,value=0,step=1,key=f"c_{grp_name}_{item}")
-        st.markdown('</div>', unsafe_allow_html=True)
+            recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
+            site_final=site_new.strip() if site_new.strip() else site_sel
 
-        st.markdown('<div class="form-sec"><div class="form-sec-title">Field Notes (optional)</div>', unsafe_allow_html=True)
-        st.text_area("Observations, site conditions, notable findings",height=90,placeholder="e.g. Recent flooding, concentrated debris near outfall, unusual items found...")
-        st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('<div class="form-sec"><div class="form-sec-title">Trash Item Counts — Enter the count for each item found. Leave at 0 if not present.</div>', unsafe_allow_html=True)
+            counts={}
+            for grp_name,items in TRASH_GROUPS.items():
+                st.markdown(f'<div class="grp-hdr">{grp_name}</div>', unsafe_allow_html=True)
+                n=min(4,len(items)); cols=st.columns(n)
+                for i,item in enumerate(items):
+                    with cols[i%n]: counts[item]=st.number_input(item,min_value=0,value=0,step=1,key=f"c_{grp_name}_{item}")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        total_preview=sum(counts.values())
-        st.markdown(f'<div class="live-total"><div class="live-total-n">{total_preview:,}</div><div class="live-total-l">total items counted in this entry</div></div>', unsafe_allow_html=True)
-        submitted=st.form_submit_button("Save Survey Entry to Database",use_container_width=True)
+            st.markdown('<div class="form-sec"><div class="form-sec-title">Field Notes (optional)</div>', unsafe_allow_html=True)
+            st.text_area("Observations, site conditions, notable findings",height=90,
+                placeholder="e.g. Recent flooding, concentrated debris near outfall, unusual items found...")
+            st.markdown('</div>', unsafe_allow_html=True)
 
-    if submitted:
-        if not event_id.strip(): st.error("Event ID is required.")
-        elif not site_final: st.error("Survey location is required.")
+            total_preview=sum(counts.values())
+            st.markdown(f'<div class="live-total"><div class="live-total-n">{total_preview:,}</div><div class="live-total-l">total items counted in this entry</div></div>', unsafe_allow_html=True)
+            submitted=st.form_submit_button("Save Survey Entry to Database",use_container_width=True)
+
+        if submitted:
+            if not event_id.strip(): st.error("Event ID is required.")
+            elif not site_final: st.error("Survey location is required.")
+            else:
+                try:
+                    sb=get_sb()
+                    sb.table("site_events").upsert({
+                        "event_id":int(event_id.strip()),"date_site":survey_date.isoformat(),
+                        "site_label":site_final,"location_description":site_final,
+                        "recorder":recorder_final,"surveyed_m2":float(area_m2) if area_m2 else None
+                    }).execute()
+                    rows=[{"event_id":int(event_id.strip()),"trash_group":g,"trash_item":item,"count_value":float(v)}
+                          for g,items in TRASH_GROUPS.items() for item in items if (v:=counts.get(item,0)) and v>0]
+                    if rows: sb.table("trash_counts").insert(rows).execute()
+                    load_data.clear()
+                    st.success(f"Saved — Event {event_id} · {site_final} · {survey_date.strftime('%B %d, %Y')} · {total_preview:,} items")
+                except Exception as e: st.error(f"Could not save: {e}")
+
+    # ── TAB 2: MANAGE / DELETE ───────────────────────────────────
+    with manage_tab:
+        st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};
+        border-left:4px solid {C['brick']};border-radius:0 8px 8px 0;
+        padding:14px 18px;margin-bottom:20px;font-size:13.5px;color:{C['text']};line-height:1.7;">
+        <strong>About deletion:</strong> Deleting an event removes it from both
+        <code>site_events</code> and <code>trash_counts</code> permanently.
+        This cannot be undone. Only delete entries that were entered in error.
+        If you need to correct a value, delete and re-enter the event with the correct data.
+        </div>""", unsafe_allow_html=True)
+
+        # Show existing events table
+        section_title("Existing Survey Events")
+        st.markdown('<div class="sec-sub">Browse all events currently in the database. Search by Event ID or location name to find what you need.</div>', unsafe_allow_html=True)
+
+        # Build event summary from loaded data
+        ev_summary = long.groupby(["event_id","date","site_label"]).agg(
+            total_items=("n","sum"),
+            categories=("trash_group","nunique")
+        ).reset_index()
+        ev_summary["date_str"] = ev_summary["date"].dt.strftime("%B %d, %Y").fillna("Unknown date")
+        ev_summary = ev_summary.sort_values("date", ascending=False).reset_index(drop=True)
+
+        # Search filter
+        search = st.text_input("Search by Event ID or location name", placeholder="e.g. 396 or Cushing")
+        if search.strip():
+            mask = (ev_summary["event_id"].astype(str).str.contains(search.strip(), case=False) |
+                    ev_summary["site_label"].str.contains(search.strip(), case=False, na=False))
+            ev_filtered = ev_summary[mask].copy()
         else:
+            ev_filtered = ev_summary.copy()
+
+        # Display table
+        disp_ev = ev_filtered[["event_id","date_str","site_label","total_items","categories"]].copy()
+        disp_ev.columns = ["Event ID","Date","Location","Total Items","Categories Recorded"]
+        disp_ev.index = range(1, len(disp_ev)+1)
+        st.dataframe(disp_ev, use_container_width=True, height=360)
+        tbl_note(f"Showing {len(ev_filtered):,} of {len(ev_summary):,} events. Use the search box above to filter.")
+
+        # Delete section
+        section_title("Delete an Entry")
+        st.markdown('<div class="sec-sub">Enter the Event ID you want to delete. The event and all its trash count records will be permanently removed.</div>', unsafe_allow_html=True)
+
+        del_col1, del_col2 = st.columns([2,3])
+        with del_col1:
+            del_id = st.text_input("Event ID to delete", placeholder="e.g. 396", key="del_event_id")
+
+        if del_id.strip():
+            # Preview what will be deleted
             try:
-                sb=get_sb()
-                sb.table("site_events").upsert({"event_id":int(event_id.strip()),"date_site":survey_date.isoformat(),
-                    "site_label":site_final,"location_description":site_final,
-                    "recorder":recorder_final,"surveyed_m2":float(area_m2) if area_m2 else None}).execute()
-                rows=[{"event_id":int(event_id.strip()),"trash_group":g,"trash_item":item,"count_value":float(v)}
-                      for g,items in TRASH_GROUPS.items() for item in items if (v:=counts.get(item,0)) and v>0]
-                if rows: sb.table("trash_counts").insert(rows).execute()
-                load_data.clear()
-                st.success(f"Saved — Event {event_id} · {site_final} · {survey_date.strftime('%B %d, %Y')} · {total_preview:,} items")
-            except Exception as e: st.error(f"Could not save: {e}")
+                del_int = int(del_id.strip())
+                preview = ev_summary[ev_summary["event_id"].astype(str) == del_id.strip()]
+                if len(preview) > 0:
+                    row = preview.iloc[0]
+                    st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
+                    border-left:4px solid {C['amber']};border-radius:0 8px 8px 0;
+                    padding:14px 20px;margin:12px 0;font-size:13.5px;color:{C['text']};line-height:1.8;">
+                    <strong>You are about to delete:</strong><br>
+                    Event ID: <strong>{row['event_id']}</strong><br>
+                    Date: <strong>{row['date_str']}</strong><br>
+                    Location: <strong>{row['site_label']}</strong><br>
+                    Total items that will be removed: <strong>{int(row['total_items']):,}</strong> across {int(row['categories'])} categories
+                    </div>""", unsafe_allow_html=True)
+
+                    # Two-step confirm
+                    if "confirm_delete_id" not in st.session_state:
+                        st.session_state["confirm_delete_id"] = None
+
+                    if st.session_state["confirm_delete_id"] != del_int:
+                        if st.button("Delete this entry", key="del_btn_1"):
+                            st.session_state["confirm_delete_id"] = del_int
+                            st.rerun()
+                    else:
+                        st.warning(f"Are you sure you want to permanently delete Event {del_int}? This cannot be undone.")
+                        col_yes, col_no = st.columns(2)
+                        with col_yes:
+                            if st.button("Yes, permanently delete", key="del_confirm_yes"):
+                                try:
+                                    sb = get_sb()
+                                    sb.table("trash_counts").delete().eq("event_id", del_int).execute()
+                                    sb.table("site_events").delete().eq("event_id", del_int).execute()
+                                    load_data.clear()
+                                    st.session_state["confirm_delete_id"] = None
+                                    st.success(f"Event {del_int} and all its trash count records have been deleted.")
+                                    st.rerun()
+                                except Exception as e:
+                                    st.error(f"Delete failed: {e}")
+                        with col_no:
+                            if st.button("Cancel", key="del_confirm_no"):
+                                st.session_state["confirm_delete_id"] = None
+                                st.rerun()
+                else:
+                    st.info(f"Event ID {del_id.strip()} was not found in the database.")
+            except ValueError:
+                st.error("Event ID must be a number.")
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════
