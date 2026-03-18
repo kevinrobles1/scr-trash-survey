@@ -4,7 +4,7 @@
 # ══════════════════════════════════════════════════════════════════
 import json, html, re, hashlib, secrets
 from datetime import datetime, date
- 
+
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -12,16 +12,16 @@ import plotly.graph_objects as go
 import streamlit as st
 import streamlit.components.v1 as components
 from supabase import create_client, Client
- 
+
 @st.cache_resource
 def get_sb() -> Client:
     return create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
- 
+
 # ──────────────────────────────────────────────────────────────────
 # CONSTANTS
 # ──────────────────────────────────────────────────────────────────
 LOGO_W = "https://sonoraninstitute.org/wp-content/themes/sonoran-institute-2016/assets/img/si_logo_white_2018.png"
- 
+
 RIVER_SEGMENTS = {
     "North Reach":   ["Santa Cruz River North of CoCerro","Between an outfall and Camino del Cerro",
                       "between an outfall and Camino del Cerro","Santa Cruz River at Camino del Cerro",
@@ -36,7 +36,7 @@ RIVER_SEGMENTS = {
 SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito","Other"]
 SEG_COLORS = {"North Reach":"#2980b9","Central Reach":"#27ae60","South Reach":"#e67e22","Rillito":"#8e44ad","Other":"#7f8c8d"}
 SEG_LIGHT  = {"North Reach":"#d6eaf8","Central Reach":"#d5f5e3","South Reach":"#fdebd0","Rillito":"#e8daef","Other":"#f0f0f0"}
- 
+
 TRASH_GROUPS = {
     "Cups":           ["Styrofoam (Polar Pop)","Styrofoam (Qt)","Styrofoam (Other)","Plastic","Paper"],
     "Beer":           ["Bottles","Cans"],
@@ -60,15 +60,15 @@ TRASH_GROUPS = {
     "Plastic Bags":   ["Plastic Bags"],
     "Misc":           ["Sm. Debris (Ex. Metal, Plastic Scraps)","Lg. Debris (Ex. Garbage Cans)"],
 }
- 
+
 TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset",
         "Soroush Hedayah","Vata Aflatoone","Kimberly Baeza","Joan Woodward",
         "Mark Krieski","Jamie Irby","Marsha Colbert","Axhel Munoz","Christine Hehenga",
         "Saige Thompson","Stephanie Winick","Damon Shorty","Julia Olson",
         "Isabella Feldmann","KyeongHee Kim","Joe Cuffori","Brian Jones"]
- 
+
 PAGES = ["Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
- 
+
 C = dict(
     forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
     cream="#faf7f0", sand="#f2ede2", sand2="#e8e1d0", sand3="#d8ceba",
@@ -77,11 +77,11 @@ C = dict(
     text="#18180f", med="#3a3a28", muted="#686854", divider="#cec6b0", white="#ffffff",
 )
 PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],"#6c4f8a","#2e8b8b",C["mint"],"#888877",C["earth"],"#c0392b","#16a085"]
- 
+
 st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon="🌊",
                    layout="wide", initial_sidebar_state="collapsed")
 PC = {"displaylogo":False,"modeBarButtonsToRemove":["lasso2d","select2d","autoScale2d","pan2d"]}
- 
+
 # ──────────────────────────────────────────────────────────────────
 # CSS
 # ──────────────────────────────────────────────────────────────────
@@ -89,10 +89,16 @@ def inject_css():
     st.markdown('<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">', unsafe_allow_html=True)
     st.markdown(f"""<style>
 html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
+/* Hide Streamlit cloud toolbar (Share/GitHub/Deploy bar) */
+header[data-testid="stHeader"]{{height:0!important;min-height:0!important;display:none!important;}}
+#MainMenu{{display:none!important;}}
+[data-testid="stToolbar"]{{display:none!important;}}
+[data-testid="stDecoration"]{{display:none!important;}}
+footer{{display:none!important;}}
 .stApp{{background:{C["sand"]};}}
 .block-container{{padding:0!important;max-width:100%!important;}}
 [data-testid="stSidebar"],[data-testid="collapsedControl"]{{display:none!important;}}
- 
+
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:2px solid {C["mint"]};box-shadow:0 4px 28px rgba(0,0,0,.25);}}
@@ -113,18 +119,18 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
 .hdr-dot{{width:6px;height:6px;background:{C["mint"]};border-radius:50%;
           animation:pulse 2s infinite;display:inline-block;}}
 @keyframes pulse{{0%,100%{{opacity:1;}}50%{{opacity:.4;}}}}
- 
+
 /* ── NAV — uses components.html iframe for perfect rendering ── */
 .nav-outer{{background:{C["forest"]};position:sticky;top:0;z-index:200;
             border-bottom:1px solid rgba(255,255,255,.08);
             box-shadow:0 3px 14px rgba(0,0,0,.35);}}
- 
+
 /* Hide the actual Streamlit radio group — nav is rendered via iframe */
 .nav-radio-hide div[role="radiogroup"]{{
     position:absolute!important;opacity:0!important;
     pointer-events:none!important;height:0!important;overflow:hidden!important;
 }}
- 
+
 /* ── BODY ── */
 .body{{max-width:1480px;margin:0 auto;padding:36px 44px 100px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
@@ -135,7 +141,7 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
 .sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:14px;line-height:1.6;}}
 .tbl-note{{font-size:12px;color:{C["muted"]};line-height:1.7;padding:10px 0 2px;
            border-top:1px solid {C["sand3"]};margin-top:10px;font-style:italic;}}
- 
+
 /* ── KPI GRID ── */
 .kpi-grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}}
 .kpi-grid-4{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}}
@@ -151,13 +157,13 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
           color:{C["green"]};line-height:1;letter-spacing:-.02em;}}
 .kpi-val.sm{{font-size:1.25rem;padding-top:6px;line-height:1.3;}}
 .kpi-note{{font-size:11px;color:{C["muted"]};margin-top:5px;}}
- 
+
 /* ── CARDS ── */
 .card{{background:#fff;border:1px solid {C["sand3"]};border-radius:10px;
        padding:24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.04);}}
 .card-hd{{display:flex;align-items:flex-start;justify-content:space-between;
           padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid {C["sand3"]};}}
- 
+
 /* ── STAT STRIP ── */
 .stat-strip{{display:flex;gap:0;background:#fff;border:1px solid {C["sand3"]};
              border-radius:10px;overflow:hidden;margin-bottom:24px;
@@ -168,7 +174,7 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
          color:{C["green"]};display:block;line-height:1.1;}}
 .stat-l{{font-size:9.5px;color:{C["muted"]};font-family:'DM Mono',monospace;
          text-transform:uppercase;letter-spacing:.8px;margin-top:3px;display:block;}}
- 
+
 /* ── FORM ── */
 .form-sec{{background:#fff;border:1px solid {C["divider"]};
            border-left:4px solid {C["green"]};border-radius:0 10px 10px 0;
@@ -184,7 +190,7 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
              display:flex;align-items:center;gap:14px;margin:14px 0;}}
 .live-total-n{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:{C["green"]};}}
 .live-total-l{{font-size:12px;color:{C["muted"]};}}
- 
+
 /* ── INPUTS ── */
 div[data-baseweb="select"]>div,div[data-baseweb="input"]>div,
 .stDateInput>div>div,.stTextInput>div>div,.stNumberInput>div>div,.stTextArea>div>div{{
@@ -194,7 +200,7 @@ div[data-baseweb="select"]>div,div[data-baseweb="input"]>div,
 div[data-baseweb="select"]>div:focus-within,div[data-baseweb="input"]>div:focus-within{{
   border-color:{C["sage"]}!important;box-shadow:0 0 0 3px rgba(93,168,50,.1)!important;}}
 label{{font-size:12px!important;font-weight:600!important;color:{C["med"]}!important;letter-spacing:.3px!important;}}
- 
+
 /* ── BUTTONS ── */
 .stButton>button{{font-family:'DM Sans',sans-serif!important;font-size:12.5px!important;
   font-weight:600!important;padding:8px 18px!important;border-radius:7px!important;
@@ -204,15 +210,15 @@ label{{font-size:12px!important;font-weight:600!important;color:{C["med"]}!impor
   color:#fff!important;box-shadow:0 4px 14px rgba(30,77,30,.4)!important;}}
 .stDownloadButton>button{{background:{C["green"]}!important;color:#fff!important;
   border-color:{C["green"]}!important;border-radius:7px!important;font-weight:600!important;}}
- 
+
 /* ── TABLE ── */
 div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;overflow:hidden;}}
- 
+
 /* ── FILTER EXPANDER ── */
 .streamlit-expanderHeader{{font-family:'DM Sans',sans-serif!important;
   font-size:12.5px!important;font-weight:700!important;color:{C["green"]}!important;
   letter-spacing:.3px!important;}}
- 
+
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{{width:5px;height:5px;}}
 ::-webkit-scrollbar-track{{background:{C["sand"]};}}
@@ -220,7 +226,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 ::-webkit-scrollbar-thumb:hover{{background:{C["sage"]};}}
 @keyframes fadeUp{{from{{opacity:0;transform:translateY(10px);}}to{{opacity:1;transform:none;}}}}
 .fade-up{{animation:fadeUp .35s ease both;}}
- 
+
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 100%);
       padding:24px 44px;margin-top:80px;border-top:2px solid {C["sage"]};}}
@@ -228,7 +234,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
          justify-content:space-between;flex-wrap:wrap;gap:16px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.8;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.55);text-decoration:none;}}
- 
+
 /* Auth tabs */
 div[data-testid="stTabs"]>div:first-child{{background:transparent!important;
   border-bottom:1px solid {C["sand3"]}!important;padding:0!important;gap:0!important;margin-bottom:24px!important;}}
@@ -241,7 +247,7 @@ div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{{
 div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important;
   border:none!important;padding:0!important;box-shadow:none!important;}}
 </style>""", unsafe_allow_html=True)
- 
+
 # ──────────────────────────────────────────────────────────────────
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
@@ -260,41 +266,91 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     fig.update_xaxes(showgrid=False,zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     fig.update_yaxes(showgrid=True,gridcolor=C["sand2"],zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     return fig
- 
+
 def show(fig, key=None):
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
- 
+
 def card_open(title, subtitle=""):
     sub = f'<div class="sec-sub">{subtitle}</div>' if subtitle else ""
     st.markdown(f'<div class="card"><div class="card-hd"><div><div class="sec-hd">{title}</div>{sub}</div></div>', unsafe_allow_html=True)
- 
+
 def card_close(): st.markdown('</div>', unsafe_allow_html=True)
- 
+
 def tbl_note(text):
     st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
- 
+
 def section_title(text):
     st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:28px 0 16px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
- 
+
 # ──────────────────────────────────────────────────────────────────
 # AUTH
 # ──────────────────────────────────────────────────────────────────
 def _hash(pw, salt): return hashlib.pbkdf2_hmac("sha256",pw.encode(),salt.encode(),100000).hex()
- 
-def register(username, password, full_name, position):
+
+SECURITY_QUESTIONS = [
+    "What is the name of the city where you were born?",
+    "What was the name of your first pet?",
+    "What is your mother's maiden name?",
+    "What was the name of your elementary school?",
+    "What was the make and model of your first car?",
+    "What is the name of the street you grew up on?",
+    "What was your childhood nickname?",
+]
+
+def register(username, password, full_name, position, sec_q="", sec_a=""):
     u = username.strip()
     if len(u)<3: return False,"Username must be at least 3 characters."
     if len(password)<6: return False,"Password must be at least 6 characters."
     if not full_name.strip(): return False,"Full name required."
     if not position.strip(): return False,"Position required."
+    if not sec_q.strip(): return False,"Please select a security question."
+    if len(sec_a.strip())<2: return False,"Security answer must be at least 2 characters."
     salt = secrets.token_hex(16)
+    ans_salt = secrets.token_hex(16)
     try:
-        get_sb().table("users").insert({"username":u,"password_hash":_hash(password,salt),
-            "salt":salt,"full_name":full_name.strip(),"position_title":position.strip()}).execute()
+        get_sb().table("users").insert({
+            "username":u,"password_hash":_hash(password,salt),"salt":salt,
+            "full_name":full_name.strip(),"position_title":position.strip(),
+            "security_question":sec_q.strip(),
+            "security_answer_hash":_hash(sec_a.strip().lower(), ans_salt),
+            "security_answer_salt":ans_salt,
+        }).execute()
         return True,"Account created — sign in."
     except Exception as e:
         return False,("Username taken." if "unique" in str(e).lower() or "duplicate" in str(e).lower() else str(e))
- 
+
+def get_security_question(username):
+    """Return the security question for a username, or None."""
+    try:
+        r = get_sb().table("users").select("security_question").eq("username",username.strip()).execute()
+        if r.data and r.data[0].get("security_question"):
+            return r.data[0]["security_question"]
+        return None
+    except: return None
+
+def verify_security_answer(username, answer):
+    """Return True if the security answer is correct."""
+    try:
+        r = get_sb().table("users").select("security_answer_hash,security_answer_salt").eq("username",username.strip()).execute()
+        if not r.data: return False
+        row = r.data[0]
+        stored = row.get("security_answer_hash","")
+        ans_salt = row.get("security_answer_salt","")
+        if not stored or not ans_salt: return False
+        return secrets.compare_digest(stored, _hash(answer.strip().lower(), ans_salt))
+    except: return False
+
+def reset_password(username, new_password):
+    """Set a new password for a user (called after security answer verified)."""
+    if len(new_password)<6: return False,"Password must be at least 6 characters."
+    salt = secrets.token_hex(16)
+    try:
+        get_sb().table("users").update({
+            "password_hash":_hash(new_password,salt),"salt":salt
+        }).eq("username",username.strip()).execute()
+        return True,"Password updated — sign in with your new password."
+    except Exception as e: return False,str(e)
+
 def login(username, password):
     try:
         r = get_sb().table("users").select("*").eq("username",username.strip()).execute()
@@ -306,12 +362,12 @@ def login(username, password):
                          "position_title":row.get("position_title","Team Member")}
         return False,None
     except: return False,None
- 
+
 def auth_gate():
     for k,v in [("auth",False),("prof",None)]:
         if k not in st.session_state: st.session_state[k]=v
     if st.session_state["auth"]: return
- 
+
     st.markdown(f"""<style>
     .stApp,.stApp>div,.block-container{{background:{C["cream"]}!important;padding:0!important;max-width:100%!important;}}
     [data-testid="column"]:last-of-type,[data-testid="column"]:last-of-type>div,
@@ -327,7 +383,7 @@ def auth_gate():
     .auth-sub{{font-size:13px;color:{C["muted"]};line-height:1.75;margin-bottom:32px;}}
     .auth-ftr{{margin-top:24px;padding-top:16px;border-top:1px solid {C["sand3"]};font-size:11px;color:{C["muted"]};font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px;}}
     </style>""", unsafe_allow_html=True)
- 
+
     lc, rc = st.columns([1.1, 0.9])
     with lc:
         components.html(f"""<!DOCTYPE html><html><head>
@@ -372,12 +428,13 @@ def auth_gate():
         </div>
         <div class="foot">Program Director: Luke Cole<br>sonoraninstitute.org</div>
         </body></html>""", height=900, scrolling=False)
- 
+
     with rc:
         st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
         <div class="auth-ttl">Sign in to<br>your account</div>
         <div class="auth-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>""", unsafe_allow_html=True)
-        t1,t2 = st.tabs(["Sign In","Create Account"])
+        t1,t2,t3 = st.tabs(["Sign In","Create Account","Forgot Password"])
+
         with t1:
             with st.form("_login"):
                 un=st.text_input("Username"); pw=st.text_input("Password",type="password")
@@ -385,24 +442,79 @@ def auth_gate():
                 if st.form_submit_button("Sign In",use_container_width=True):
                     ok,prof=login(un,pw)
                     if ok: st.session_state["auth"]=True; st.session_state["prof"]=prof; st.rerun()
-                    else: st.error("Invalid username or password.")
+                    else: st.error("Invalid username or password. Use the Forgot Password tab if needed.")
+
         with t2:
+            st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-bottom:12px;padding:10px 12px;background:{C["sand"]};border-radius:6px;border:1px solid {C["sand3"]};">Your username is how you sign in. Write it down — there is no way to look it up later. Choose something simple like your first name or initials.</div>', unsafe_allow_html=True)
             with st.form("_reg"):
                 c1,c2=st.columns(2)
                 fn=c1.text_input("Full Name"); pos=c2.text_input("Position / Title")
-                nu=st.text_input("Username (min 3 characters)")
+                nu=st.text_input("Username (min 3 characters — write this down)")
                 c3,c4=st.columns(2)
                 p1=c3.text_input("Password (min 6 characters)",type="password")
                 p2=c4.text_input("Confirm Password",type="password")
+                st.markdown("<div style='height:4px'></div>",unsafe_allow_html=True)
+                sq=st.selectbox("Security question (for password reset)",["— Select one —"]+SECURITY_QUESTIONS)
+                sa=st.text_input("Your answer to the security question",help="Case-insensitive. Example: if the question is about your pet, type the pet's name.")
                 st.markdown("<div style='height:6px'></div>",unsafe_allow_html=True)
                 if st.form_submit_button("Create Account",use_container_width=True):
                     if p1!=p2: st.error("Passwords don't match.")
+                    elif sq=="— Select one —": st.error("Please select a security question.")
                     else:
-                        ok,msg=register(nu,p1,fn,pos)
+                        ok,msg=register(nu,p1,fn,pos,sq,sa)
                         (st.success if ok else st.error)(msg)
-        st.markdown(f"""<div class="auth-ftr"><span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>Cloud database secured by Supabase</div>""",unsafe_allow_html=True)
+
+        with t3:
+            st.markdown(f'<div style="font-size:13px;color:{C["muted"]};margin-bottom:16px;line-height:1.7;">To reset your password, enter your username and answer your security question. If you did not set a security question when creating your account, contact the program administrator (Kevin Robles) to reset manually.</div>', unsafe_allow_html=True)
+            if "reset_step" not in st.session_state: st.session_state["reset_step"]=1
+            if "reset_username" not in st.session_state: st.session_state["reset_username"]=""
+
+            if st.session_state["reset_step"]==1:
+                with st.form("_reset1"):
+                    r_un=st.text_input("Your username")
+                    if st.form_submit_button("Look up my security question",use_container_width=True):
+                        if not r_un.strip():
+                            st.error("Please enter your username.")
+                        else:
+                            q=get_security_question(r_un.strip())
+                            if q:
+                                st.session_state["reset_username"]=r_un.strip()
+                                st.session_state["reset_question"]=q
+                                st.session_state["reset_step"]=2
+                                st.rerun()
+                            else:
+                                st.error("Username not found, or this account has no security question set. Contact Kevin Robles for a manual reset.")
+
+            elif st.session_state["reset_step"]==2:
+                st.markdown(f'<div style="font-size:13px;color:{C["green"]};font-weight:600;margin-bottom:12px;padding:10px 14px;background:{C["sand"]};border-radius:6px;border-left:3px solid {C["green"]};">Security question for <strong>{st.session_state["reset_username"]}</strong>:<br>{st.session_state.get("reset_question","")}</div>', unsafe_allow_html=True)
+                with st.form("_reset2"):
+                    r_ans=st.text_input("Your answer",help="Not case-sensitive")
+                    if st.form_submit_button("Verify answer",use_container_width=True):
+                        if verify_security_answer(st.session_state["reset_username"], r_ans):
+                            st.session_state["reset_step"]=3
+                            st.rerun()
+                        else:
+                            st.error("Incorrect answer. Try again, or contact Kevin Robles.")
+                if st.button("Start over", key="reset_back"):
+                    st.session_state["reset_step"]=1; st.rerun()
+
+            elif st.session_state["reset_step"]==3:
+                st.success(f"Identity verified for {st.session_state['reset_username']}. Choose a new password.")
+                with st.form("_reset3"):
+                    np1=st.text_input("New password (min 6 characters)",type="password")
+                    np2=st.text_input("Confirm new password",type="password")
+                    if st.form_submit_button("Set new password",use_container_width=True):
+                        if np1!=np2: st.error("Passwords don't match.")
+                        else:
+                            ok,msg=reset_password(st.session_state["reset_username"],np1)
+                            if ok:
+                                st.success(msg)
+                                st.session_state["reset_step"]=1
+                            else: st.error(msg)
+
+        st.markdown(f"""<div class="auth-ftr"><span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>Cloud database secured by Supabase · Passwords encrypted</div>""",unsafe_allow_html=True)
     st.stop()
- 
+
 # ──────────────────────────────────────────────────────────────────
 # DATA LOADING
 # ──────────────────────────────────────────────────────────────────
@@ -412,16 +524,16 @@ def load_data():
     tc=pd.DataFrame(sb.table("trash_counts").select("event_id,trash_group,trash_item,count_value").execute().data or [])
     se=pd.DataFrame(sb.table("site_events").select("*").execute().data or [])
     wt=pd.DataFrame(sb.table("weights_data").select("event_id,date_recorded,total_weight_oz").execute().data or [])
- 
+
     if tc.empty: tc=pd.DataFrame(columns=["event_id","trash_group","trash_item","count_value"])
     tc.rename(columns={"count_value":"n"},inplace=True)
     tc["n"]=pd.to_numeric(tc["n"],errors="coerce").fillna(0)
- 
+
     long=tc.copy()
     if not se.empty and not long.empty:
         cols=[c for c in ["event_id","date_site","site_label","point_id","replicate_no","lat","lon","recorder","surveyed_m2"] if c in se.columns]
         long=long.merge(se[cols],on="event_id",how="left")
- 
+
     long["date"]=pd.to_datetime(long.get("date_site",pd.NaT),errors="coerce")
     long["site_label"]=long.get("site_label",pd.Series("Unknown",index=long.index)).fillna("Unknown")
     long["lat"]=pd.to_numeric(long.get("lat",np.nan),errors="coerce") if "lat" in long.columns else np.nan
@@ -433,14 +545,14 @@ def load_data():
     long["month"]=long["date"].dt.month
     long["month_name"]=pd.Categorical(long["date"].dt.strftime("%b"),
         categories=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],ordered=True)
- 
+
     if not wt.empty:
         wt["date"]=pd.to_datetime(wt["date_recorded"],errors="coerce")
         wt.rename(columns={"total_weight_oz":"weight_oz"},inplace=True)
     else: wt=pd.DataFrame(columns=["event_id","date","weight_oz"])
- 
+
     return long, se, wt
- 
+
 def make_et(df):
     if df.empty: return pd.DataFrame()
     g=[c for c in ["event_id","date","site_label","seg","surveyed_m2"] if c in df.columns]
@@ -449,7 +561,7 @@ def make_et(df):
         a=pd.to_numeric(et["surveyed_m2"],errors="coerce")
         et["per_m2"]=np.where(a>0, et["total"]/a, np.nan)
     return et
- 
+
 # ──────────────────────────────────────────────────────────────────
 # FILTERS
 # ──────────────────────────────────────────────────────────────────
@@ -465,10 +577,10 @@ def build_site_stats_ns(df):
     if df.empty or "site_label" not in df.columns: return pd.DataFrame()
     df2 = df.copy()
     df2["n"] = pd.to_numeric(df2["n"], errors="coerce").fillna(0)
- 
+
     # Event-level totals (one row per event per site)
     ev_site = df2.groupby(["site_label","event_id","seg"],dropna=False)["n"].sum().reset_index(name="plot_total")
- 
+
     # Site-level stats across events
     ss = ev_site.groupby(["site_label","seg"],dropna=False)["plot_total"].agg(
         n_plots="count", mean="mean", median="median",
@@ -478,11 +590,11 @@ def build_site_stats_ns(df):
     ss["se"] = ss["sd"] / np.sqrt(ss["n_plots"].replace(0, np.nan))
     ss["cv"] = np.where(ss["mean"] > 0, ss["sd"] / ss["mean"], np.nan)
     ss["range"] = ss["max_v"] - ss["min_v"]
- 
+
     # Attach coordinates
     coords = df2.groupby("site_label",dropna=False).agg(lat=("lat","mean"),lon=("lon","mean")).reset_index()
     ss = ss.merge(coords, on="site_label", how="left")
- 
+
     # North-to-south rank (higher lat = more north = rank 1)
     ss["lat_num"] = pd.to_numeric(ss["lat"], errors="coerce")
     ss_with = ss[ss["lat_num"].notna()].sort_values("lat_num", ascending=False).copy()
@@ -490,12 +602,12 @@ def build_site_stats_ns(df):
     ss_without = ss[ss["lat_num"].isna()].copy()
     ss_without["north_rank"] = np.nan
     ss = pd.concat([ss_with, ss_without], ignore_index=True)
- 
+
     ss["site_display"] = ss.apply(lambda r:
         f"{int(r['north_rank'])}. {r['site_label']}" if pd.notna(r["north_rank"]) else r["site_label"], axis=1)
     ss = ss.sort_values(["north_rank","site_label"]).reset_index(drop=True)
     return ss
- 
+
 def fig_note(what, why, read, extra=""):
     """Render a styled interpretation box under a chart."""
     extra_html = f'<p style="color:{C["muted"]};margin:4px 0;font-size:13px;"><strong>Additional context:</strong> {extra}</p>' if extra else ""
@@ -507,7 +619,45 @@ def fig_note(what, why, read, extra=""):
     <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>How to interpret it:</strong> {read}</p>
     {extra_html}
     </div>""", unsafe_allow_html=True)
- 
+
+def last_updated_insight(df, chart_type="general", site=None, category=None):
+    """Show a dynamic 'As of [month year]...' insight line under a chart."""
+    if df is None or df.empty or "date" not in df.columns: return
+    latest = df["date"].dropna().max()
+    if pd.isna(latest): return
+    as_of = latest.strftime("%B %Y")
+    total = int(df["n"].sum()) if "n" in df.columns else 0
+
+    if chart_type == "monthly":
+        recent = df[df["date"].dt.year == latest.year]
+        yr_total = int(recent["n"].sum()) if "n" in recent.columns else 0
+        msg = f"As of <strong>{as_of}</strong>, a total of <strong>{yr_total:,}</strong> items have been recorded in {latest.year}, with the most recent survey data from {as_of}."
+    elif chart_type == "site" and site:
+        site_df = df[df["site_label"]==site] if "site_label" in df.columns else df
+        site_total = int(site_df["n"].sum()) if "n" in site_df.columns else 0
+        site_mean = site_df.groupby("event_id")["n"].sum().mean() if "event_id" in site_df.columns else 0
+        msg = f"As of <strong>{as_of}</strong>, <strong>{site}</strong> has recorded <strong>{site_total:,}</strong> total items across {site_df['event_id'].nunique() if 'event_id' in site_df.columns else '—'} survey events, with a mean of <strong>{site_mean:.1f}</strong> items per event."
+    elif chart_type == "category" and category:
+        cat_df = df[df["trash_group"]==category] if "trash_group" in df.columns else df
+        cat_total = int(cat_df["n"].sum()) if "n" in cat_df.columns else 0
+        pct = 100*cat_total/max(total,1)
+        msg = f"As of <strong>{as_of}</strong>, <strong>{category}</strong> accounts for <strong>{cat_total:,}</strong> items — representing <strong>{pct:.1f}%</strong> of all recorded trash in the database."
+    elif chart_type == "annual":
+        yr_grp = df.dropna(subset=["year"]).groupby("year")["n"].sum()
+        if len(yr_grp)>=2:
+            yrs = sorted(yr_grp.index)
+            last_yr, prev_yr = yrs[-1], yrs[-2]
+            diff = int(yr_grp[last_yr] - yr_grp[prev_yr])
+            direction = "increase" if diff>0 else "decrease"
+            msg = f"As of <strong>{as_of}</strong>, {int(last_yr)} recorded <strong>{int(yr_grp[last_yr]):,}</strong> items — a <strong>{abs(diff):,}-item {direction}</strong> from {int(prev_yr)} ({int(yr_grp[prev_yr]):,} items)."
+        else:
+            msg = f"As of <strong>{as_of}</strong>, the database contains <strong>{total:,}</strong> total recorded items."
+    else:
+        n_sites = df["site_label"].nunique() if "site_label" in df.columns else "—"
+        msg = f"As of <strong>{as_of}</strong>, the database contains <strong>{total:,}</strong> recorded items across <strong>{n_sites}</strong> survey locations. Most recent data: {as_of}."
+
+    st.markdown(f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};border-radius:6px;border-left:3px solid {C["sage"]};margin:8px 0 16px;line-height:1.7;">{msg}</div>', unsafe_allow_html=True)
+
 def color_legend(title="Trash Burden", mode="gradient"):
     """Render a color legend below a map or chart."""
     if mode == "gradient":
@@ -527,7 +677,7 @@ def color_legend(title="Trash Burden", mode="gradient"):
         box-shadow:0 2px 6px rgba(0,0,0,.04);">
         <strong>River Segments:</strong>&nbsp;&nbsp;{dots}
         </div>""", unsafe_allow_html=True)
- 
+
 def render_filters(df, kp="", cats=True):
     all_segs=[s for s in df["seg"].dropna().unique() if s!="Other"] if "seg" in df.columns else []
     all_segs=sorted(all_segs)
@@ -550,7 +700,7 @@ def render_filters(df, kp="", cats=True):
     if dr and isinstance(dr,(tuple,list)) and len(dr)==2:
         s,e=dr; f=f[f["date"].notna()&(f["date"].dt.date>=s)&(f["date"].dt.date<=e)]
     return f
- 
+
 def stat_strip(df_orig, df_f):
     ni=int(df_f["n"].sum()) if "n" in df_f.columns else 0
     ne=df_f["event_id"].nunique() if "event_id" in df_f.columns else 0
@@ -562,7 +712,7 @@ def stat_strip(df_orig, df_f):
     <div class="stat-item"><span class="stat-v">{ns:,}</span><span class="stat-l">Locations</span></div>
     <div class="stat-item"><span class="stat-v">{pct:.0f}%</span><span class="stat-l">Of All Data</span></div>
     </div>""", unsafe_allow_html=True)
- 
+
 # ──────────────────────────────────────────────────────────────────
 # MAP
 # ──────────────────────────────────────────────────────────────────
@@ -576,7 +726,7 @@ def color_val(v,vmin,vmax):
             f=(t-t0)/(t1-t0) if t1>t0 else 0
             return "#{:02x}{:02x}{:02x}".format(*[round(c0[j]+f*(c1[j]-c0[j])) for j in range(3)])
     return "#d64541"
- 
+
 def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=560):
     if df is None or len(df)==0: st.info("No coordinate data available."); return
     d=df.copy()
@@ -619,14 +769,14 @@ bounds.push([m.lat,m.lon]);
 if(bounds.length>1) map.fitBounds(bounds,{{padding:[30,30]}});
 </script></body></html>"""
     components.html(html_src, height=height+10)
- 
+
 # ──────────────────────────────────────────────────────────────────
 # APP START
 # ──────────────────────────────────────────────────────────────────
 inject_css()
 auth_gate()
 prof=st.session_state.get("prof") or {}
- 
+
 # HEADER
 st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
@@ -637,11 +787,11 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-user"><strong>{prof.get('full_name','')}</strong>{prof.get('position_title','')}
   <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div></div>
 </div></div>""", unsafe_allow_html=True)
- 
+
 # ── NAV BAR via components.html (perfect rendering, no CSS battles) ──
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
 cur = st.session_state["page"]
- 
+
 nav_items = "".join(f"""<div class="ni {'active' if p==cur else ''}" onclick="choose('{p}')">{p}</div>""" for p in PAGES)
 components.html(f"""<style>
 *{{margin:0;padding:0;box-sizing:border-box;}}
@@ -663,7 +813,7 @@ function choose(p){{
   window.parent.postMessage({{type:'streamlit:setComponentValue',value:p}},'*');
 }}
 </script>""", height=50)
- 
+
 # Invisible radio to actually drive Streamlit state from the nav clicks
 # We use session state directly — nav clicks go through postMessage → component value
 nav_val = st.radio("_nav", PAGES, index=PAGES.index(cur),
@@ -678,16 +828,16 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {
     position:absolute!important;opacity:0!important;pointer-events:none!important;
 }
 </style>""", unsafe_allow_html=True)
- 
+
 page = st.session_state["page"]
- 
+
 # LOAD DATA
 with st.spinner("Loading from database…"):
     try: long, se, wt = load_data()
     except Exception as e: st.error(f"Database error: {e}"); st.stop()
- 
+
 et = make_et(long)
- 
+
 # ══════════════════════════════════════════════════════════════════
 # OVERVIEW
 # ══════════════════════════════════════════════════════════════════
@@ -695,11 +845,11 @@ if page == "Overview":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Santa Cruz River Trash Monitoring</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="pg-lead">Longitudinal trash survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across {long["site_label"].nunique()} recorded locations spanning the river corridor and tributaries. Program directed by <strong>Luke Cole</strong>, Sonoran Institute.</div>', unsafe_allow_html=True)
- 
+
     with st.expander("Filter Data", expanded=False):
         lf = render_filters(long, kp="ov")
     stat_strip(long, lf)
- 
+
     total_n=int(lf["n"].sum()); n_ev=lf["event_id"].nunique(); n_si=lf["site_label"].nunique()
     n_gr=lf["trash_group"].nunique(); d_min,d_max=lf["date"].min(),lf["date"].max()
     span=f"{d_min.strftime('%b %Y')} – {d_max.strftime('%b %Y')}" if pd.notna(d_min) and pd.notna(d_max) else "—"
@@ -710,7 +860,7 @@ if page == "Overview":
     <div class="kpi"><div class="kpi-lbl">Trash Categories</div><div class="kpi-val">{n_gr}</div><div class="kpi-note">item groups tracked</div></div>
     <div class="kpi"><div class="kpi-lbl">Survey Period</div><div class="kpi-val sm">{span}</div><div class="kpi-note">date range</div></div>
     </div>""", unsafe_allow_html=True)
- 
+
     c1,c2 = st.columns([3,2])
     with c1:
         card_open("Monthly Items Recorded Over Time",
@@ -724,6 +874,7 @@ if page == "Overview":
             fig.add_bar(x=ts["date"],y=ts["n"],marker_color=[C["sand3"] if g else C["green"] for g in ts["gap"]],name="Monthly",opacity=.88)
             fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Month Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
             fb(fig,"Month","Total Items",h=300,title="Monthly Items Recorded"); show(fig,"ov_ts")
+        last_updated_insight(lf, chart_type="monthly")
         card_close()
     with c2:
         card_open("Share by Trash Category",
@@ -735,7 +886,7 @@ if page == "Overview":
             fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"ov_pie")
         card_close()
- 
+
     c3,c4 = st.columns([2,3])
     with c3:
         card_open("Top 15 Most Frequently Recorded Items",
@@ -753,7 +904,7 @@ if page == "Overview":
             fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER})
             fb(fig,"River Segment","Total Items",h=420,title="Items by Segment and Category"); show(fig,"ov_seg")
         card_close()
- 
+
     section_title("Category Summary Table")
     st.markdown('<div class="sec-sub">Total items, number of individual records, and average count per record for each trash category. Sorted by total count descending.</div>', unsafe_allow_html=True)
     summary=lf.groupby("trash_group")["n"].agg(Total="sum",Records="count",Average="mean").reset_index()
@@ -764,7 +915,7 @@ if page == "Overview":
     st.dataframe(summary, use_container_width=True, height=380)
     tbl_note("Each row represents one trash category group. 'Records' = number of individual count entries in the database for that category. 'Avg per Record' = mean count per single data entry, not per survey event.")
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════════
 # MAP
 # ══════════════════════════════════════════════════════════════════
@@ -772,18 +923,18 @@ elif page == "Map":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Survey Site Map</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">GPS locations of survey sites along the Santa Cruz River corridor. Click any marker to view site details. Only sites with latitude/longitude data in the database will appear on the map.</div>', unsafe_allow_html=True)
- 
+
     map_mode=st.radio("Map view",["By River Segment","By Trash Burden","Individual Events"],horizontal=True)
- 
+
     site_agg=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),lat=("lat","mean"),lon=("lon","mean")).reset_index()
     site_agg["avg_per_event"]=(site_agg["total"]/site_agg["events"]).round(1)
     wc=site_agg[site_agg["lat"].notna()&site_agg["lon"].notna()]
- 
+
     m1,m2,m3,m4=st.columns(4)
     m1.metric("Sites with GPS",len(wc)); m2.metric("Total Sites in DB",len(site_agg))
     m3.metric("Events Mapped",int(wc["events"].sum()))
     m4.metric("Grand Avg Items/Site",f"{site_agg['avg_per_event'].mean():.1f}" if len(site_agg)>0 else "—")
- 
+
     if map_mode=="By River Segment":
         render_map(wc,"lat","lon","site_label",["site_label","seg","total","events","avg_per_event"],"total",seg_col="seg")
         color_legend("River Segment Colors", mode="segments")
@@ -794,7 +945,7 @@ elif page == "Map":
         ev_geo=et[et["lat"].notna()&et["lon"].notna()] if "lat" in et.columns else pd.DataFrame()
         if len(ev_geo)>0: render_map(ev_geo,"lat","lon","site_label",["event_id","site_label","date","total"],"total",seg_col="seg")
         else: st.info("No individual event coordinates in database.")
- 
+
     section_title("Sites with GPS Coordinates")
     st.markdown('<div class="sec-sub">All survey locations that have latitude/longitude data. Sorted by total items recorded descending.</div>', unsafe_allow_html=True)
     disp=wc[["site_label","seg","total","events","avg_per_event","lat","lon"]].copy()
@@ -804,7 +955,7 @@ elif page == "Map":
     st.dataframe(disp, use_container_width=True, height=420)
     color_legend("Map Color = Trash Burden", mode="gradient")
     tbl_note("Latitude and longitude values are averaged from all records for that site. 'Avg Items/Event' = total items ÷ number of survey events at that location. Map circles: blue = lower trash burden, red = higher trash burden.")
- 
+
     section_title("All Sites — Including Those Without GPS")
     st.markdown('<div class="sec-sub">Complete list of all recorded locations in the database, with or without coordinates.</div>', unsafe_allow_html=True)
     all_sites_tbl=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique")).reset_index()
@@ -815,25 +966,55 @@ elif page == "Map":
     st.dataframe(all_sites_tbl, use_container_width=True, height=480)
     tbl_note(f"Showing all {len(all_sites_tbl)} unique location names recorded in the database. Many may have slight spelling variations (e.g. 'Drexel and Irvington' vs 'Drexel and irvington') which cause them to appear as separate entries.")
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════════
 # TRENDS
 # ══════════════════════════════════════════════════════════════════
 elif page == "Trends":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Temporal Trends</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">How trash levels have changed over time — monthly, annual, and seasonal patterns across the full survey record. Use the filter to narrow by location, segment, or date range.</div>', unsafe_allow_html=True)
- 
+    st.markdown('<div class="pg-lead">How trash levels have changed over time. Select a figure from the menu below, read the description, then view the chart. Use the filter to narrow by location, segment, or date range.</div>', unsafe_allow_html=True)
+
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="tr", cats=False)
     stat_strip(long,lf)
- 
+
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
- 
-    c1,c2=st.columns(2)
-    with c1:
-        card_open("Monthly Item Count — Full Survey Record",
-                  "Green bars = survey conducted. Gray bars = no survey that month. Dashed gold line = 3-month rolling average to smooth out variability.")
+
+    TREND_FIGS = {
+        "Monthly Item Count — Full Record": {
+            "desc": "Total recorded trash items by calendar month. Green bars = survey conducted. Gray bars = no survey that month. Gold dashed line = 3-month rolling average.",
+            "why": "Best figure for seeing the overall timeline of the program and identifying gaps in survey coverage.",
+        },
+        "Annual Totals by Year": {
+            "desc": "Total items recorded within each calendar year, with exact counts labeled above each bar.",
+            "why": "Useful for annual reporting and comparing year-over-year changes in overall burden.",
+        },
+        "Month-by-Month Comparison Across Years": {
+            "desc": "Same calendar months compared across different survey years. Each color = one year.",
+            "why": "Reveals seasonal patterns and whether a particular month is consistently heavy or light.",
+        },
+        "Average Items Per Survey Event Over Time": {
+            "desc": "Monthly mean of total items per field visit. Dotted line = grand mean across the full record.",
+            "why": "Adjusts for varying survey frequency — fairer than raw totals when the number of events per month changes.",
+        },
+        "Items by River Segment — Quarterly": {
+            "desc": "Quarterly item totals for each named river segment. Each color = one segment.",
+            "why": "Shows whether segments are tracking together or whether certain reaches are getting heavier or lighter over time.",
+        },
+        "Weight of Trash Collected Over Time": {
+            "desc": "Monthly total weight (oz) for events where weight data was recorded. Not all events have weight data.",
+            "why": "Provides a physical mass perspective on the litter burden, complementing the item count view.",
+        },
+    }
+
+    sel_trend = st.selectbox("Select a figure to display", list(TREND_FIGS.keys()), key="trend_sel")
+
+    # Description card
+    fd = TREND_FIGS[sel_trend]
+    st.markdown(f'<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};border-radius:0 8px 8px 0;padding:14px 20px;margin:12px 0 20px;"><div style="font-weight:700;font-size:14px;color:{C["text"]};margin-bottom:4px;">{sel_trend}</div><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>What it shows:</strong> {fd["desc"]}</p><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>Why useful:</strong> {fd["why"]}</p></div>', unsafe_allow_html=True)
+
+    if sel_trend == "Monthly Item Count — Full Record":
         ts=df.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
         full=pd.date_range(ts["date"].min(),ts["date"].max(),freq="MS")
         ts=ts.set_index("date").reindex(full).reset_index().rename(columns={"index":"date"})
@@ -841,74 +1022,81 @@ elif page == "Trends":
         fig=go.Figure()
         fig.add_bar(x=ts["date"],y=ts["n"],marker_color=[C["sand3"] if g else C["green"] for g in ts["gap"]],name="Monthly")
         fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Mo Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
-        fb(fig,"Month","Total Items",h=320,title="Monthly Item Count — Full Record"); show(fig,"tr_ts")
-        fig_note("Total recorded trash items aggregated by calendar month across all sites and categories.",
-            "Best figure for seeing the broad timeline — peaks, gaps, and overall direction of the program.",
-            "Green bars = survey month. Gray bars = no survey that month. Gold dashed line = 3-month rolling average to smooth noise.",
-            "Gray bars do not mean zero trash — they mean no survey was conducted. Rolling average treats gaps as zero, which may understate recent burden.")
-        card_close()
-    with c2:
-        card_open("Annual Totals by Survey Year",
-                  "Total items recorded across all events within each calendar year. Labels show exact totals above each bar.")
+        fb(fig,"Month","Total Items",h=460,title="Monthly Item Count — Full Survey Record"); show(fig,"tr_ts")
+        last_updated_insight(df, chart_type="monthly")
+        fig_note("Total recorded trash items by calendar month across all sites and categories.",
+            "Best figure for seeing the broad timeline — peaks, gaps, and overall direction.",
+            "Green bars = survey conducted. Gray = no survey that month. Gold line = 3-month rolling average.",
+            "Gray bars do not mean zero trash — they mean no survey. Rolling average treats gaps as zero.")
+
+    elif sel_trend == "Annual Totals by Year":
         yr=df.dropna(subset=["year"]).groupby("year")["n"].sum().reset_index(); yr["year"]=yr["year"].astype(str)
         fig=px.bar(yr,x="year",y="n",color_discrete_sequence=[C["green"]],text="n")
         fig.update_traces(texttemplate="%{text:,}",textposition="outside")
-        fb(fig,"Year","Total Items",h=320,title="Annual Totals by Survey Year"); show(fig,"tr_yr")
-        card_close()
- 
-    c3,c4=st.columns(2)
-    with c3:
-        card_open("Month-by-Month Comparison Across Years",
-                  "Each cluster of bars shows the same calendar month across different survey years. Useful for identifying seasonal patterns and year-over-year changes.")
+        fb(fig,"Year","Total Items",h=420,title="Annual Totals by Survey Year"); show(fig,"tr_yr")
+        last_updated_insight(df, chart_type="annual")
+        fig_note("Total items across all events within each calendar year.",
+            "Useful for year-over-year reporting.",
+            "Taller bars = more total recorded items in that year.",
+            "Annual totals reflect both trash burden and survey effort — years with more events may show higher counts.")
+
+    elif sel_trend == "Month-by-Month Comparison Across Years":
         md=df.dropna(subset=["year","month"]).groupby(["year","month","month_name"],observed=False)["n"].sum().reset_index()
         md["year_str"]=md["year"].astype(str)
         fig=px.bar(md,x="month_name",y="n",color="year_str",barmode="group",
             category_orders={"month_name":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},
             color_discrete_sequence=PAL)
-        fb(fig,"Month","Total Items",h=320,title="Month-by-Month Comparison Across Years"); show(fig,"tr_mby")
-        card_close()
-    with c4:
-        card_open("Average Items Per Survey Event Over Time",
-                  "Monthly average of total items found per individual field visit. Dotted line = grand mean across the full record. Useful for detecting whether survey intensity is changing.")
+        fb(fig,"Month","Total Items",h=460,title="Month-by-Month Comparison Across Years"); show(fig,"tr_mby")
+        last_updated_insight(df, chart_type="monthly")
+        fig_note("The same calendar months compared across survey years.",
+            "Reveals seasonal patterns and year-over-year changes within each month.",
+            "Each color = one survey year. Bars in the same month cluster = that month across years.",
+            "Missing bars for a year-month combination mean no surveys were conducted in that period.")
+
+    elif sel_trend == "Average Items Per Survey Event Over Time":
         ef=make_et(lf)
         if not ef.empty and "date" in ef.columns:
             ev2=ef.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["total"].mean().reset_index(name="avg")
             fig=px.line(ev2,x="date",y="avg",markers=True,color_discrete_sequence=[C["water"]])
-            fig.add_hline(y=ev2["avg"].mean(),line_dash="dot",line_color=C["earth"],annotation_text=f"Grand mean: {ev2['avg'].mean():.0f}",annotation_font_size=11)
-            fb(fig,"Month","Avg Items / Event",h=320,title="Average Items Per Survey Event"); show(fig,"tr_avg")
-            fig_note("Mean total items per survey visit, aggregated monthly across all sites.",
-                "Removes the effect of varying event counts — a month with 1 heavy survey and 5 surveys average differently.",
-                "Dotted line = grand mean over the full record. Points above it = heavier-than-average months.",
-                "This metric is more interpretable than raw totals when survey frequency varies month to month.")
-        card_close()
- 
-    c5,c6=st.columns(2)
-    with c5:
-        card_open("Items by River Segment Over Time",
-                  "Quarterly item totals for each named river segment. Shows how trash burden has shifted geographically across survey years.")
+            fig.add_hline(y=ev2["avg"].mean(),line_dash="dot",line_color=C["earth"],
+                annotation_text=f"Grand mean: {ev2['avg'].mean():.0f}",annotation_font_size=11)
+            fb(fig,"Month","Avg Items / Event",h=420,title="Average Items Per Survey Event — Monthly"); show(fig,"tr_avg")
+            last_updated_insight(df, chart_type="general")
+            fig_note("Monthly mean of total items per field visit across all sites.",
+                "More interpretable than raw totals when survey frequency varies between months.",
+                "Points above the dotted line = heavier-than-average months.",
+                "Grand mean = average across all months in the full record.")
+        else: st.info("No event-level data available.")
+
+    elif sel_trend == "Items by River Segment — Quarterly":
         if "seg" in df.columns:
             sg=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(sg,x="date",y="n",color="seg",markers=True,color_discrete_map=SEG_COLORS)
-            fb(fig,"Quarter","Items",h=320,title="Items by River Segment — Quarterly"); show(fig,"tr_seg")
-        color_legend("Segment Colors", mode="segments")
-        fig_note("Quarterly item totals split by named river segment.",
-            "Reveals whether segments are tracking together or diverging over time.",
-            "Lines trending upward = more trash in that segment. Crossing lines = relative burden shifting between reaches.",
-            "Only sites with assigned segment labels are included. Sites labeled 'Other' are excluded.")
-        card_close()
-    with c6:
+            fb(fig,"Quarter","Items",h=420,title="Items by River Segment — Quarterly"); show(fig,"tr_seg")
+            color_legend("Segment Colors", mode="segments")
+            last_updated_insight(df, chart_type="general")
+            fig_note("Quarterly totals split by named river segment.",
+                "Reveals whether segments track together or diverge over time.",
+                "Each line = one segment. Rising = more trash in that reach. Crossing lines = relative burden shifting.",
+                "Only sites with assigned segment labels are included.")
+        else: st.info("No segment data available.")
+
+    elif sel_trend == "Weight of Trash Collected Over Time":
         if not wt.empty and "weight_oz" in wt.columns:
-            card_open("Weight of Trash Collected Over Time",
-                      "Monthly total weight (oz) across all events where weight data was recorded. Not all events have weight data.")
             dated=wt.dropna(subset=["weight_oz","date"])
             if len(dated)>0:
                 wtrend=dated.groupby(pd.Grouper(key="date",freq="MS"))["weight_oz"].sum().reset_index()
                 fig=px.bar(wtrend,x="date",y="weight_oz",color_discrete_sequence=[C["earth"]])
-                fb(fig,"Month","Weight (oz)",h=320,title="Weight of Trash Collected Over Time"); show(fig,"tr_wt")
-            card_close()
- 
+                fb(fig,"Month","Weight (oz)",h=420,title="Weight of Trash Collected — Monthly Total"); show(fig,"tr_wt")
+                last_updated_insight(wt.rename(columns={"weight_oz":"n"}), chart_type="monthly")
+                fig_note("Monthly total weight of trash collected (ounces).",
+                    "Provides a physical mass perspective complementing the item count view.",
+                    "Taller bars = more weight collected that month.",
+                    "Not all survey events have weight data. Months with no bar may have item counts but no weight record.")
+        else: st.info("No weight data in the database.")
+
     section_title("Annual Summary Table")
-    st.markdown('<div class="sec-sub">Aggregate statistics by survey year. Events = number of distinct field visits. Total Items = all counts recorded that year.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sec-sub">Total items, number of events, and average items per event by calendar year. Sorted most recent first.</div>', unsafe_allow_html=True)
     ann=df.dropna(subset=["year"]).groupby("year").agg(
         total_items=("n","sum"),
         events=("event_id","nunique") if "event_id" in df.columns else ("n","count")
@@ -918,34 +1106,29 @@ elif page == "Trends":
     ann=ann.sort_values("year",ascending=False).reset_index(drop=True)
     ann.index=range(1,len(ann)+1)
     ann.columns=["Year","Total Items","# Events","Avg Items per Event"]
-    st.dataframe(ann, use_container_width=True, height=300)
-    tbl_note("'Avg Items per Event' = total items that year ÷ number of distinct survey events. Higher values indicate either more trash found or more thorough counting, or both.")
- 
+    st.dataframe(ann, use_container_width=True, height=280)
+    tbl_note("'Avg Items per Event' = total items that year ÷ distinct survey events. Higher values indicate heavier events, more thorough counting, or both. Years with fewer events have less reliable averages.")
+
     section_title("Monthly Breakdown Table")
-    st.markdown('<div class="sec-sub">Total items by calendar month across all years combined. Reveals seasonal patterns in trash accumulation or survey coverage.</div>', unsafe_allow_html=True)
-    mon=df.dropna(subset=["month_name"]).groupby("month_name",observed=False)["n"].agg(
-        total="sum", events=("count")
-    ).reset_index()
+    st.markdown('<div class="sec-sub">Total items by calendar month across all years combined.</div>', unsafe_allow_html=True)
+    mon=df.dropna(subset=["month_name"]).groupby("month_name",observed=False)["n"].agg(total="sum",records="count").reset_index()
     mon.columns=["Month","Total Items","# Records"]
-    st.dataframe(mon, use_container_width=True, height=300)
-    tbl_note("Month-level data combines all survey years. Months with low counts may reflect fewer surveys conducted, not less trash present.")
+    st.dataframe(mon, use_container_width=True, height=280)
+    tbl_note("Months with low totals may reflect fewer surveys, not less trash. Do not interpret as evidence of cleaner months without checking survey coverage.")
     st.markdown('</div>', unsafe_allow_html=True)
- 
-# ══════════════════════════════════════════════════════════════════
-# CATEGORIES
-# ══════════════════════════════════════════════════════════════════
+
 elif page == "Categories":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Trash Categories</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Detailed breakdown of all recorded items by category group and individual type. Food Packaging is consistently the dominant category, followed by Clothing and Misc debris.</div>', unsafe_allow_html=True)
- 
+
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="cat")
     stat_strip(long,lf)
- 
+
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
     total_all=df["n"].sum()
- 
+
     c1,c2=st.columns([2,3])
     with c1:
         card_open("Total Items by Category Group",
@@ -954,6 +1137,7 @@ elif page == "Categories":
         fig=px.bar(ct,x="n",y="trash_group",orientation="h",color_discrete_sequence=[C["green"]],text="n")
         fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
         fb(fig,"Total Items",None,h=max(400,28*len(ct)),title="Total Items by Category Group"); show(fig,"cat_ct")
+        last_updated_insight(df, chart_type="general")
         fig_note("Cumulative total of all recorded items within each material category across all events.",
             "Identifies the dominant waste types driving the overall litter burden.",
             "Longer bars = more total items in that category. Food Packaging typically dominates due to its many sub-items.",
@@ -965,12 +1149,13 @@ elif page == "Categories":
         top=df.groupby("trash_item")["n"].sum().sort_values(ascending=False).head(30).reset_index().sort_values("n")
         fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["sky"]])
         fb(fig,"Total Count",None,h=max(540,22*len(top)),title="Top 30 Individual Items — All Time"); show(fig,"cat_top")
+        last_updated_insight(df, chart_type="general")
         fig_note("Individual item types ranked by total cumulative count across all survey events and locations.",
             "Pinpoints the specific items most frequently found — useful for targeted prevention and messaging.",
             "Items near the top appear most consistently and in the highest quantities. Items near the bottom are rare.",
             "High-count items are often packaging from common beverages or fast food — useful for identifying source patterns.")
         card_close()
- 
+
     c3,c4=st.columns(2)
     with c3:
         card_open("Category Proportions — Percentage of All Items",
@@ -990,7 +1175,7 @@ elif page == "Categories":
             fig=px.line(ct3,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
             fb(fig,"Quarter","Items",h=380,title="Category Trends Over Time (Top 6 Groups)"); show(fig,"cat_trend")
         card_close()
- 
+
     c5,c6=st.columns(2)
     with c5:
         card_open("Category Mix by River Segment",
@@ -1009,7 +1194,7 @@ elif page == "Categories":
         fig=px.bar(avg_cat,x="avg_per_event",y="trash_group",orientation="h",color_discrete_sequence=[C["brick"]])
         fb(fig,"Avg Items / Event",None,h=max(360,26*len(avg_cat)),title="Average Items per Event by Category"); show(fig,"cat_avg")
         card_close()
- 
+
     section_title("Full Item-Level Breakdown")
     st.markdown('<div class="sec-sub">Every individual item type in the database with its total count, percentage of all items, and average per record. Use this table to identify rare vs. common items.</div>', unsafe_allow_html=True)
     item_tbl=df.groupby(["trash_group","trash_item"])["n"].agg(Total="sum",Records="count",Average="mean").reset_index()
@@ -1019,7 +1204,7 @@ elif page == "Categories":
     item_tbl.columns=["Category","Item","Total Count","# Records","Avg per Record","% of Total"]
     st.dataframe(item_tbl, use_container_width=True, height=520)
     tbl_note("'Records' = number of data entries for that specific item. 'Avg per Record' = mean count when that item is recorded (including zeros only if explicitly entered). '% of Total' is relative to the current filter's total item count.")
- 
+
     section_title("Category Group Summary")
     st.markdown('<div class="sec-sub">Rollup of item-level data to category group level. Ranks each group by total items, showing its relative importance in the survey record.</div>', unsafe_allow_html=True)
     grp_tbl=df.groupby("trash_group")["n"].agg(Total="sum",Records="count",Avg="mean").reset_index()
@@ -1031,7 +1216,7 @@ elif page == "Categories":
     st.dataframe(grp_tbl, use_container_width=True, height=400)
     tbl_note("Rank 1 = most commonly recorded category by total item count.")
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════════
 # LOCATIONS
 # ══════════════════════════════════════════════════════════════════
@@ -1039,11 +1224,11 @@ elif page == "Locations":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Locations & Sites</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Site-level analysis of trash burden across all recorded survey locations. Sites with GPS coordinates are ordered <strong>North to South</strong> by latitude. Statistics (mean, SD, SE, CV) are computed at the survey-event level — each event at a site counts as one observation.</div>', unsafe_allow_html=True)
- 
+
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="loc", cats=False)
     stat_strip(long,lf)
- 
+
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
     # Build N→S triplicate stats
     ss=build_site_stats_ns(df)
@@ -1053,7 +1238,7 @@ elif page == "Locations":
     site_st["avg_per_event"]=(site_st["total"]/site_st["events"]).round(1)
     site_st["sd"]=site_st["sd"].fillna(0).round(1)
     site_st=site_st.sort_values("total",ascending=False).reset_index(drop=True)
- 
+
     # KPI strip
     grand_mean = ss["mean"].mean() if len(ss)>0 else 0
     grand_sd   = ss["sd"].mean() if len(ss)>0 else 0
@@ -1064,14 +1249,14 @@ elif page == "Locations":
     <div class="stat-item"><span class="stat-v">±{grand_sd:.1f}</span><span class="stat-l">Mean SD Across Sites</span></div>
     <div class="stat-item"><span class="stat-v">{int(site_st["events"].sum()):,}</span><span class="stat-l">Total Events</span></div>
     </div>""", unsafe_allow_html=True)
- 
+
     color_legend("River Segment Colors", mode="segments")
- 
+
     loc_tab1, loc_tab2, loc_tab3, loc_tab4 = st.tabs([
         "North to South — Mean", "North to South — Variability",
         "Segment Comparison", "Full Statistics Table"
     ])
- 
+
     with loc_tab1:
         if len(ss)>0:
             card_open("Average Items per Survey Event — Sites Ordered North to South",
@@ -1086,13 +1271,14 @@ elif page == "Locations":
                 fb(fig,"Mean Items per Event","Site (North to South)",
                    h=max(560,26*len(ns_show)),
                    title="Mean Items per Survey Event — North to South"); show(fig,"ns_mean")
+                last_updated_insight(df, chart_type="general")
             fig_note(
                 "Mean number of items recorded per survey event at each site, ordered north to south by GPS latitude.",
                 "Geographic ordering reveals whether trash burden is clustered in certain reaches of the corridor.",
                 "Longer bars = heavier sites. Error bars show ±1 standard error (SE). Sites at the top are the northernmost.",
                 "SE = SD ÷ √n. A small SE means the site's mean is reliably estimated. A large SE means high variability between events at that site."
             )
- 
+
         section_title("Site Statistics — North to South")
         st.markdown('<div class="sec-sub">Full statistical summary for sites with GPS coordinates, ordered north to south. N = number of survey events. Mean ± SD are computed across events at each site.</div>', unsafe_allow_html=True)
         if len(ns_show)>0:
@@ -1104,7 +1290,7 @@ elif page == "Locations":
             tbl = tbl.round(2)
             st.dataframe(tbl, use_container_width=True, height=500)
             tbl_note("Mean = average items per event. SD = standard deviation (spread across events). SE = standard error (reliability of mean). CV = coefficient of variation (SD÷Mean×100) — higher % means more variable site. Range = max minus min across events. Rank 1 = northernmost site with coordinates.")
- 
+
     with loc_tab2:
         if len(ss)>0:
             ns_show = ss[ss["lat_num"].notna()].sort_values("north_rank")
@@ -1132,7 +1318,7 @@ elif page == "Locations":
                         "Unlike SD, CV adjusts for the size of the mean so you can compare variability across sites fairly.",
                         "CV < 30% = relatively consistent. CV 30–100% = moderate variability. CV > 100% = highly unpredictable.",
                         "A clean site with CV=150% is more unpredictable than a heavy site with CV=25%.")
- 
+
             card_open("Range of Items per Event by Site — North to South",
                       "Range = maximum items recorded minus minimum items recorded across all events at that site. Simple and easy to communicate in presentations.")
             fig=px.bar(ns_show,x="range",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
@@ -1142,7 +1328,7 @@ elif page == "Locations":
                 "Range is intuitive for non-technical audiences.",
                 "A range of 0 means the same count every visit. A large range means the site fluctuates dramatically.",
                 "Range is sensitive to extreme outlier events, unlike SD or CV.")
- 
+
     with loc_tab3:
         c1s,c2s = st.columns(2)
         with c1s:
@@ -1166,7 +1352,7 @@ elif page == "Locations":
                 "Compare with total items chart — a segment with more events should be expected to have more items.",
                 "Normalizing by events (using mean) is more fair when event counts differ substantially.")
         color_legend("Segment Colors", mode="segments")
- 
+
         section_title("Segment Summary Table")
         seg_summary = df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg").agg(
             Total_Items=("n","sum"), Events=("event_id","nunique"),
@@ -1176,7 +1362,7 @@ elif page == "Locations":
         seg_summary = seg_summary.round(1)
         st.dataframe(seg_summary, use_container_width=True, height=240)
         tbl_note("Mean per Event is computed across all individual item records, not event totals. Use 'Total Items ÷ # Events' for event-level mean.")
- 
+
         section_title("Top 20 Sites by Average Items per Event")
         top20_avg=site_st.nlargest(20,"avg_per_event").sort_values("avg_per_event")
         card_open("Sites Ranked by Average Items per Event",
@@ -1188,11 +1374,11 @@ elif page == "Locations":
             "A site visited once with 300 items scores higher than one visited 10 times averaging 20 items.",
             "Use alongside visit counts — a high average based on a single visit may not be reliable.")
         card_close()
- 
+
     with loc_tab4:
         seg_filter2=st.selectbox("Filter by River Segment",["All"]+SEG_ORDER[:-1], key="loc_seg_filter2")
         view_order=st.radio("Sort order",["North to South (GPS)","By Total Items","By Mean per Event"],horizontal=True)
- 
+
         if len(ss)>0:
             tbl_full = ss.merge(site_st[["site_label","total","events","avg_per_event"]],on="site_label",how="left",suffixes=("","_ev"))
             if seg_filter2!="All": tbl_full=tbl_full[tbl_full["seg"]==seg_filter2]
@@ -1202,7 +1388,7 @@ elif page == "Locations":
                 tbl_full=tbl_full.sort_values("total",ascending=False)
             else:
                 tbl_full=tbl_full.sort_values("mean",ascending=False)
- 
+
             disp=tbl_full[["site_display","seg","n_plots","mean","sd","se","cv","range","total","lat_num","lon"]].copy()
             disp["cv_pct"]=(disp["cv"]*100).round(1)
             disp=disp.drop(columns=["cv"])
@@ -1219,9 +1405,9 @@ elif page == "Locations":
             disp=disp.round(1).reset_index(drop=True); disp.index=range(1,len(disp)+1)
             st.dataframe(disp, use_container_width=True, height=600)
             tbl_note("Mean and SD are computed across individual count records, not event totals.")
- 
+
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════════
 # DATA TABLE
 # ══════════════════════════════════════════════════════════════════
@@ -1229,11 +1415,11 @@ elif page == "Data Table":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Data Table</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Browse and explore the complete raw dataset. Every record in the database is shown here. Use the filters to narrow down by segment, location, category, or date range.</div>', unsafe_allow_html=True)
- 
+
     with st.expander("Filter Data", expanded=True):
         lf=render_filters(long, kp="dt")
     stat_strip(long,lf)
- 
+
     section_title("Raw Survey Records")
     st.markdown('<div class="sec-sub">One row per trash item category per survey event. Use column headers to sort. Maximum 5,000 rows displayed.</div>', unsafe_allow_html=True)
     cols=[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in lf.columns]
@@ -1243,7 +1429,7 @@ elif page == "Data Table":
     disp.index=range(1,len(disp)+1)
     st.dataframe(disp, use_container_width=True, height=560)
     tbl_note(f"Showing {min(len(lf),5000):,} of {len(lf):,} rows matching current filters. Each row represents one item type recorded at one survey event. To see all data, export as CSV from the Export page.")
- 
+
     section_title("Filtered Summary — Category Breakdown")
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records above, grouped by trash category.</div>', unsafe_allow_html=True)
     sum_cat=lf.groupby("trash_group")["n"].agg(Total="sum",Records="count").reset_index()
@@ -1253,7 +1439,7 @@ elif page == "Data Table":
     sum_cat.columns=["Category","Total Items","# Records","% of Filtered Total"]
     st.dataframe(sum_cat, use_container_width=True, height=360)
     tbl_note("This table summarizes the filtered records shown above. Change the filters to update both this table and the raw records.")
- 
+
     section_title("Filtered Summary — Location Breakdown")
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records grouped by survey location.</div>', unsafe_allow_html=True)
     sum_loc=lf.groupby(["site_label","seg"]).agg(Total=("n","sum"),Events=("event_id","nunique")).reset_index()
@@ -1264,7 +1450,7 @@ elif page == "Data Table":
     st.dataframe(sum_loc, use_container_width=True, height=380)
     tbl_note("This table shows the same filtered records aggregated by location. Useful for seeing which sites are most represented in the current filter selection.")
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════════
 # DATA ENTRY
 # ══════════════════════════════════════════════════════════════════
@@ -1272,7 +1458,7 @@ elif page == "Data Entry":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">New Survey Entry</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Submit a completed field survey directly into the cloud database. Data is saved immediately and reflected in all charts and tables. Double-check all values before submitting — entries cannot be deleted from this interface.</div>', unsafe_allow_html=True)
- 
+
     with st.form("survey_form", clear_on_submit=False):
         st.markdown('<div class="form-sec"><div class="form-sec-title">Event Information</div>', unsafe_allow_html=True)
         ec1,ec2,ec3,ec4=st.columns(4)
@@ -1287,10 +1473,10 @@ elif page == "Data Entry":
         rec_other=""
         if recorder=="Other — type below": rec_other=st.text_input("Recorder full name")
         st.markdown('</div>', unsafe_allow_html=True)
- 
+
         recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
         site_final=site_new.strip() if site_new.strip() else site_sel
- 
+
         st.markdown('<div class="form-sec"><div class="form-sec-title">Trash Item Counts — Enter the count for each item found. Leave at 0 if not present.</div>', unsafe_allow_html=True)
         counts={}
         for grp_name,items in TRASH_GROUPS.items():
@@ -1299,15 +1485,15 @@ elif page == "Data Entry":
             for i,item in enumerate(items):
                 with cols[i%n]: counts[item]=st.number_input(item,min_value=0,value=0,step=1,key=f"c_{grp_name}_{item}")
         st.markdown('</div>', unsafe_allow_html=True)
- 
+
         st.markdown('<div class="form-sec"><div class="form-sec-title">Field Notes (optional)</div>', unsafe_allow_html=True)
         st.text_area("Observations, site conditions, notable findings",height=90,placeholder="e.g. Recent flooding, concentrated debris near outfall, unusual items found...")
         st.markdown('</div>', unsafe_allow_html=True)
- 
+
         total_preview=sum(counts.values())
         st.markdown(f'<div class="live-total"><div class="live-total-n">{total_preview:,}</div><div class="live-total-l">total items counted in this entry</div></div>', unsafe_allow_html=True)
         submitted=st.form_submit_button("Save Survey Entry to Database",use_container_width=True)
- 
+
     if submitted:
         if not event_id.strip(): st.error("Event ID is required.")
         elif not site_final: st.error("Survey location is required.")
@@ -1324,7 +1510,7 @@ elif page == "Data Entry":
                 st.success(f"Saved — Event {event_id} · {site_final} · {survey_date.strftime('%B %d, %Y')} · {total_preview:,} items")
             except Exception as e: st.error(f"Could not save: {e}")
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # ══════════════════════════════════════════════════════════════════
 # EXPORT
 # ══════════════════════════════════════════════════════════════════
@@ -1332,15 +1518,15 @@ elif page == "Export":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Export Data</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Download clean, formatted datasets from the live database. All three formats are ready to open in Excel, Google Sheets, R, Python, or ArcGIS.</div>', unsafe_allow_html=True)
- 
+
     long_exp=long[[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in long.columns]].copy()
     long_exp=long_exp.rename(columns={"n":"count","seg":"river_segment","site_label":"location"})
- 
+
     et_exp=make_et(long)
- 
+
     site_exp=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),avg=("n","mean")).reset_index()
     site_exp=site_exp.sort_values("total",ascending=False)
- 
+
     exports=[
         ("Long Format — Every Record",long_exp,"scr_trash_long_format.csv",
          "One row per item category per survey event. The most complete format — best for custom analysis in R, Python, or Excel pivot tables. Contains every count entry with its associated location, date, and segment.",
@@ -1367,7 +1553,7 @@ elif page == "Export":
                 st.dataframe(df_exp.head(30), use_container_width=True, height=220)
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
- 
+
 # ── FOOTER ────────────────────────────────────────────────────────
 st.markdown(f"""<div class="ftr"><div class="ftr-in">
   <div style="display:flex;align-items:center;gap:16px;">
@@ -1380,7 +1566,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
     Dashboard v5.0 · Cloud Edition
   </div>
 </div></div>""", unsafe_allow_html=True)
- 
+
 with st.expander("Account"):
     st.write(f"Signed in as **{prof.get('full_name','')}** ({prof.get('username','')})")
     c1,c2=st.columns(2)
