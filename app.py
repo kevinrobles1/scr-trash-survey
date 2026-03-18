@@ -259,7 +259,7 @@ label{{font-size:12px!important;font-weight:600!important;
 div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;overflow:hidden;}}
  
 /* ── HIDE PHANTOM NAV ── */
-.stTabs [data-baseweb="tab-list"]{{display:none!important;}}
+/* tab lists are visible - auth page uses them */
 .nav-btn-row{{margin:0!important;padding:0!important;
   height:0!important;overflow:hidden!important;}}
  
