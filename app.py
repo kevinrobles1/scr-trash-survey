@@ -344,233 +344,144 @@ def auth_gate():
         if k not in st.session_state: st.session_state[k]=v
     if st.session_state["auth"]: return
 
-    st.markdown(f"""
-    <style>
-    /* ── AUTH PAGE OVERRIDES ── */
-    .stApp {{ background: {C["forest"]} !important; }}
-    .block-container {{ padding: 0 !important; }}
-
-    /* Full-screen two-column layout */
-    .auth-wrap {{
-        display: flex; min-height: 100vh; width: 100%;
+    st.markdown(f"""<style>
+    .stApp {{ background:{C["forest"]} !important; }}
+    .block-container {{ padding:0 !important; }}
+    /* right form panel */
+    .auth-right-wrap {{
+        background:{C["sand"]};
+        min-height:100vh;
+        padding:64px 56px;
+        border-left:1px solid rgba(255,255,255,0.06);
     }}
-
-    /* LEFT PANEL — rich green brand side */
-    .auth-left {{
-        flex: 1.1;
-        background: linear-gradient(175deg, {C["forest"]} 0%, #0d1f0f 40%, #1a3520 100%);
-        padding: 60px 56px;
-        display: flex; flex-direction: column; justify-content: space-between;
-        position: relative; overflow: hidden;
-    }}
-    .auth-left::before {{
-        content: '';
-        position: absolute; inset: 0;
-        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%235da832' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        opacity: 1;
-    }}
-    .auth-left::after {{
-        content: '';
-        position: absolute;
-        bottom: -120px; right: -120px;
-        width: 500px; height: 500px;
-        background: radial-gradient(circle, {C["mint"]}18 0%, transparent 65%);
-        border-radius: 50%;
-    }}
-
-    .auth-brand {{
-        display: flex; align-items: center; gap: 14px; position: relative; z-index: 2;
-    }}
-    .auth-logo {{ height: 44px; opacity: 0.95; }}
-    .auth-brand-text {{
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.05rem; font-weight: 700; color: rgba(255,255,255,0.9);
-        line-height: 1.25;
-    }}
-    .auth-brand-sub {{
-        font-family: 'DM Mono', monospace;
-        font-size: 8.5px; color: rgba(255,255,255,0.35);
-        letter-spacing: 2.5px; text-transform: uppercase; margin-top: 3px;
-    }}
-
-    .auth-hero {{ position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 40px 0; }}
     .auth-eyebrow {{
-        font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
-        letter-spacing: 3px; text-transform: uppercase;
-        color: {C["mint"]}; margin-bottom: 20px;
-        display: flex; align-items: center; gap: 10px;
-    }}
-    .auth-eyebrow::before {{
-        content: ''; display: block; width: 32px; height: 1px;
-        background: {C["mint"]};
-    }}
-    .auth-headline {{
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 3.4rem; font-weight: 700; line-height: 1.08;
-        color: white; letter-spacing: -0.03em;
-        margin-bottom: 20px;
-    }}
-    .auth-headline em {{
-        font-style: italic; color: {C["mint"]};
-    }}
-    .auth-desc {{
-        font-size: 14.5px; color: rgba(255,255,255,0.5);
-        line-height: 1.8; max-width: 400px; margin-bottom: 40px;
-    }}
-
-    .auth-stats {{
-        display: flex; gap: 36px; position: relative; z-index: 2;
-    }}
-    .auth-stat-num {{
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.9rem; font-weight: 700; color: white;
-        line-height: 1; letter-spacing: -0.02em;
-    }}
-    .auth-stat-lbl {{
-        font-size: 10px; color: rgba(255,255,255,0.4);
-        text-transform: uppercase; letter-spacing: 1.2px;
-        margin-top: 4px; font-family: 'DM Mono', monospace;
-    }}
-    .auth-stat-bar {{
-        width: 1px; background: rgba(255,255,255,0.1);
-        margin: 0; align-self: stretch;
-    }}
-
-    /* RIGHT PANEL — clean white form side */
-    .auth-right {{
-        flex: 0.9;
-        background: {C["sand"]};
-        display: flex; flex-direction: column; justify-content: center;
-        padding: 60px 64px;
-        position: relative;
-    }}
-    .auth-right::before {{
-        content: '';
-        position: absolute; top: 0; left: 0; bottom: 0; width: 1px;
-        background: linear-gradient(to bottom, transparent, {C["mint"]}40 30%, {C["mint"]}40 70%, transparent);
-    }}
-
-    .auth-form-eyebrow {{
-        font-family: 'DM Mono', monospace; font-size: 9.5px;
-        letter-spacing: 2.5px; text-transform: uppercase;
-        color: {C["mint"]}; margin-bottom: 12px;
+        font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;
+        text-transform:uppercase;color:{C["mint"]};margin-bottom:14px;
     }}
     .auth-form-title {{
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 2.3rem; font-weight: 700; color: {C["text"]};
-        letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 6px;
+        font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;
+        color:{C["text"]};letter-spacing:-.02em;line-height:1.1;margin-bottom:8px;
     }}
     .auth-form-sub {{
-        font-size: 13px; color: {C["muted"]}; line-height: 1.65;
-        margin-bottom: 36px;
+        font-size:13px;color:{C["muted"]};line-height:1.7;margin-bottom:32px;
     }}
-
-    /* Tab styles for auth page */
+    .auth-footer {{
+        margin-top:28px;padding-top:18px;border-top:1px solid {C["sand3"]};
+        font-size:11px;color:{C["muted"]};font-family:'DM Mono',monospace;
+        display:flex;align-items:center;gap:8px;
+    }}
+    /* tab styles */
     div[data-testid="stTabs"] > div:first-child {{
-        background: transparent !important;
-        border-bottom: 1px solid {C["sand3"]} !important;
-        padding: 0 !important; gap: 0 !important; margin-bottom: 28px !important;
+        background:transparent !important;
+        border-bottom:1px solid {C["sand3"]} !important;
+        padding:0 !important; gap:0 !important; margin-bottom:24px !important;
     }}
     div[data-testid="stTabs"] button[role="tab"] {{
-        font-family: 'DM Sans', sans-serif !important;
-        font-size: 12px !important; font-weight: 600 !important;
-        text-transform: uppercase !important; letter-spacing: 1px !important;
-        color: {C["muted"]} !important; border-radius: 0 !important;
-        padding: 12px 24px 12px 0 !important;
-        border-bottom: 2px solid transparent !important;
-        background: transparent !important; margin-right: 8px !important;
+        font-family:'DM Sans',sans-serif !important;
+        font-size:11.5px !important;font-weight:600 !important;
+        text-transform:uppercase !important;letter-spacing:1px !important;
+        color:{C["muted"]} !important;border-radius:0 !important;
+        padding:12px 20px 12px 0 !important;
+        border-bottom:2px solid transparent !important;
+        background:transparent !important;margin-right:4px !important;
     }}
     div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {{
-        color: {C["green"]} !important;
-        border-bottom-color: {C["mint"]} !important;
+        color:{C["green"]} !important;
+        border-bottom-color:{C["mint"]} !important;
     }}
     div[data-testid="stTabs"] div[role="tabpanel"] {{
-        background: transparent !important;
-        border: none !important; padding: 0 !important;
-        box-shadow: none !important;
+        background:transparent !important;
+        border:none !important;padding:0 !important;box-shadow:none !important;
     }}
+    </style>""", unsafe_allow_html=True)
 
-    .auth-footer {{
-        margin-top: 36px; padding-top: 20px;
-        border-top: 1px solid {C["sand3"]};
-        font-size: 11px; color: {C["muted"]};
-        display: flex; align-items: center; gap: 8px;
-    }}
-    .auth-footer-dot {{
-        width: 5px; height: 5px; border-radius: 50%;
-        background: {C["mint"]}; display: inline-block;
-    }}
-    </style>
+    left_col, right_col = st.columns([1.1, 0.9])
 
-    <div class="auth-wrap">
+    with left_col:
+        components.html(f"""<!DOCTYPE html><html><head>
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,700&family=DM+Sans:wght@400;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+        <style>
+        * {{ margin:0; padding:0; box-sizing:border-box; }}
+        body {{
+            background:linear-gradient(165deg,{C["forest"]} 0%,#0b1a0e 45%,#162b1a 100%);
+            min-height:100vh; padding:52px 52px 48px;
+            display:flex; flex-direction:column; justify-content:space-between;
+            position:relative; overflow:hidden;
+            font-family:'DM Sans',sans-serif;
+        }}
+        body::before {{
+            content:''; position:absolute; inset:0;
+            background-image: radial-gradient(circle at 1px 1px, rgba(93,168,50,0.06) 1px, transparent 0);
+            background-size: 32px 32px;
+        }}
+        body::after {{
+            content:''; position:absolute;
+            bottom:-160px; right:-160px;
+            width:560px; height:560px;
+            background:radial-gradient(circle, rgba(93,168,50,0.12) 0%, transparent 65%);
+            border-radius:50%;
+        }}
+        .brand {{ display:flex; align-items:center; gap:14px; position:relative; z-index:2; }}
+        .brand img {{ height:40px; opacity:0.9; }}
+        .brand-name {{ font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:700; color:rgba(255,255,255,0.88); line-height:1.25; }}
+        .brand-sub {{ font-family:'DM Mono',monospace; font-size:8px; color:rgba(255,255,255,0.3); letter-spacing:2.5px; text-transform:uppercase; margin-top:3px; }}
 
-      <!-- LEFT: Brand panel -->
-      <div class="auth-left">
-        <div class="auth-brand">
-          <img src="{LOGO_W}" class="auth-logo">
+        .hero {{ flex:1; display:flex; flex-direction:column; justify-content:center; padding:48px 0 40px; position:relative; z-index:2; }}
+        .eyebrow {{ display:flex; align-items:center; gap:12px; margin-bottom:22px; }}
+        .eyebrow-line {{ width:36px; height:1px; background:{C["mint"]}; }}
+        .eyebrow-text {{ font-family:'DM Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:{C["mint"]}; }}
+
+        .headline {{ font-family:'Cormorant Garamond',serif; font-size:3.6rem; font-weight:700; line-height:1.05; color:white; letter-spacing:-.03em; margin-bottom:22px; }}
+        .headline em {{ font-style:italic; color:{C["mint"]}; }}
+
+        .desc {{ font-size:14px; color:rgba(255,255,255,0.45); line-height:1.85; max-width:380px; margin-bottom:44px; }}
+
+        .stats {{ display:flex; gap:0; }}
+        .stat {{ padding:0 28px 0 0; }}
+        .stat:first-child {{ padding-left:0; }}
+        .stat + .stat {{ border-left:1px solid rgba(255,255,255,0.1); padding-left:28px; }}
+        .stat-num {{ font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:700; color:white; line-height:1; letter-spacing:-.02em; }}
+        .stat-lbl {{ font-family:'DM Mono',monospace; font-size:9px; color:rgba(255,255,255,0.35); text-transform:uppercase; letter-spacing:1.5px; margin-top:5px; }}
+
+        .foot {{ position:relative; z-index:2; font-family:'DM Mono',monospace; font-size:10px; color:rgba(255,255,255,0.2); line-height:1.9; }}
+        </style></head><body>
+        <div class="brand">
+          <img src="{LOGO_W}">
           <div>
-            <div class="auth-brand-text">Sonoran Institute</div>
-            <div class="auth-brand-sub">River Restoration Program</div>
+            <div class="brand-name">Sonoran Institute</div>
+            <div class="brand-sub">River Restoration Program</div>
           </div>
         </div>
-
-        <div class="auth-hero">
-          <div class="auth-eyebrow">Tucson, Arizona</div>
-          <div class="auth-headline">
-            Santa Cruz River<br><em>Trash Survey</em>
+        <div class="hero">
+          <div class="eyebrow">
+            <div class="eyebrow-line"></div>
+            <div class="eyebrow-text">Tucson, Arizona</div>
           </div>
-          <div class="auth-desc">
-            Longitudinal monitoring of litter and debris along
-            the Santa Cruz River corridor. Triplicates across
-            14 sites, from Camino del Cerro to Drexel Road.
-          </div>
-          <div class="auth-stats">
-            <div>
-              <div class="auth-stat-num">14</div>
-              <div class="auth-stat-lbl">Survey Sites</div>
-            </div>
-            <div class="auth-stat-bar"></div>
-            <div>
-              <div class="auth-stat-num">4</div>
-              <div class="auth-stat-lbl">River Reaches</div>
-            </div>
-            <div class="auth-stat-bar"></div>
-            <div>
-              <div class="auth-stat-num">395+</div>
-              <div class="auth-stat-lbl">Events Logged</div>
-            </div>
+          <div class="headline">Santa Cruz River<br><em>Trash Survey</em></div>
+          <div class="desc">Longitudinal monitoring of litter and debris along the Santa Cruz River corridor. Triplicate 10×10m plots across 14 sites from Camino del Cerro to Drexel Road.</div>
+          <div class="stats">
+            <div class="stat"><div class="stat-num">14</div><div class="stat-lbl">Survey Sites</div></div>
+            <div class="stat"><div class="stat-num">4</div><div class="stat-lbl">River Reaches</div></div>
+            <div class="stat"><div class="stat-num">395+</div><div class="stat-lbl">Events Logged</div></div>
           </div>
         </div>
+        <div class="foot">Program Director: Luke Cole<br>sonoraninstitute.org</div>
+        </body></html>""", height=820)
 
-        <div style="font-size:11px;color:rgba(255,255,255,0.25);
-        font-family:'DM Mono',monospace;position:relative;z-index:2;">
-          Program Director: Luke Cole<br>
-          sonoraninstitute.org
-        </div>
-      </div>
+    with right_col:
+        st.markdown(f"""
+        <div class="auth-right-wrap">
+          <div class="auth-eyebrow">Authorized Personnel Only</div>
+          <div class="auth-form-title">Sign in to<br>your account</div>
+          <div class="auth-form-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>
+        </div>""", unsafe_allow_html=True)
 
-      <!-- RIGHT: Form panel (rendered by Streamlit below) -->
-      <div class="auth-right" id="auth-right-anchor">
-        <div class="auth-form-eyebrow">Authorized Personnel Only</div>
-        <div class="auth-form-title">Sign in to<br>your account</div>
-        <div class="auth-form-sub">
-          Access the Santa Cruz River data dashboard,<br>
-          field entry tools, and analysis reports.
-        </div>
-      </div>
-
-    </div>
-    """, unsafe_allow_html=True)
-
-    # Streamlit columns to position the form over the right panel
-    _gap, form_col, _gap2 = st.columns([1.15, 0.85, 0.02])
-    with form_col:
         t1, t2 = st.tabs(["Sign In", "Create Account"])
         with t1:
             with st.form("_login"):
                 un = st.text_input("Username")
                 pw = st.text_input("Password", type="password")
-                st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
                 if st.form_submit_button("Sign In →", use_container_width=True):
                     ok, prof = login(un, pw)
                     if ok:
@@ -581,24 +492,23 @@ def auth_gate():
                         st.error("Invalid username or password.")
         with t2:
             with st.form("_reg"):
-                c1, c2 = st.columns(2)
+                c1,c2 = st.columns(2)
                 fn  = c1.text_input("Full Name")
                 pos = c2.text_input("Position / Title")
-                nu  = st.text_input("Username (min 3 characters)")
-                c3, c4 = st.columns(2)
+                nu  = st.text_input("Username (min 3 chars)")
+                c3,c4 = st.columns(2)
                 p1 = c3.text_input("Password (min 6 chars)", type="password")
                 p2 = c4.text_input("Confirm Password", type="password")
-                st.markdown("<div style='height:4px'></div>", unsafe_allow_html=True)
+                st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
                 if st.form_submit_button("Create Account", use_container_width=True):
-                    if p1 != p2:
-                        st.error("Passwords don't match.")
+                    if p1 != p2: st.error("Passwords don't match.")
                     else:
-                        ok, msg = register(nu, p1, fn, pos)
+                        ok,msg = register(nu,p1,fn,pos)
                         (st.success if ok else st.error)(msg)
-        st.markdown(f"""
-        <div class="auth-footer">
-          <span class="auth-footer-dot"></span>
-          Cloud database · Data secured by Supabase
+
+        st.markdown(f"""<div class="auth-footer">
+          <span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>
+          Cloud database · Secured by Supabase
         </div>""", unsafe_allow_html=True)
     st.stop()
 
