@@ -587,7 +587,7 @@ function choose(p){{
   // post message to parent Streamlit
   window.parent.postMessage({{type:'streamlit:setComponentValue',value:p}},'*');
 }}
-</script>""", height=50, key="nav_html")
+</script>""", height=50)
 
 # Invisible radio to actually drive Streamlit state from the nav clicks
 # We use session state directly — nav clicks go through postMessage → component value
