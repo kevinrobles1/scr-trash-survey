@@ -366,22 +366,23 @@ def auth_gate():
     if st.session_state["auth"]: return
 
     st.markdown(f"""<style>
-    .stApp {{ background:{C["forest"]} !important; }}
-    .block-container {{ padding:0 !important; }}
-
-    /* Right column — force cream, nuke every layer of green */
+    /* Entire app bg = cream — the dark green lives ONLY inside the left iframe */
+    .stApp, .stApp > div, .block-container {{
+        background:{C["cream"]} !important;
+        padding:0 !important;
+        max-width:100% !important;
+    }}
+    /* Left column: no padding, zero bg (iframe fills it) */
+    [data-testid="column"]:first-of-type,
+    [data-testid="column"]:first-of-type > div,
+    [data-testid="column"]:first-of-type > div > div {{
+        background:transparent !important;
+        padding:0 !important;
+    }}
+    /* Right column: cream */
     [data-testid="column"]:last-of-type {{
         background:{C["cream"]} !important;
-        min-height:100vh !important;
         padding:72px 56px !important;
-    }}
-    [data-testid="column"]:last-of-type > div,
-    [data-testid="column"]:last-of-type > div > div,
-    [data-testid="column"]:last-of-type > div > div > div,
-    [data-testid="column"]:last-of-type section,
-    [data-testid="column"]:last-of-type [data-testid="stVerticalBlock"],
-    [data-testid="column"]:last-of-type [data-testid="stVerticalBlock"] > div {{
-        background:{C["cream"]} !important;
     }}
 
     /* Labels */
@@ -529,7 +530,7 @@ def auth_gate():
           </div>
         </div>
         <div class="foot">Program Director: Luke Cole<br>sonoraninstitute.org</div>
-        </body></html>""", height=820)
+        </body></html>""", height=900, scrolling=False)
 
     with right_col:
         st.markdown(f"""
