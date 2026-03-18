@@ -1904,59 +1904,202 @@ elif page == "Data Entry":
 
     # ── TAB 1: ADD NEW ENTRY ─────────────────────────────────────
     with entry_tab:
-        with st.form("survey_form", clear_on_submit=False):
-            st.markdown('<div class="form-sec"><div class="form-sec-title">Event Information</div>', unsafe_allow_html=True)
-            ec1,ec2,ec3,ec4=st.columns(4)
-            event_id=ec1.text_input("Event ID",placeholder="e.g. 396")
-            survey_date=ec2.date_input("Survey Date",value=date.today())
-            area_m2=ec3.number_input("Plot Area (m²)",min_value=0.0,value=10.0,step=0.5)
-            recorder=ec4.selectbox("Recorder",[""] + TEAM + ["Other — type below"])
-            ec5,ec6=st.columns([2,2])
-            existing=sorted(long["site_label"].dropna().astype(str).unique().tolist())
-            site_sel=ec5.selectbox("Survey Location (existing)",[""] + existing)
-            site_new=ec6.text_input("Or enter a new location name")
-            rec_other=""
-            if recorder=="Other — type below": rec_other=st.text_input("Recorder full name")
-            st.markdown('</div>', unsafe_allow_html=True)
+        # ── Step state ──────────────────────────────────────────────
+        # step 1 = filling form, step 2 = review before submit
+        for _k,_v in [("entry_step",1),("entry_snapshot",None)]:
+            if _k not in st.session_state: st.session_state[_k]=_v
 
-            recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
-            site_final=site_new.strip() if site_new.strip() else site_sel
+        # ── STEP 1: FILL OUT THE FORM ────────────────────────────────
+        if st.session_state["entry_step"] == 1:
+            with st.form("survey_form", clear_on_submit=False):
+                st.markdown('<div class="form-sec"><div class="form-sec-title">Event Information</div>', unsafe_allow_html=True)
+                ec1,ec2,ec3,ec4=st.columns(4)
+                event_id=ec1.text_input("Event ID",placeholder="e.g. 396")
+                survey_date=ec2.date_input("Survey Date",value=date.today())
+                area_m2=ec3.number_input("Plot Area (m²)",min_value=0.0,value=10.0,step=0.5)
+                recorder=ec4.selectbox("Recorder",[""] + TEAM + ["Other — type below"])
+                ec5,ec6=st.columns([2,2])
+                existing=sorted(long["site_label"].dropna().astype(str).unique().tolist())
+                site_sel=ec5.selectbox("Survey Location (existing)",[""] + existing)
+                site_new=ec6.text_input("Or enter a new location name")
+                rec_other=""
+                if recorder=="Other — type below": rec_other=st.text_input("Recorder full name")
+                st.markdown('</div>', unsafe_allow_html=True)
 
-            st.markdown('<div class="form-sec"><div class="form-sec-title">Trash Item Counts — Enter the count for each item found. Leave at 0 if not present.</div>', unsafe_allow_html=True)
-            counts={}
-            for grp_name,items in TRASH_GROUPS.items():
-                st.markdown(f'<div class="grp-hdr">{grp_name}</div>', unsafe_allow_html=True)
-                n=min(4,len(items)); cols=st.columns(n)
-                for i,item in enumerate(items):
-                    with cols[i%n]: counts[item]=st.number_input(item,min_value=0,value=0,step=1,key=f"c_{grp_name}_{item}")
-            st.markdown('</div>', unsafe_allow_html=True)
+                recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
+                site_final=site_new.strip() if site_new.strip() else site_sel
 
-            st.markdown('<div class="form-sec"><div class="form-sec-title">Field Notes (optional)</div>', unsafe_allow_html=True)
-            st.text_area("Observations, site conditions, notable findings",height=90,
-                placeholder="e.g. Recent flooding, concentrated debris near outfall, unusual items found...")
-            st.markdown('</div>', unsafe_allow_html=True)
+                st.markdown('<div class="form-sec"><div class="form-sec-title">Trash Item Counts — Enter the count for each item found. Leave at 0 if not present.</div>', unsafe_allow_html=True)
+                counts={}
+                for grp_name,items in TRASH_GROUPS.items():
+                    st.markdown(f'<div class="grp-hdr">{grp_name}</div>', unsafe_allow_html=True)
+                    n=min(4,len(items)); cols=st.columns(n)
+                    for i,item in enumerate(items):
+                        with cols[i%n]: counts[item]=st.number_input(item,min_value=0,value=0,step=1,key=f"c_{grp_name}_{item}")
+                st.markdown('</div>', unsafe_allow_html=True)
 
-            total_preview=sum(counts.values())
-            st.markdown(f'<div class="live-total"><div class="live-total-n">{total_preview:,}</div><div class="live-total-l">total items counted in this entry</div></div>', unsafe_allow_html=True)
-            submitted=st.form_submit_button("Save Survey Entry to Database",use_container_width=True)
+                st.markdown('<div class="form-sec"><div class="form-sec-title">Field Notes (optional)</div>', unsafe_allow_html=True)
+                field_notes=st.text_area("Observations, site conditions, notable findings",height=90,
+                    placeholder="e.g. Recent flooding, concentrated debris near outfall, unusual items found...")
+                st.markdown('</div>', unsafe_allow_html=True)
 
-        if submitted:
-            if not event_id.strip(): st.error("Event ID is required.")
-            elif not site_final: st.error("Survey location is required.")
-            else:
-                try:
-                    sb=get_sb()
-                    sb.table("site_events").upsert({
-                        "event_id":int(event_id.strip()),"date_site":survey_date.isoformat(),
-                        "site_label":site_final,"location_description":site_final,
-                        "recorder":recorder_final,"surveyed_m2":float(area_m2) if area_m2 else None
-                    }).execute()
-                    rows=[{"event_id":int(event_id.strip()),"trash_group":g,"trash_item":item,"count_value":float(v)}
-                          for g,items in TRASH_GROUPS.items() for item in items if (v:=counts.get(item,0)) and v>0]
-                    if rows: sb.table("trash_counts").insert(rows).execute()
-                    load_data.clear()
-                    st.success(f"Saved — Event {event_id} · {site_final} · {survey_date.strftime('%B %d, %Y')} · {total_preview:,} items")
-                except Exception as e: st.error(f"Could not save: {e}")
+                total_preview=sum(counts.values())
+                st.markdown(f'<div class="live-total"><div class="live-total-n">{total_preview:,}</div><div class="live-total-l">total items counted in this entry</div></div>', unsafe_allow_html=True)
+                go_review=st.form_submit_button("Review Before Submitting",use_container_width=True)
+
+            if go_review:
+                if not event_id.strip():
+                    st.error("Event ID is required.")
+                elif not site_final:
+                    st.error("Survey location is required.")
+                elif total_preview == 0:
+                    st.warning("No items were entered. Are you sure you want to submit a zero-count event? If yes, enter at least one count.")
+                else:
+                    # Save everything to session state and move to review step
+                    st.session_state["entry_snapshot"] = {
+                        "event_id": event_id.strip(),
+                        "survey_date": survey_date,
+                        "area_m2": area_m2,
+                        "recorder_final": recorder_final,
+                        "site_final": site_final,
+                        "counts": {k:v for k,v in counts.items() if v>0},
+                        "field_notes": field_notes,
+                        "total": total_preview,
+                    }
+                    st.session_state["entry_step"] = 2
+                    st.rerun()
+
+        # ── STEP 2: REVIEW PANEL ─────────────────────────────────────
+        elif st.session_state["entry_step"] == 2:
+            snap = st.session_state["entry_snapshot"]
+
+            st.markdown(
+                f'<div style="background:{C["green"]}0d;border:1px solid {C["green"]}33;' +
+                f'border-radius:10px;padding:22px 28px;margin-bottom:20px;">' +
+                f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;' +
+                f'color:{C["green"]};margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};'+">" +
+                "Review Your Entry — Verify Everything Before Submitting" +
+                "</div>",
+                unsafe_allow_html=True
+            )
+
+            # Event info summary
+            st.markdown(
+                f'<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;">' +
+                f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;padding:14px 16px;">' +
+                f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};margin-bottom:6px;">Event ID</div>' +
+                f'<div style="font-size:1.5rem;font-family:Cormorant Garamond,serif;font-weight:700;color:{C["green"]};">{snap["event_id"]}</div></div>' +
+                f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;padding:14px 16px;">' +
+                f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};margin-bottom:6px;">Survey Date</div>' +
+                f'<div style="font-size:1rem;font-family:Cormorant Garamond,serif;font-weight:700;color:{C["text"]};">{snap["survey_date"].strftime("%B %d, %Y")}</div></div>' +
+                f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;padding:14px 16px;">' +
+                f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};margin-bottom:6px;">Location</div>' +
+                f'<div style="font-size:1rem;font-family:Cormorant Garamond,serif;font-weight:700;color:{C["text"]};line-height:1.3;">{snap["site_final"]}</div></div>' +
+                f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;padding:14px 16px;">' +
+                f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};margin-bottom:6px;">Recorder</div>' +
+                f'<div style="font-size:1rem;font-family:Cormorant Garamond,serif;font-weight:700;color:{C["text"]};">{snap["recorder_final"] or "—"}</div></div>' +
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+            # Plot area + total count
+            st.markdown(
+                f'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">' +
+                f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;padding:14px 16px;">' +
+                f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};margin-bottom:6px;">Plot Area</div>' +
+                f'<div style="font-size:1.3rem;font-family:Cormorant Garamond,serif;font-weight:700;color:{C["text"]};">{snap["area_m2"]} m²</div></div>' +
+                f'<div style="background:{C["green"]};border-radius:8px;padding:14px 16px;">' +
+                f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.6);margin-bottom:6px;">Total Items to Be Saved</div>' +
+                f'<div style="font-size:2rem;font-family:Cormorant Garamond,serif;font-weight:700;color:white;">{snap["total"]:,}</div></div>' +
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+            # Items recorded — only non-zero
+            if snap["counts"]:
+                st.markdown(
+                    f'<div style="font-size:10px;font-family:DM Mono,monospace;text-transform:uppercase;' +
+                    f'letter-spacing:1.5px;color:{C["muted"]};margin-bottom:10px;">Items Recorded (non-zero only)</div>',
+                    unsafe_allow_html=True
+                )
+                # Group by category
+                by_group = {}
+                for grp_name, items in TRASH_GROUPS.items():
+                    grp_counts = {item: snap["counts"][item] for item in items if item in snap["counts"]}
+                    if grp_counts: by_group[grp_name] = grp_counts
+
+                for grp_name, grp_counts in by_group.items():
+                    grp_total = sum(grp_counts.values())
+                    rows_html = "".join(
+                        f'<div style="display:flex;justify-content:space-between;padding:5px 0;' +
+                        f'border-bottom:1px solid {C["sand3"]};font-size:13px;">' +
+                        f'<span style="color:{C["text"]};">{item}</span>' +
+                        f'<span style="font-weight:700;color:{C["green"]};font-family:DM Mono,monospace;">{count:,}</span></div>'
+                        for item, count in sorted(grp_counts.items(), key=lambda x: -x[1])
+                    )
+                    st.markdown(
+                        f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;' +
+                        f'margin-bottom:10px;overflow:hidden;">' +
+                        f'<div style="background:{C["sand"]};padding:8px 16px;display:flex;' +
+                        f'justify-content:space-between;border-bottom:1px solid {C["sand3"]};">' +
+                        f'<span style="font-size:10px;font-family:DM Mono,monospace;text-transform:uppercase;' +
+                        f'letter-spacing:1.2px;color:{C["green"]};font-weight:700;">{grp_name}</span>' +
+                        f'<span style="font-size:10px;font-family:DM Mono,monospace;color:{C["muted"]};">Total: {grp_total:,}</span></div>' +
+                        f'<div style="padding:4px 16px 8px;">{rows_html}</div></div>',
+                        unsafe_allow_html=True
+                    )
+
+            # Field notes
+            if snap.get("field_notes","").strip():
+                st.markdown(
+                    f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;' +
+                    f'padding:14px 16px;margin-bottom:18px;">' +
+                    f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;' +
+                    f'letter-spacing:1.5px;color:{C["muted"]};margin-bottom:8px;">Field Notes</div>' +
+                    f'<div style="font-size:13.5px;color:{C["text"]};line-height:1.7;">{snap["field_notes"]}</div></div>',
+                    unsafe_allow_html=True
+                )
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            # Confirm / Go back buttons
+            st.markdown(
+                f'<div style="font-size:13.5px;font-weight:600;color:{C["text"]};margin:20px 0 12px;">' +
+                "Does everything look correct? Once submitted, this entry is saved to the live database.",
+                unsafe_allow_html=True
+            )
+            col_submit, col_back = st.columns(2)
+            with col_submit:
+                if st.button("Confirm and Submit to Database", use_container_width=True, key="final_submit"):
+                    try:
+                        sb=get_sb()
+                        sb.table("site_events").upsert({
+                            "event_id":int(snap["event_id"]),
+                            "date_site":snap["survey_date"].isoformat(),
+                            "site_label":snap["site_final"],
+                            "location_description":snap["site_final"],
+                            "recorder":snap["recorder_final"],
+                            "surveyed_m2":float(snap["area_m2"]) if snap["area_m2"] else None
+                        }).execute()
+                        all_counts=snap["counts"]
+                        rows=[{"event_id":int(snap["event_id"]),"trash_group":g,"trash_item":item,"count_value":float(v)}
+                              for g,items in TRASH_GROUPS.items() for item in items if (v:=all_counts.get(item,0)) and v>0]
+                        if rows: sb.table("trash_counts").insert(rows).execute()
+                        load_data.clear()
+                        st.session_state["entry_step"]=1
+                        st.session_state["entry_snapshot"]=None
+                        st.success(
+                            f"Saved — Event {snap['event_id']} · {snap['site_final']} · "
+                            f"{snap['survey_date'].strftime('%B %d, %Y')} · {snap['total']:,} items"
+                        )
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"Could not save: {e}")
+            with col_back:
+                if st.button("Go Back and Edit", use_container_width=True, key="back_to_form"):
+                    st.session_state["entry_step"]=1
+                    st.session_state["entry_snapshot"]=None
+                    st.rerun()
 
     # ── TAB 2: MANAGE / DELETE ───────────────────────────────────
     with manage_tab:
