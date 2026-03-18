@@ -88,11 +88,26 @@ PLOTLY_CFG = {"displaylogo":False,"modeBarButtonsToRemove":["lasso2d","select2d"
 # DESIGN SYSTEM
 # ──────────────────────────────────────────────────────────────────
 C = dict(
-    forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
-    gold="#c9820e", amber="#e8a620", cream="#faf7f0", sand="#f2ede2",
-    sand2="#e8e1d0", sand3="#d8ceba", earth="#8b4513", brick="#b5451b",
-    sky="#1a5276", water="#2471a3", text="#18180f", med="#3a3a28",
-    muted="#686854", divider="#cec6b0", white="#ffffff",
+    # ONE GREEN — used for all green elements
+    forest="#1e4d1e",  # primary green (header, nav, buttons, accents)
+    green="#1e4d1e",   # alias
+    sage="#1e4d1e",    # alias
+    mint="#1e4d1e",    # alias
+
+    # ONE CREAM — used for all light elements
+    cream="#faf7f0",   # primary light bg
+    sand="#faf7f0",    # alias
+    sand2="#ede8de",   # slightly darker cream (section backgrounds)
+    sand3="#d8d0c0",   # border/divider color
+
+    # ACCENTS — only used in charts, not UI chrome
+    gold="#c9820e", amber="#e8a620",
+    earth="#8b4513", brick="#b5451b",
+    sky="#1a5276", water="#2471a3",
+
+    # TEXT
+    text="#18180f", med="#3a3a28",
+    muted="#686854", divider="#d8d0c0", white="#ffffff",
 )
 PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],
        "#6c4f8a","#2e8b8b","#b5451b","#888877",C["mint"]]
@@ -447,7 +462,7 @@ def auth_gate():
         <style>
         * {{ margin:0; padding:0; box-sizing:border-box; }}
         body {{
-            background:linear-gradient(165deg,{C["forest"]} 0%,#0b1a0e 45%,#162b1a 100%);
+            background:{C["forest"]};
             min-height:100vh; padding:52px 52px 48px;
             display:flex; flex-direction:column; justify-content:space-between;
             position:relative; overflow:hidden;
@@ -455,14 +470,14 @@ def auth_gate():
         }}
         body::before {{
             content:''; position:absolute; inset:0;
-            background-image: radial-gradient(circle at 1px 1px, rgba(93,168,50,0.06) 1px, transparent 0);
+            background-image: radial-gradient(circle at 1px 1px, rgba(30,77,30,0.12) 1px, transparent 0);
             background-size: 32px 32px;
         }}
         body::after {{
             content:''; position:absolute;
             bottom:-160px; right:-160px;
             width:560px; height:560px;
-            background:radial-gradient(circle, rgba(93,168,50,0.12) 0%, transparent 65%);
+            background:radial-gradient(circle, rgba(30,77,30,0.18) 0%, transparent 65%);
             border-radius:50%;
         }}
         .brand {{ display:flex; align-items:center; gap:14px; position:relative; z-index:2; }}
@@ -853,7 +868,7 @@ if page=="Overview":
     if "year" in long.columns:
         heat=long.groupby(["site_label","year"])["n"].sum().reset_index()
         pvt=heat.pivot(index="site_label",columns="year",values="n").fillna(0)
-        fig=px.imshow(pvt,color_continuous_scale=["#f2ede2","#5da832","#1e4d1e"],
+        fig=px.imshow(pvt,color_continuous_scale=["#f2ede2","#1e4d1e","#1e4d1e"],
             labels=dict(color="Items"),aspect="auto")
         fig_base(fig,None,"Site",h=max(300,28*len(pvt)))
         fig.update_xaxes(tickangle=0); show(fig,"ov_heat")
@@ -1082,7 +1097,7 @@ elif page=="Figures":
             if "trash_group" in df.columns and "site_label" in df.columns:
                 ht=df.groupby(["site_label","trash_group"])["n"].sum().reset_index()
                 pv=ht.pivot(index="site_label",columns="trash_group",values="n").fillna(0)
-                fig=px.imshow(pv,color_continuous_scale=["#f2ede2","#5da832","#1e4d1e"],
+                fig=px.imshow(pv,color_continuous_scale=["#f2ede2","#1e4d1e","#1e4d1e"],
                     aspect="auto",labels=dict(color="Items"))
                 fig_base(fig,None,"Site",h=max(380,28*len(pv)))
                 fig.update_xaxes(tickangle=-35); show(fig,"f_cht")
