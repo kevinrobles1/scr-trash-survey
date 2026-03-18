@@ -343,45 +343,101 @@ def auth_gate():
     for k,v in [("auth",False),("prof",None)]:
         if k not in st.session_state: st.session_state[k]=v
     if st.session_state["auth"]: return
-    st.markdown(f"""<div style="background:linear-gradient(160deg,{C['forest']},{C['sage']});
-    padding:16px 44px;display:flex;align-items:center;gap:16px;border-bottom:2px solid {C['mint']};">
-    <img src="{LOGO_W}" style="height:40px;">
-    <div><div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:#fff;">
-    Santa Cruz River Trash Survey</div>
-    <div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:2px;text-transform:uppercase;
-    font-family:'DM Mono',monospace;">Sonoran Institute · River Restoration Program</div></div></div>""",
-    unsafe_allow_html=True)
+ 
+    # Full-width header bar
+    st.markdown(f"""
+    <div style="background:linear-gradient(160deg,{C['forest']},{C['sage']});
+    padding:18px 44px;display:flex;align-items:center;gap:16px;
+    border-bottom:2px solid {C['mint']};">
+      <img src="{LOGO_W}" style="height:40px;">
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.25rem;
+        font-weight:700;color:#fff;white-space:nowrap;">Santa Cruz River Trash Survey</div>
+        <div style="font-size:9px;color:rgba(255,255,255,.45);letter-spacing:2px;
+        text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:3px;">
+        Sonoran Institute · River Restoration Program</div>
+      </div>
+    </div>
+ 
+    <style>
+    /* Style the tab bar to look like it belongs to the card */
+    div[data-testid="stTabs"] > div:first-child {{
+        background: {C['forest']} !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        gap: 0 !important;
+    }}
+    div[data-testid="stTabs"] button[role="tab"] {{
+        font-family: 'DM Sans', sans-serif !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.8px !important;
+        color: rgba(255,255,255,0.5) !important;
+        border-radius: 0 !important;
+        padding: 14px 28px !important;
+        border-bottom: 3px solid transparent !important;
+        background: transparent !important;
+    }}
+    div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {{
+        color: {C['mint']} !important;
+        border-bottom-color: {C['mint']} !important;
+        background: rgba(126,200,80,0.08) !important;
+    }}
+    div[data-testid="stTabs"] div[role="tabpanel"] {{
+        background: white !important;
+        border: 1px solid {C['sand3']} !important;
+        border-top: none !important;
+        border-radius: 0 0 10px 10px !important;
+        padding: 32px 36px 36px !important;
+        box-shadow: 0 12px 48px rgba(0,0,0,.1) !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+ 
+    # Welcome text above tabs
+    st.markdown(f"""
+    <div style="background:{C['forest']};padding:28px 36px 0;max-width:560px;
+    margin:40px auto 0;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;
+      font-weight:700;color:#fff;line-height:1.2;margin-bottom:6px;">Welcome back</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:0;">
+        Santa Cruz River Program &nbsp;·&nbsp;
+        <span style="font-family:'DM Mono',monospace;font-size:11px;color:{C['mint']};">
+        Director: Luke Cole</span>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+ 
     _,col,_ = st.columns([1,1.3,1])
     with col:
-        st.markdown(f"""<div style="background:#fff;border:1px solid {C['sand3']};
-        border-top:4px solid {C['green']};border-radius:0 0 10px 10px;
-        padding:40px 44px;box-shadow:0 12px 48px rgba(0,0,0,.12);margin-top:52px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;
-        color:{C['text']};margin-bottom:4px;">Welcome back</div>
-        <div style="font-size:13px;color:{C['muted']};margin-bottom:28px;line-height:1.7;">
-        Sonoran Institute · Santa Cruz River Program<br>
-        <span style="font-family:'DM Mono',monospace;font-size:11px;color:{C['sage']};">
-        Director: Luke Cole</span></div></div>""", unsafe_allow_html=True)
-        t1,t2 = st.tabs(["Sign In","Create Account"])
+        t1, t2 = st.tabs(["Sign In", "Create Account"])
         with t1:
             with st.form("_login"):
                 un = st.text_input("Username")
-                pw = st.text_input("Password",type="password")
-                if st.form_submit_button("Sign In →",use_container_width=True):
-                    ok,prof = login(un,pw)
-                    if ok: st.session_state["auth"]=True; st.session_state["prof"]=prof; st.rerun()
-                    else: st.error("Invalid username or password.")
+                pw = st.text_input("Password", type="password")
+                if st.form_submit_button("Sign In →", use_container_width=True):
+                    ok, prof = login(un, pw)
+                    if ok:
+                        st.session_state["auth"] = True
+                        st.session_state["prof"] = prof
+                        st.rerun()
+                    else:
+                        st.error("Invalid username or password.")
         with t2:
             with st.form("_reg"):
-                c1,c2 = st.columns(2)
-                fn=c1.text_input("Full Name"); pos=c2.text_input("Position")
-                nu=st.text_input("Username")
-                c3,c4=st.columns(2)
-                p1=c3.text_input("Password",type="password"); p2=c4.text_input("Confirm",type="password")
-                if st.form_submit_button("Create Account",use_container_width=True):
-                    if p1!=p2: st.error("Passwords don't match.")
+                c1, c2 = st.columns(2)
+                fn = c1.text_input("Full Name")
+                pos = c2.text_input("Position / Title")
+                nu = st.text_input("Username (min 3 characters)")
+                c3, c4 = st.columns(2)
+                p1 = c3.text_input("Password (min 6 chars)", type="password")
+                p2 = c4.text_input("Confirm Password", type="password")
+                if st.form_submit_button("Create Account", use_container_width=True):
+                    if p1 != p2:
+                        st.error("Passwords don't match.")
                     else:
-                        ok,msg = register(nu,p1,fn,pos)
+                        ok, msg = register(nu, p1, fn, pos)
                         (st.success if ok else st.error)(msg)
     st.stop()
  
