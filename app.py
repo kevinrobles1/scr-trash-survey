@@ -4,7 +4,7 @@
 # ══════════════════════════════════════════════════════════════════
 import json, html, re, hashlib, secrets
 from datetime import datetime, date
-
+ 
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -12,16 +12,16 @@ import plotly.graph_objects as go
 import streamlit as st
 import streamlit.components.v1 as components
 from supabase import create_client, Client
-
+ 
 @st.cache_resource
 def get_sb() -> Client:
     return create_client(st.secrets["SUPABASE_URL"], st.secrets["SUPABASE_KEY"])
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # CONSTANTS
 # ──────────────────────────────────────────────────────────────────
 LOGO_W = "https://sonoraninstitute.org/wp-content/themes/sonoran-institute-2016/assets/img/si_logo_white_2018.png"
-
+ 
 RIVER_SEGMENTS = {
     "North Reach":   ["Santa Cruz River North of CoCerro","Between an outfall and Camino del Cerro",
                       "between an outfall and Camino del Cerro","Santa Cruz River at Camino del Cerro",
@@ -36,7 +36,7 @@ RIVER_SEGMENTS = {
 SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito","Other"]
 SEG_COLORS = {"North Reach":"#2980b9","Central Reach":"#27ae60","South Reach":"#e67e22","Rillito":"#8e44ad","Other":"#7f8c8d"}
 SEG_LIGHT  = {"North Reach":"#d6eaf8","Central Reach":"#d5f5e3","South Reach":"#fdebd0","Rillito":"#e8daef","Other":"#f0f0f0"}
-
+ 
 TRASH_GROUPS = {
     "Cups":           ["Styrofoam (Polar Pop)","Styrofoam (Qt)","Styrofoam (Other)","Plastic","Paper"],
     "Beer":           ["Bottles","Cans"],
@@ -60,15 +60,15 @@ TRASH_GROUPS = {
     "Plastic Bags":   ["Plastic Bags"],
     "Misc":           ["Sm. Debris (Ex. Metal, Plastic Scraps)","Lg. Debris (Ex. Garbage Cans)"],
 }
-
+ 
 TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset",
         "Soroush Hedayah","Vata Aflatoone","Kimberly Baeza","Joan Woodward",
         "Mark Krieski","Jamie Irby","Marsha Colbert","Axhel Munoz","Christine Hehenga",
         "Saige Thompson","Stephanie Winick","Damon Shorty","Julia Olson",
         "Isabella Feldmann","KyeongHee Kim","Joe Cuffori","Brian Jones"]
-
+ 
 PAGES = ["Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
-
+ 
 C = dict(
     forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
     cream="#faf7f0", sand="#f2ede2", sand2="#e8e1d0", sand3="#d8ceba",
@@ -77,11 +77,11 @@ C = dict(
     text="#18180f", med="#3a3a28", muted="#686854", divider="#cec6b0", white="#ffffff",
 )
 PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],"#6c4f8a","#2e8b8b",C["mint"],"#888877",C["earth"],"#c0392b","#16a085"]
-
+ 
 st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon="🌊",
                    layout="wide", initial_sidebar_state="collapsed")
 PC = {"displaylogo":False,"modeBarButtonsToRemove":["lasso2d","select2d","autoScale2d","pan2d"]}
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # CSS
 # ──────────────────────────────────────────────────────────────────
@@ -92,7 +92,7 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
 .stApp{{background:{C["sand"]};}}
 .block-container{{padding:0!important;max-width:100%!important;}}
 [data-testid="stSidebar"],[data-testid="collapsedControl"]{{display:none!important;}}
-
+ 
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:2px solid {C["mint"]};box-shadow:0 4px 28px rgba(0,0,0,.25);}}
@@ -113,18 +113,18 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
 .hdr-dot{{width:6px;height:6px;background:{C["mint"]};border-radius:50%;
           animation:pulse 2s infinite;display:inline-block;}}
 @keyframes pulse{{0%,100%{{opacity:1;}}50%{{opacity:.4;}}}}
-
+ 
 /* ── NAV — uses components.html iframe for perfect rendering ── */
 .nav-outer{{background:{C["forest"]};position:sticky;top:0;z-index:200;
             border-bottom:1px solid rgba(255,255,255,.08);
             box-shadow:0 3px 14px rgba(0,0,0,.35);}}
-
+ 
 /* Hide the actual Streamlit radio group — nav is rendered via iframe */
 .nav-radio-hide div[role="radiogroup"]{{
     position:absolute!important;opacity:0!important;
     pointer-events:none!important;height:0!important;overflow:hidden!important;
 }}
-
+ 
 /* ── BODY ── */
 .body{{max-width:1480px;margin:0 auto;padding:36px 44px 100px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
@@ -135,7 +135,7 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
 .sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:14px;line-height:1.6;}}
 .tbl-note{{font-size:12px;color:{C["muted"]};line-height:1.7;padding:10px 0 2px;
            border-top:1px solid {C["sand3"]};margin-top:10px;font-style:italic;}}
-
+ 
 /* ── KPI GRID ── */
 .kpi-grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}}
 .kpi-grid-4{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}}
@@ -151,13 +151,13 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
           color:{C["green"]};line-height:1;letter-spacing:-.02em;}}
 .kpi-val.sm{{font-size:1.25rem;padding-top:6px;line-height:1.3;}}
 .kpi-note{{font-size:11px;color:{C["muted"]};margin-top:5px;}}
-
+ 
 /* ── CARDS ── */
 .card{{background:#fff;border:1px solid {C["sand3"]};border-radius:10px;
        padding:24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.04);}}
 .card-hd{{display:flex;align-items:flex-start;justify-content:space-between;
           padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid {C["sand3"]};}}
-
+ 
 /* ── STAT STRIP ── */
 .stat-strip{{display:flex;gap:0;background:#fff;border:1px solid {C["sand3"]};
              border-radius:10px;overflow:hidden;margin-bottom:24px;
@@ -168,7 +168,7 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
          color:{C["green"]};display:block;line-height:1.1;}}
 .stat-l{{font-size:9.5px;color:{C["muted"]};font-family:'DM Mono',monospace;
          text-transform:uppercase;letter-spacing:.8px;margin-top:3px;display:block;}}
-
+ 
 /* ── FORM ── */
 .form-sec{{background:#fff;border:1px solid {C["divider"]};
            border-left:4px solid {C["green"]};border-radius:0 10px 10px 0;
@@ -184,7 +184,7 @@ html,body,[class*="css"]{{font-family:'DM Sans',sans-serif;color:{C["text"]};}}
              display:flex;align-items:center;gap:14px;margin:14px 0;}}
 .live-total-n{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:{C["green"]};}}
 .live-total-l{{font-size:12px;color:{C["muted"]};}}
-
+ 
 /* ── INPUTS ── */
 div[data-baseweb="select"]>div,div[data-baseweb="input"]>div,
 .stDateInput>div>div,.stTextInput>div>div,.stNumberInput>div>div,.stTextArea>div>div{{
@@ -194,7 +194,7 @@ div[data-baseweb="select"]>div,div[data-baseweb="input"]>div,
 div[data-baseweb="select"]>div:focus-within,div[data-baseweb="input"]>div:focus-within{{
   border-color:{C["sage"]}!important;box-shadow:0 0 0 3px rgba(93,168,50,.1)!important;}}
 label{{font-size:12px!important;font-weight:600!important;color:{C["med"]}!important;letter-spacing:.3px!important;}}
-
+ 
 /* ── BUTTONS ── */
 .stButton>button{{font-family:'DM Sans',sans-serif!important;font-size:12.5px!important;
   font-weight:600!important;padding:8px 18px!important;border-radius:7px!important;
@@ -204,15 +204,15 @@ label{{font-size:12px!important;font-weight:600!important;color:{C["med"]}!impor
   color:#fff!important;box-shadow:0 4px 14px rgba(30,77,30,.4)!important;}}
 .stDownloadButton>button{{background:{C["green"]}!important;color:#fff!important;
   border-color:{C["green"]}!important;border-radius:7px!important;font-weight:600!important;}}
-
+ 
 /* ── TABLE ── */
 div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;overflow:hidden;}}
-
+ 
 /* ── FILTER EXPANDER ── */
 .streamlit-expanderHeader{{font-family:'DM Sans',sans-serif!important;
   font-size:12.5px!important;font-weight:700!important;color:{C["green"]}!important;
   letter-spacing:.3px!important;}}
-
+ 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{{width:5px;height:5px;}}
 ::-webkit-scrollbar-track{{background:{C["sand"]};}}
@@ -220,7 +220,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 ::-webkit-scrollbar-thumb:hover{{background:{C["sage"]};}}
 @keyframes fadeUp{{from{{opacity:0;transform:translateY(10px);}}to{{opacity:1;transform:none;}}}}
 .fade-up{{animation:fadeUp .35s ease both;}}
-
+ 
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 100%);
       padding:24px 44px;margin-top:80px;border-top:2px solid {C["sage"]};}}
@@ -228,7 +228,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
          justify-content:space-between;flex-wrap:wrap;gap:16px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.8;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.55);text-decoration:none;}}
-
+ 
 /* Auth tabs */
 div[data-testid="stTabs"]>div:first-child{{background:transparent!important;
   border-bottom:1px solid {C["sand3"]}!important;padding:0!important;gap:0!important;margin-bottom:24px!important;}}
@@ -241,7 +241,7 @@ div[data-testid="stTabs"] button[role="tab"][aria-selected="true"]{{
 div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important;
   border:none!important;padding:0!important;box-shadow:none!important;}}
 </style>""", unsafe_allow_html=True)
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
@@ -260,27 +260,27 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     fig.update_xaxes(showgrid=False,zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     fig.update_yaxes(showgrid=True,gridcolor=C["sand2"],zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     return fig
-
+ 
 def show(fig, key=None):
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
-
+ 
 def card_open(title, subtitle=""):
     sub = f'<div class="sec-sub">{subtitle}</div>' if subtitle else ""
     st.markdown(f'<div class="card"><div class="card-hd"><div><div class="sec-hd">{title}</div>{sub}</div></div>', unsafe_allow_html=True)
-
+ 
 def card_close(): st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 def tbl_note(text):
     st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
-
+ 
 def section_title(text):
     st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:28px 0 16px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # AUTH
 # ──────────────────────────────────────────────────────────────────
 def _hash(pw, salt): return hashlib.pbkdf2_hmac("sha256",pw.encode(),salt.encode(),100000).hex()
-
+ 
 def register(username, password, full_name, position):
     u = username.strip()
     if len(u)<3: return False,"Username must be at least 3 characters."
@@ -294,7 +294,7 @@ def register(username, password, full_name, position):
         return True,"Account created — sign in."
     except Exception as e:
         return False,("Username taken." if "unique" in str(e).lower() or "duplicate" in str(e).lower() else str(e))
-
+ 
 def login(username, password):
     try:
         r = get_sb().table("users").select("*").eq("username",username.strip()).execute()
@@ -306,12 +306,12 @@ def login(username, password):
                          "position_title":row.get("position_title","Team Member")}
         return False,None
     except: return False,None
-
+ 
 def auth_gate():
     for k,v in [("auth",False),("prof",None)]:
         if k not in st.session_state: st.session_state[k]=v
     if st.session_state["auth"]: return
-
+ 
     st.markdown(f"""<style>
     .stApp,.stApp>div,.block-container{{background:{C["cream"]}!important;padding:0!important;max-width:100%!important;}}
     [data-testid="column"]:last-of-type,[data-testid="column"]:last-of-type>div,
@@ -327,7 +327,7 @@ def auth_gate():
     .auth-sub{{font-size:13px;color:{C["muted"]};line-height:1.75;margin-bottom:32px;}}
     .auth-ftr{{margin-top:24px;padding-top:16px;border-top:1px solid {C["sand3"]};font-size:11px;color:{C["muted"]};font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px;}}
     </style>""", unsafe_allow_html=True)
-
+ 
     lc, rc = st.columns([1.1, 0.9])
     with lc:
         components.html(f"""<!DOCTYPE html><html><head>
@@ -372,7 +372,7 @@ def auth_gate():
         </div>
         <div class="foot">Program Director: Luke Cole<br>sonoraninstitute.org</div>
         </body></html>""", height=900, scrolling=False)
-
+ 
     with rc:
         st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
         <div class="auth-ttl">Sign in to<br>your account</div>
@@ -402,7 +402,7 @@ def auth_gate():
                         (st.success if ok else st.error)(msg)
         st.markdown(f"""<div class="auth-ftr"><span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>Cloud database secured by Supabase</div>""",unsafe_allow_html=True)
     st.stop()
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # DATA LOADING
 # ──────────────────────────────────────────────────────────────────
@@ -412,16 +412,16 @@ def load_data():
     tc=pd.DataFrame(sb.table("trash_counts").select("event_id,trash_group,trash_item,count_value").execute().data or [])
     se=pd.DataFrame(sb.table("site_events").select("*").execute().data or [])
     wt=pd.DataFrame(sb.table("weights_data").select("event_id,date_recorded,total_weight_oz").execute().data or [])
-
+ 
     if tc.empty: tc=pd.DataFrame(columns=["event_id","trash_group","trash_item","count_value"])
     tc.rename(columns={"count_value":"n"},inplace=True)
     tc["n"]=pd.to_numeric(tc["n"],errors="coerce").fillna(0)
-
+ 
     long=tc.copy()
     if not se.empty and not long.empty:
         cols=[c for c in ["event_id","date_site","site_label","point_id","replicate_no","lat","lon","recorder","surveyed_m2"] if c in se.columns]
         long=long.merge(se[cols],on="event_id",how="left")
-
+ 
     long["date"]=pd.to_datetime(long.get("date_site",pd.NaT),errors="coerce")
     long["site_label"]=long.get("site_label",pd.Series("Unknown",index=long.index)).fillna("Unknown")
     long["lat"]=pd.to_numeric(long.get("lat",np.nan),errors="coerce") if "lat" in long.columns else np.nan
@@ -433,14 +433,14 @@ def load_data():
     long["month"]=long["date"].dt.month
     long["month_name"]=pd.Categorical(long["date"].dt.strftime("%b"),
         categories=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],ordered=True)
-
+ 
     if not wt.empty:
         wt["date"]=pd.to_datetime(wt["date_recorded"],errors="coerce")
         wt.rename(columns={"total_weight_oz":"weight_oz"},inplace=True)
     else: wt=pd.DataFrame(columns=["event_id","date","weight_oz"])
-
+ 
     return long, se, wt
-
+ 
 def make_et(df):
     if df.empty: return pd.DataFrame()
     g=[c for c in ["event_id","date","site_label","seg","surveyed_m2"] if c in df.columns]
@@ -449,10 +449,85 @@ def make_et(df):
         a=pd.to_numeric(et["surveyed_m2"],errors="coerce")
         et["per_m2"]=np.where(a>0, et["total"]/a, np.nan)
     return et
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # FILTERS
 # ──────────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────────────────────────
+# SITE TRIPLICATE STATISTICS (North → South)
+# ──────────────────────────────────────────────────────────────────
+def build_site_stats_ns(df):
+    """
+    Build per-site summary ordered North to South by latitude.
+    Returns DataFrame with mean, SD, SE, CV, range, n_plots, total.
+    These are computed at the PLOT level (one row per event at each site).
+    """
+    if df.empty or "site_label" not in df.columns: return pd.DataFrame()
+    df2 = df.copy()
+    df2["n"] = pd.to_numeric(df2["n"], errors="coerce").fillna(0)
+ 
+    # Event-level totals (one row per event per site)
+    ev_site = df2.groupby(["site_label","event_id","seg"],dropna=False)["n"].sum().reset_index(name="plot_total")
+ 
+    # Site-level stats across events
+    ss = ev_site.groupby(["site_label","seg"],dropna=False)["plot_total"].agg(
+        n_plots="count", mean="mean", median="median",
+        sd="std", total="sum", min_v="min", max_v="max"
+    ).reset_index()
+    ss["sd"] = ss["sd"].fillna(0)
+    ss["se"] = ss["sd"] / np.sqrt(ss["n_plots"].replace(0, np.nan))
+    ss["cv"] = np.where(ss["mean"] > 0, ss["sd"] / ss["mean"], np.nan)
+    ss["range"] = ss["max_v"] - ss["min_v"]
+ 
+    # Attach coordinates
+    coords = df2.groupby("site_label",dropna=False).agg(lat=("lat","mean"),lon=("lon","mean")).reset_index()
+    ss = ss.merge(coords, on="site_label", how="left")
+ 
+    # North-to-south rank (higher lat = more north = rank 1)
+    ss["lat_num"] = pd.to_numeric(ss["lat"], errors="coerce")
+    ss_with = ss[ss["lat_num"].notna()].sort_values("lat_num", ascending=False).copy()
+    ss_with["north_rank"] = range(1, len(ss_with)+1)
+    ss_without = ss[ss["lat_num"].isna()].copy()
+    ss_without["north_rank"] = np.nan
+    ss = pd.concat([ss_with, ss_without], ignore_index=True)
+ 
+    ss["site_display"] = ss.apply(lambda r:
+        f"{int(r['north_rank'])}. {r['site_label']}" if pd.notna(r["north_rank"]) else r["site_label"], axis=1)
+    ss = ss.sort_values(["north_rank","site_label"]).reset_index(drop=True)
+    return ss
+ 
+def fig_note(what, why, read, extra=""):
+    """Render a styled interpretation box under a chart."""
+    extra_html = f'<p style="color:{C["muted"]};margin:4px 0;font-size:13px;"><strong>Additional context:</strong> {extra}</p>' if extra else ""
+    st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["green"]};
+    border-radius:0 8px 8px 0;padding:16px 20px;margin:12px 0 20px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:{C["green"]};margin-bottom:10px;">How to read this figure</div>
+    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>What it shows:</strong> {what}</p>
+    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>Why it is useful:</strong> {why}</p>
+    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>How to interpret it:</strong> {read}</p>
+    {extra_html}
+    </div>""", unsafe_allow_html=True)
+ 
+def color_legend(title="Trash Burden", mode="gradient"):
+    """Render a color legend below a map or chart."""
+    if mode == "gradient":
+        st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;
+        padding:14px 18px;margin:10px 0;display:inline-flex;align-items:center;gap:16px;
+        font-size:12px;color:{C["muted"]};box-shadow:0 2px 6px rgba(0,0,0,.04);">
+        <strong style="color:{C["text"]};font-size:12px;">{title}:</strong>
+        <div style="width:160px;height:10px;border-radius:4px;
+        background:linear-gradient(to right,#3182ce,#4ec9b0,#f59534,#d64541);"></div>
+        <span>Lower</span><span style="font-size:16px;">→</span><span>Higher</span>
+        </div>""", unsafe_allow_html=True)
+    else:
+        segs = [("North Reach","#2980b9"),("Central Reach","#27ae60"),("South Reach","#e67e22"),("Rillito","#8e44ad")]
+        dots = "".join(f'<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px;"><span style="width:10px;height:10px;border-radius:50%;background:{c};display:inline-block;"></span>{s}</span>' for s,c in segs)
+        st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;
+        padding:12px 18px;margin:10px 0;font-size:12px;color:{C["text"]};
+        box-shadow:0 2px 6px rgba(0,0,0,.04);">
+        <strong>River Segments:</strong>&nbsp;&nbsp;{dots}
+        </div>""", unsafe_allow_html=True)
+ 
 def render_filters(df, kp="", cats=True):
     all_segs=[s for s in df["seg"].dropna().unique() if s!="Other"] if "seg" in df.columns else []
     all_segs=sorted(all_segs)
@@ -475,7 +550,7 @@ def render_filters(df, kp="", cats=True):
     if dr and isinstance(dr,(tuple,list)) and len(dr)==2:
         s,e=dr; f=f[f["date"].notna()&(f["date"].dt.date>=s)&(f["date"].dt.date<=e)]
     return f
-
+ 
 def stat_strip(df_orig, df_f):
     ni=int(df_f["n"].sum()) if "n" in df_f.columns else 0
     ne=df_f["event_id"].nunique() if "event_id" in df_f.columns else 0
@@ -487,7 +562,7 @@ def stat_strip(df_orig, df_f):
     <div class="stat-item"><span class="stat-v">{ns:,}</span><span class="stat-l">Locations</span></div>
     <div class="stat-item"><span class="stat-v">{pct:.0f}%</span><span class="stat-l">Of All Data</span></div>
     </div>""", unsafe_allow_html=True)
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # MAP
 # ──────────────────────────────────────────────────────────────────
@@ -501,7 +576,7 @@ def color_val(v,vmin,vmax):
             f=(t-t0)/(t1-t0) if t1>t0 else 0
             return "#{:02x}{:02x}{:02x}".format(*[round(c0[j]+f*(c1[j]-c0[j])) for j in range(3)])
     return "#d64541"
-
+ 
 def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=560):
     if df is None or len(df)==0: st.info("No coordinate data available."); return
     d=df.copy()
@@ -544,14 +619,14 @@ bounds.push([m.lat,m.lon]);
 if(bounds.length>1) map.fitBounds(bounds,{{padding:[30,30]}});
 </script></body></html>"""
     components.html(html_src, height=height+10)
-
+ 
 # ──────────────────────────────────────────────────────────────────
 # APP START
 # ──────────────────────────────────────────────────────────────────
 inject_css()
 auth_gate()
 prof=st.session_state.get("prof") or {}
-
+ 
 # HEADER
 st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
@@ -562,11 +637,11 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-user"><strong>{prof.get('full_name','')}</strong>{prof.get('position_title','')}
   <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div></div>
 </div></div>""", unsafe_allow_html=True)
-
+ 
 # ── NAV BAR via components.html (perfect rendering, no CSS battles) ──
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
 cur = st.session_state["page"]
-
+ 
 nav_items = "".join(f"""<div class="ni {'active' if p==cur else ''}" onclick="choose('{p}')">{p}</div>""" for p in PAGES)
 components.html(f"""<style>
 *{{margin:0;padding:0;box-sizing:border-box;}}
@@ -588,7 +663,7 @@ function choose(p){{
   window.parent.postMessage({{type:'streamlit:setComponentValue',value:p}},'*');
 }}
 </script>""", height=50)
-
+ 
 # Invisible radio to actually drive Streamlit state from the nav clicks
 # We use session state directly — nav clicks go through postMessage → component value
 nav_val = st.radio("_nav", PAGES, index=PAGES.index(cur),
@@ -603,16 +678,16 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {
     position:absolute!important;opacity:0!important;pointer-events:none!important;
 }
 </style>""", unsafe_allow_html=True)
-
+ 
 page = st.session_state["page"]
-
+ 
 # LOAD DATA
 with st.spinner("Loading from database…"):
     try: long, se, wt = load_data()
     except Exception as e: st.error(f"Database error: {e}"); st.stop()
-
+ 
 et = make_et(long)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # OVERVIEW
 # ══════════════════════════════════════════════════════════════════
@@ -620,11 +695,11 @@ if page == "Overview":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Santa Cruz River Trash Monitoring</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="pg-lead">Longitudinal trash survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across {long["site_label"].nunique()} recorded locations spanning the river corridor and tributaries. Program directed by <strong>Luke Cole</strong>, Sonoran Institute.</div>', unsafe_allow_html=True)
-
+ 
     with st.expander("Filter Data", expanded=False):
         lf = render_filters(long, kp="ov")
     stat_strip(long, lf)
-
+ 
     total_n=int(lf["n"].sum()); n_ev=lf["event_id"].nunique(); n_si=lf["site_label"].nunique()
     n_gr=lf["trash_group"].nunique(); d_min,d_max=lf["date"].min(),lf["date"].max()
     span=f"{d_min.strftime('%b %Y')} – {d_max.strftime('%b %Y')}" if pd.notna(d_min) and pd.notna(d_max) else "—"
@@ -635,7 +710,7 @@ if page == "Overview":
     <div class="kpi"><div class="kpi-lbl">Trash Categories</div><div class="kpi-val">{n_gr}</div><div class="kpi-note">item groups tracked</div></div>
     <div class="kpi"><div class="kpi-lbl">Survey Period</div><div class="kpi-val sm">{span}</div><div class="kpi-note">date range</div></div>
     </div>""", unsafe_allow_html=True)
-
+ 
     c1,c2 = st.columns([3,2])
     with c1:
         card_open("Monthly Items Recorded Over Time",
@@ -660,7 +735,7 @@ if page == "Overview":
             fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"ov_pie")
         card_close()
-
+ 
     c3,c4 = st.columns([2,3])
     with c3:
         card_open("Top 15 Most Frequently Recorded Items",
@@ -678,7 +753,7 @@ if page == "Overview":
             fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER})
             fb(fig,"River Segment","Total Items",h=420,title="Items by Segment and Category"); show(fig,"ov_seg")
         card_close()
-
+ 
     section_title("Category Summary Table")
     st.markdown('<div class="sec-sub">Total items, number of individual records, and average count per record for each trash category. Sorted by total count descending.</div>', unsafe_allow_html=True)
     summary=lf.groupby("trash_group")["n"].agg(Total="sum",Records="count",Average="mean").reset_index()
@@ -689,7 +764,7 @@ if page == "Overview":
     st.dataframe(summary, use_container_width=True, height=380)
     tbl_note("Each row represents one trash category group. 'Records' = number of individual count entries in the database for that category. 'Avg per Record' = mean count per single data entry, not per survey event.")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # MAP
 # ══════════════════════════════════════════════════════════════════
@@ -697,27 +772,29 @@ elif page == "Map":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Survey Site Map</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">GPS locations of survey sites along the Santa Cruz River corridor. Click any marker to view site details. Only sites with latitude/longitude data in the database will appear on the map.</div>', unsafe_allow_html=True)
-
+ 
     map_mode=st.radio("Map view",["By River Segment","By Trash Burden","Individual Events"],horizontal=True)
-
+ 
     site_agg=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),lat=("lat","mean"),lon=("lon","mean")).reset_index()
     site_agg["avg_per_event"]=(site_agg["total"]/site_agg["events"]).round(1)
     wc=site_agg[site_agg["lat"].notna()&site_agg["lon"].notna()]
-
+ 
     m1,m2,m3,m4=st.columns(4)
     m1.metric("Sites with GPS",len(wc)); m2.metric("Total Sites in DB",len(site_agg))
     m3.metric("Events Mapped",int(wc["events"].sum()))
     m4.metric("Grand Avg Items/Site",f"{site_agg['avg_per_event'].mean():.1f}" if len(site_agg)>0 else "—")
-
+ 
     if map_mode=="By River Segment":
         render_map(wc,"lat","lon","site_label",["site_label","seg","total","events","avg_per_event"],"total",seg_col="seg")
+        color_legend("River Segment Colors", mode="segments")
     elif map_mode=="By Trash Burden":
         render_map(wc,"lat","lon","site_label",["site_label","seg","total","events","avg_per_event"],"total")
+        color_legend("Map Color = Trash Burden (Total Items)", mode="gradient")
     else:
         ev_geo=et[et["lat"].notna()&et["lon"].notna()] if "lat" in et.columns else pd.DataFrame()
         if len(ev_geo)>0: render_map(ev_geo,"lat","lon","site_label",["event_id","site_label","date","total"],"total",seg_col="seg")
         else: st.info("No individual event coordinates in database.")
-
+ 
     section_title("Sites with GPS Coordinates")
     st.markdown('<div class="sec-sub">All survey locations that have latitude/longitude data. Sorted by total items recorded descending.</div>', unsafe_allow_html=True)
     disp=wc[["site_label","seg","total","events","avg_per_event","lat","lon"]].copy()
@@ -725,8 +802,9 @@ elif page == "Map":
     disp=disp.sort_values("Total Items",ascending=False).round(2).reset_index(drop=True)
     disp.index=range(1,len(disp)+1)
     st.dataframe(disp, use_container_width=True, height=420)
-    tbl_note("Latitude and longitude values are averaged from all records for that site. 'Avg Items/Event' = total items ÷ number of survey events at that location.")
-
+    color_legend("Map Color = Trash Burden", mode="gradient")
+    tbl_note("Latitude and longitude values are averaged from all records for that site. 'Avg Items/Event' = total items ÷ number of survey events at that location. Map circles: blue = lower trash burden, red = higher trash burden.")
+ 
     section_title("All Sites — Including Those Without GPS")
     st.markdown('<div class="sec-sub">Complete list of all recorded locations in the database, with or without coordinates.</div>', unsafe_allow_html=True)
     all_sites_tbl=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique")).reset_index()
@@ -737,7 +815,7 @@ elif page == "Map":
     st.dataframe(all_sites_tbl, use_container_width=True, height=480)
     tbl_note(f"Showing all {len(all_sites_tbl)} unique location names recorded in the database. Many may have slight spelling variations (e.g. 'Drexel and Irvington' vs 'Drexel and irvington') which cause them to appear as separate entries.")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # TRENDS
 # ══════════════════════════════════════════════════════════════════
@@ -745,13 +823,13 @@ elif page == "Trends":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Temporal Trends</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">How trash levels have changed over time — monthly, annual, and seasonal patterns across the full survey record. Use the filter to narrow by location, segment, or date range.</div>', unsafe_allow_html=True)
-
+ 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="tr", cats=False)
     stat_strip(long,lf)
-
+ 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
-
+ 
     c1,c2=st.columns(2)
     with c1:
         card_open("Monthly Item Count — Full Survey Record",
@@ -764,6 +842,10 @@ elif page == "Trends":
         fig.add_bar(x=ts["date"],y=ts["n"],marker_color=[C["sand3"] if g else C["green"] for g in ts["gap"]],name="Monthly")
         fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Mo Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
         fb(fig,"Month","Total Items",h=320,title="Monthly Item Count — Full Record"); show(fig,"tr_ts")
+        fig_note("Total recorded trash items aggregated by calendar month across all sites and categories.",
+            "Best figure for seeing the broad timeline — peaks, gaps, and overall direction of the program.",
+            "Green bars = survey month. Gray bars = no survey that month. Gold dashed line = 3-month rolling average to smooth noise.",
+            "Gray bars do not mean zero trash — they mean no survey was conducted. Rolling average treats gaps as zero, which may understate recent burden.")
         card_close()
     with c2:
         card_open("Annual Totals by Survey Year",
@@ -773,7 +855,7 @@ elif page == "Trends":
         fig.update_traces(texttemplate="%{text:,}",textposition="outside")
         fb(fig,"Year","Total Items",h=320,title="Annual Totals by Survey Year"); show(fig,"tr_yr")
         card_close()
-
+ 
     c3,c4=st.columns(2)
     with c3:
         card_open("Month-by-Month Comparison Across Years",
@@ -794,8 +876,12 @@ elif page == "Trends":
             fig=px.line(ev2,x="date",y="avg",markers=True,color_discrete_sequence=[C["water"]])
             fig.add_hline(y=ev2["avg"].mean(),line_dash="dot",line_color=C["earth"],annotation_text=f"Grand mean: {ev2['avg'].mean():.0f}",annotation_font_size=11)
             fb(fig,"Month","Avg Items / Event",h=320,title="Average Items Per Survey Event"); show(fig,"tr_avg")
+            fig_note("Mean total items per survey visit, aggregated monthly across all sites.",
+                "Removes the effect of varying event counts — a month with 1 heavy survey and 5 surveys average differently.",
+                "Dotted line = grand mean over the full record. Points above it = heavier-than-average months.",
+                "This metric is more interpretable than raw totals when survey frequency varies month to month.")
         card_close()
-
+ 
     c5,c6=st.columns(2)
     with c5:
         card_open("Items by River Segment Over Time",
@@ -804,6 +890,11 @@ elif page == "Trends":
             sg=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(sg,x="date",y="n",color="seg",markers=True,color_discrete_map=SEG_COLORS)
             fb(fig,"Quarter","Items",h=320,title="Items by River Segment — Quarterly"); show(fig,"tr_seg")
+        color_legend("Segment Colors", mode="segments")
+        fig_note("Quarterly item totals split by named river segment.",
+            "Reveals whether segments are tracking together or diverging over time.",
+            "Lines trending upward = more trash in that segment. Crossing lines = relative burden shifting between reaches.",
+            "Only sites with assigned segment labels are included. Sites labeled 'Other' are excluded.")
         card_close()
     with c6:
         if not wt.empty and "weight_oz" in wt.columns:
@@ -815,7 +906,7 @@ elif page == "Trends":
                 fig=px.bar(wtrend,x="date",y="weight_oz",color_discrete_sequence=[C["earth"]])
                 fb(fig,"Month","Weight (oz)",h=320,title="Weight of Trash Collected Over Time"); show(fig,"tr_wt")
             card_close()
-
+ 
     section_title("Annual Summary Table")
     st.markdown('<div class="sec-sub">Aggregate statistics by survey year. Events = number of distinct field visits. Total Items = all counts recorded that year.</div>', unsafe_allow_html=True)
     ann=df.dropna(subset=["year"]).groupby("year").agg(
@@ -829,7 +920,7 @@ elif page == "Trends":
     ann.columns=["Year","Total Items","# Events","Avg Items per Event"]
     st.dataframe(ann, use_container_width=True, height=300)
     tbl_note("'Avg Items per Event' = total items that year ÷ number of distinct survey events. Higher values indicate either more trash found or more thorough counting, or both.")
-
+ 
     section_title("Monthly Breakdown Table")
     st.markdown('<div class="sec-sub">Total items by calendar month across all years combined. Reveals seasonal patterns in trash accumulation or survey coverage.</div>', unsafe_allow_html=True)
     mon=df.dropna(subset=["month_name"]).groupby("month_name",observed=False)["n"].agg(
@@ -839,7 +930,7 @@ elif page == "Trends":
     st.dataframe(mon, use_container_width=True, height=300)
     tbl_note("Month-level data combines all survey years. Months with low counts may reflect fewer surveys conducted, not less trash present.")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # CATEGORIES
 # ══════════════════════════════════════════════════════════════════
@@ -847,14 +938,14 @@ elif page == "Categories":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Trash Categories</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Detailed breakdown of all recorded items by category group and individual type. Food Packaging is consistently the dominant category, followed by Clothing and Misc debris.</div>', unsafe_allow_html=True)
-
+ 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="cat")
     stat_strip(long,lf)
-
+ 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
     total_all=df["n"].sum()
-
+ 
     c1,c2=st.columns([2,3])
     with c1:
         card_open("Total Items by Category Group",
@@ -863,6 +954,10 @@ elif page == "Categories":
         fig=px.bar(ct,x="n",y="trash_group",orientation="h",color_discrete_sequence=[C["green"]],text="n")
         fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
         fb(fig,"Total Items",None,h=max(400,28*len(ct)),title="Total Items by Category Group"); show(fig,"cat_ct")
+        fig_note("Cumulative total of all recorded items within each material category across all events.",
+            "Identifies the dominant waste types driving the overall litter burden.",
+            "Longer bars = more total items in that category. Food Packaging typically dominates due to its many sub-items.",
+            "These are raw totals and do not adjust for the number of sub-items within each category group.")
         card_close()
     with c2:
         card_open("Top 30 Individual Items — Ranked by Total Count",
@@ -870,8 +965,12 @@ elif page == "Categories":
         top=df.groupby("trash_item")["n"].sum().sort_values(ascending=False).head(30).reset_index().sort_values("n")
         fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["sky"]])
         fb(fig,"Total Count",None,h=max(540,22*len(top)),title="Top 30 Individual Items — All Time"); show(fig,"cat_top")
+        fig_note("Individual item types ranked by total cumulative count across all survey events and locations.",
+            "Pinpoints the specific items most frequently found — useful for targeted prevention and messaging.",
+            "Items near the top appear most consistently and in the highest quantities. Items near the bottom are rare.",
+            "High-count items are often packaging from common beverages or fast food — useful for identifying source patterns.")
         card_close()
-
+ 
     c3,c4=st.columns(2)
     with c3:
         card_open("Category Proportions — Percentage of All Items",
@@ -891,7 +990,7 @@ elif page == "Categories":
             fig=px.line(ct3,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
             fb(fig,"Quarter","Items",h=380,title="Category Trends Over Time (Top 6 Groups)"); show(fig,"cat_trend")
         card_close()
-
+ 
     c5,c6=st.columns(2)
     with c5:
         card_open("Category Mix by River Segment",
@@ -910,7 +1009,7 @@ elif page == "Categories":
         fig=px.bar(avg_cat,x="avg_per_event",y="trash_group",orientation="h",color_discrete_sequence=[C["brick"]])
         fb(fig,"Avg Items / Event",None,h=max(360,26*len(avg_cat)),title="Average Items per Event by Category"); show(fig,"cat_avg")
         card_close()
-
+ 
     section_title("Full Item-Level Breakdown")
     st.markdown('<div class="sec-sub">Every individual item type in the database with its total count, percentage of all items, and average per record. Use this table to identify rare vs. common items.</div>', unsafe_allow_html=True)
     item_tbl=df.groupby(["trash_group","trash_item"])["n"].agg(Total="sum",Records="count",Average="mean").reset_index()
@@ -920,7 +1019,7 @@ elif page == "Categories":
     item_tbl.columns=["Category","Item","Total Count","# Records","Avg per Record","% of Total"]
     st.dataframe(item_tbl, use_container_width=True, height=520)
     tbl_note("'Records' = number of data entries for that specific item. 'Avg per Record' = mean count when that item is recorded (including zeros only if explicitly entered). '% of Total' is relative to the current filter's total item count.")
-
+ 
     section_title("Category Group Summary")
     st.markdown('<div class="sec-sub">Rollup of item-level data to category group level. Ranks each group by total items, showing its relative importance in the survey record.</div>', unsafe_allow_html=True)
     grp_tbl=df.groupby("trash_group")["n"].agg(Total="sum",Records="count",Avg="mean").reset_index()
@@ -932,85 +1031,197 @@ elif page == "Categories":
     st.dataframe(grp_tbl, use_container_width=True, height=400)
     tbl_note("Rank 1 = most commonly recorded category by total item count.")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # LOCATIONS
 # ══════════════════════════════════════════════════════════════════
 elif page == "Locations":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Locations & Sites</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Site-level analysis of trash burden across all recorded survey locations. Use this page to identify high-priority sites, compare segments, and understand survey coverage by location.</div>', unsafe_allow_html=True)
-
+    st.markdown('<div class="pg-lead">Site-level analysis of trash burden across all recorded survey locations. Sites with GPS coordinates are ordered <strong>North to South</strong> by latitude. Statistics (mean, SD, SE, CV) are computed at the survey-event level — each event at a site counts as one observation.</div>', unsafe_allow_html=True)
+ 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="loc", cats=False)
     stat_strip(long,lf)
-
+ 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
+    # Build N→S triplicate stats
+    ss=build_site_stats_ns(df)
+    # Also keep old simple stats for backward compat
     site_st=df.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),
         mean=("n","mean"),mx=("n","max"),mn_v=("n","min"),sd=("n","std")).reset_index()
     site_st["avg_per_event"]=(site_st["total"]/site_st["events"]).round(1)
     site_st["sd"]=site_st["sd"].fillna(0).round(1)
     site_st=site_st.sort_values("total",ascending=False).reset_index(drop=True)
-
+ 
+    # KPI strip
+    grand_mean = ss["mean"].mean() if len(ss)>0 else 0
+    grand_sd   = ss["sd"].mean() if len(ss)>0 else 0
     st.markdown(f"""<div class="stat-strip">
-    <div class="stat-item"><span class="stat-v">{len(site_st)}</span><span class="stat-l">Total Locations</span></div>
-    <div class="stat-item"><span class="stat-v">{int(site_st['total'].max()):,}</span><span class="stat-l">Max Items at One Site</span></div>
-    <div class="stat-item"><span class="stat-v">{site_st['avg_per_event'].mean():.1f}</span><span class="stat-l">Grand Avg / Event</span></div>
-    <div class="stat-item"><span class="stat-v">{int(site_st['events'].max())}</span><span class="stat-l">Max Events at One Site</span></div>
-    <div class="stat-item"><span class="stat-v">{int(site_st['events'].sum()):,}</span><span class="stat-l">Total Events (filtered)</span></div>
+    <div class="stat-item"><span class="stat-v">{len(ss) if len(ss)>0 else len(site_st)}</span><span class="stat-l">Total Locations</span></div>
+    <div class="stat-item"><span class="stat-v">{int(site_st["total"].max()):,}</span><span class="stat-l">Max Items at One Site</span></div>
+    <div class="stat-item"><span class="stat-v">{grand_mean:.1f}</span><span class="stat-l">Grand Mean / Event</span></div>
+    <div class="stat-item"><span class="stat-v">±{grand_sd:.1f}</span><span class="stat-l">Mean SD Across Sites</span></div>
+    <div class="stat-item"><span class="stat-v">{int(site_st["events"].sum()):,}</span><span class="stat-l">Total Events</span></div>
     </div>""", unsafe_allow_html=True)
-
-    c1,c2=st.columns([3,2])
-    with c1:
-        card_open("Top 30 Locations by Total Items Recorded",
-                  "Horizontal bar chart colored by river segment assignment. Locations labeled 'Other' are not assigned to a named segment.")
-        t30=site_st.head(30).sort_values("total")
-        fig=px.bar(t30,x="total",y="site_label",orientation="h",color="seg" if "seg" in t30.columns else None,color_discrete_map=SEG_COLORS)
-        fb(fig,"Total Items",None,h=max(520,22*len(t30)),title="Top 30 Locations by Total Items Recorded"); show(fig,"loc_top")
-        card_close()
-    with c2:
-        card_open("Total Items by River Segment",
-                  "Aggregate comparison of total items across the four named river segments. Sites not assigned to a segment are excluded.")
-        seg_tot=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["n"].sum().reset_index()
-        fig=px.bar(seg_tot,x="seg",y="n",color="seg",color_discrete_map=SEG_COLORS,category_orders={"seg":SEG_ORDER})
-        fb(fig,"Segment","Total Items",h=260,leg=False,title="Total Items by River Segment"); show(fig,"loc_seg")
-        card_close()
-
-        card_open("Survey Frequency by Segment",
-                  "Number of distinct survey events conducted within each named river segment.")
-        seg_ev=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["event_id"].nunique().reset_index(name="events")
-        fig=px.bar(seg_ev,x="seg",y="events",color="seg",color_discrete_map=SEG_COLORS)
-        fb(fig,"Segment","# Events",h=240,leg=False,title="Survey Events by River Segment"); show(fig,"loc_segev")
-        card_close()
-
-    c3,c4=st.columns(2)
-    with c3:
-        card_open("Average Items Per Event — Top 20 Locations",
-                  "Ranks locations by their per-event average rather than cumulative total. A site visited only once with 200 items ranks higher than a site visited 10 times with 50 items each.")
+ 
+    color_legend("River Segment Colors", mode="segments")
+ 
+    loc_tab1, loc_tab2, loc_tab3, loc_tab4 = st.tabs([
+        "North to South — Mean", "North to South — Variability",
+        "Segment Comparison", "Full Statistics Table"
+    ])
+ 
+    with loc_tab1:
+        if len(ss)>0:
+            card_open("Average Items per Survey Event — Sites Ordered North to South",
+                      "Each bar = one survey site. Height = mean items per event at that site. Sites are ordered geographically from northernmost (top) to southernmost (bottom). Color indicates river segment.")
+            ns_show = ss[ss["lat_num"].notna()].sort_values("north_rank")
+            if len(ns_show)>0:
+                fig=px.bar(ns_show, x="mean", y="site_display", orientation="h",
+                    color="seg", color_discrete_map=SEG_COLORS,
+                    error_x="se",
+                    category_orders={"site_display": ns_show["site_display"].tolist()})
+                fig.update_yaxes(categoryorder="array", categoryarray=ns_show["site_display"].tolist(), autorange="reversed")
+                fb(fig,"Mean Items per Event","Site (North to South)",
+                   h=max(560,26*len(ns_show)),
+                   title="Mean Items per Survey Event — North to South"); show(fig,"ns_mean")
+            fig_note(
+                "Mean number of items recorded per survey event at each site, ordered north to south by GPS latitude.",
+                "Geographic ordering reveals whether trash burden is clustered in certain reaches of the corridor.",
+                "Longer bars = heavier sites. Error bars show ±1 standard error (SE). Sites at the top are the northernmost.",
+                "SE = SD ÷ √n. A small SE means the site's mean is reliably estimated. A large SE means high variability between events at that site."
+            )
+ 
+        section_title("Site Statistics — North to South")
+        st.markdown('<div class="sec-sub">Full statistical summary for sites with GPS coordinates, ordered north to south. N = number of survey events. Mean ± SD are computed across events at each site.</div>', unsafe_allow_html=True)
+        if len(ns_show)>0:
+            tbl = ns_show[["north_rank","site_display","seg","n_plots","mean","sd","se","cv","range","total","lat_num","lon"]].copy()
+            tbl = tbl.rename(columns={"north_rank":"Rank (N→S)","site_display":"Site","seg":"Segment",
+                "n_plots":"N (events)","mean":"Mean","sd":"Std Dev","se":"Std Error",
+                "cv":"CV (%)","range":"Range","total":"Total","lat_num":"Latitude","lon":"Longitude"})
+            tbl["CV (%)"]=tbl["CV (%)"].apply(lambda x: f"{100*x:.1f}" if pd.notna(x) else "—")
+            tbl = tbl.round(2)
+            st.dataframe(tbl, use_container_width=True, height=500)
+            tbl_note("Mean = average items per event. SD = standard deviation (spread across events). SE = standard error (reliability of mean). CV = coefficient of variation (SD÷Mean×100) — higher % means more variable site. Range = max minus min across events. Rank 1 = northernmost site with coordinates.")
+ 
+    with loc_tab2:
+        if len(ss)>0:
+            ns_show = ss[ss["lat_num"].notna()].sort_values("north_rank")
+            c1v,c2v = st.columns(2)
+            with c1v:
+                card_open("Standard Deviation by Site — North to South",
+                          "SD measures how much individual events vary at each site. A site with SD=0 had exactly the same count every visit. High SD = unpredictable or patchy litter.")
+                fig=px.bar(ns_show,x="sd",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
+                fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
+                fb(fig,"Standard Deviation","Site",h=max(500,24*len(ns_show)),title="Within-Site Variability (SD) — North to South"); show(fig,"ns_sd")
+                fig_note("Standard deviation of total items per event at each site.",
+                    "High SD indicates inconsistency — some visits found a lot of trash, others very little.",
+                    "Longer bars = more variable sites. A site can have a low mean but high SD if trash events are sporadic.",
+                    "SD is not comparable across sites with very different means. Use CV for that.")
+            with c2v:
+                card_open("Coefficient of Variation (CV) by Site — North to South",
+                          "CV = SD ÷ Mean × 100. It normalizes variability so sites with different mean burden can be fairly compared.")
+                ns_show_cv = ns_show[ns_show["cv"].notna()].copy()
+                ns_show_cv["cv_pct"]=(ns_show_cv["cv"]*100).round(1)
+                if len(ns_show_cv)>0:
+                    fig=px.bar(ns_show_cv,x="cv_pct",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
+                    fig.update_yaxes(categoryorder="array",categoryarray=ns_show_cv["site_display"].tolist(),autorange="reversed")
+                    fb(fig,"CV (%)","Site",h=max(500,24*len(ns_show_cv)),title="Coefficient of Variation (CV%) — North to South"); show(fig,"ns_cv")
+                    fig_note("CV = (SD ÷ Mean) × 100, expressed as a percentage.",
+                        "Unlike SD, CV adjusts for the size of the mean so you can compare variability across sites fairly.",
+                        "CV < 30% = relatively consistent. CV 30–100% = moderate variability. CV > 100% = highly unpredictable.",
+                        "A clean site with CV=150% is more unpredictable than a heavy site with CV=25%.")
+ 
+            card_open("Range of Items per Event by Site — North to South",
+                      "Range = maximum items recorded minus minimum items recorded across all events at that site. Simple and easy to communicate in presentations.")
+            fig=px.bar(ns_show,x="range",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
+            fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
+            fb(fig,"Range (Max − Min)","Site",h=max(500,24*len(ns_show)),title="Range of Items per Event — North to South"); show(fig,"ns_range")
+            fig_note("The difference between the heaviest and lightest events recorded at each site.",
+                "Range is intuitive for non-technical audiences.",
+                "A range of 0 means the same count every visit. A large range means the site fluctuates dramatically.",
+                "Range is sensitive to extreme outlier events, unlike SD or CV.")
+ 
+    with loc_tab3:
+        c1s,c2s = st.columns(2)
+        with c1s:
+            card_open("Total Items by River Segment",
+                      "Sum of all recorded items across all events and sites within each named segment. Only sites with segment labels are included.")
+            seg_tot=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["n"].sum().reset_index()
+            fig=px.bar(seg_tot,x="seg",y="n",color="seg",color_discrete_map=SEG_COLORS,category_orders={"seg":SEG_ORDER})
+            fb(fig,"Segment","Total Items",h=320,leg=False,title="Total Items by River Segment"); show(fig,"loc_seg")
+            fig_note("Cumulative sum of all recorded items within each river segment.",
+                "Identifies which reach contributes most to the overall corridor burden.",
+                "Taller bars = more total trash. This is influenced by both the number of sites and their individual burden.",
+                "A segment with many lightly-visited sites can look heavy due to accumulated counts.")
+        with c2s:
+            card_open("Survey Events by River Segment",
+                      "Number of distinct survey events within each segment — shows sampling effort distribution.")
+            seg_ev=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["event_id"].nunique().reset_index(name="events")
+            fig=px.bar(seg_ev,x="seg",y="events",color="seg",color_discrete_map=SEG_COLORS)
+            fb(fig,"Segment","# Events",h=320,leg=False,title="Survey Events by River Segment"); show(fig,"loc_segev")
+            fig_note("Number of individual survey events per segment.",
+                "Unequal sampling effort means direct total comparisons should be interpreted with care.",
+                "Compare with total items chart — a segment with more events should be expected to have more items.",
+                "Normalizing by events (using mean) is more fair when event counts differ substantially.")
+        color_legend("Segment Colors", mode="segments")
+ 
+        section_title("Segment Summary Table")
+        seg_summary = df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg").agg(
+            Total_Items=("n","sum"), Events=("event_id","nunique"),
+            Sites=("site_label","nunique"), Mean_per_event=("n","mean")
+        ).reset_index().rename(columns={"seg":"River Segment","Total_Items":"Total Items",
+            "Events":"# Events","Sites":"# Sites","Mean_per_event":"Mean per Event"})
+        seg_summary = seg_summary.round(1)
+        st.dataframe(seg_summary, use_container_width=True, height=240)
+        tbl_note("Mean per Event is computed across all individual item records, not event totals. Use 'Total Items ÷ # Events' for event-level mean.")
+ 
+        section_title("Top 20 Sites by Average Items per Event")
         top20_avg=site_st.nlargest(20,"avg_per_event").sort_values("avg_per_event")
+        card_open("Sites Ranked by Average Items per Event",
+                  "Per-event average is a fairer metric than total count — it adjusts for how many times a site was visited.")
         fig=px.bar(top20_avg,x="avg_per_event",y="site_label",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
-        fb(fig,"Avg Items / Event",None,h=max(420,22*len(top20_avg)),title="Average Items Per Event — Top 20 Locations"); show(fig,"loc_avg")
+        fb(fig,"Avg Items / Event",None,h=max(460,22*len(top20_avg)),title="Top 20 Sites — Average Items per Event"); show(fig,"loc_avg")
+        fig_note("Average total items recorded per survey visit at each site.",
+            "Avoids penalizing well-sampled sites that appear heavier only because they were visited more.",
+            "A site visited once with 300 items scores higher than one visited 10 times averaging 20 items.",
+            "Use alongside visit counts — a high average based on a single visit may not be reliable.")
         card_close()
-    with c4:
-        card_open("Events per Location — Survey Coverage Distribution",
-                  "Histogram showing how many survey events each location has received. Most locations are visited only 1–3 times; a few core sites are surveyed repeatedly.")
-        fig=px.histogram(site_st,x="events",nbins=20,color_discrete_sequence=[C["sage"]])
-        fig.add_vline(x=site_st["events"].mean(),line_dash="dot",line_color=C["brick"],annotation_text=f"Mean: {site_st['events'].mean():.1f}",annotation_font_size=11)
-        fb(fig,"# Events per Location","# Locations",h=320,title="Survey Coverage — Events per Location Distribution"); show(fig,"loc_hist")
-        card_close()
-
-    seg_filter=st.selectbox("Filter table by River Segment",["All"]+SEG_ORDER[:-1])
-
-    section_title("Complete Location Statistics Table")
-    st.markdown('<div class="sec-sub">All survey locations with full summary statistics. Sort any column by clicking its header.</div>', unsafe_allow_html=True)
-    filtered_st=site_st if seg_filter=="All" else site_st[site_st["seg"]==seg_filter]
-    disp=filtered_st[["site_label","seg","total","events","avg_per_event","mean","sd","mx","mn_v"]].copy()
-    disp.columns=["Location","Segment","Total Items","# Events","Avg/Event","Mean Count","Std Dev","Max","Min"]
-    disp=disp.round(1).reset_index(drop=True); disp.index=range(1,len(disp)+1)
-    st.dataframe(disp, use_container_width=True, height=540)
-    tbl_note("'Mean Count' and 'Std Dev' refer to the distribution of individual count records for that location, not event-level totals. 'Avg/Event' is the more interpretable metric for comparing trash burden across sites.")
+ 
+    with loc_tab4:
+        seg_filter2=st.selectbox("Filter by River Segment",["All"]+SEG_ORDER[:-1], key="loc_seg_filter2")
+        view_order=st.radio("Sort order",["North to South (GPS)","By Total Items","By Mean per Event"],horizontal=True)
+ 
+        if len(ss)>0:
+            tbl_full = ss.merge(site_st[["site_label","total","events","avg_per_event"]],on="site_label",how="left",suffixes=("","_ev"))
+            if seg_filter2!="All": tbl_full=tbl_full[tbl_full["seg"]==seg_filter2]
+            if view_order=="North to South (GPS)":
+                tbl_full=tbl_full.sort_values(["north_rank","site_label"])
+            elif view_order=="By Total Items":
+                tbl_full=tbl_full.sort_values("total",ascending=False)
+            else:
+                tbl_full=tbl_full.sort_values("mean",ascending=False)
+ 
+            disp=tbl_full[["site_display","seg","n_plots","mean","sd","se","cv","range","total","lat_num","lon"]].copy()
+            disp["cv_pct"]=(disp["cv"]*100).round(1)
+            disp=disp.drop(columns=["cv"])
+            disp=disp.rename(columns={"site_display":"Site (N→S)","seg":"Segment","n_plots":"N Events",
+                "mean":"Mean","sd":"SD","se":"SE","cv_pct":"CV (%)","range":"Range",
+                "total":"Total","lat_num":"Latitude","lon":"Longitude"})
+            disp=disp.round(2).reset_index(drop=True); disp.index=range(1,len(disp)+1)
+            st.dataframe(disp, use_container_width=True, height=600)
+            tbl_note("N Events = number of survey events at this site. Mean ± SD computed across events. SE = SD÷√N (reliability of mean estimate). CV = SD÷Mean×100 (normalized variability). Range = Max−Min across events. Sites without GPS coordinates may not have a North→South rank.")
+        else:
+            filtered_st=site_st if seg_filter2=="All" else site_st[site_st["seg"]==seg_filter2]
+            disp=filtered_st[["site_label","seg","total","events","avg_per_event","mean","sd","mx","mn_v"]].copy()
+            disp.columns=["Location","Segment","Total Items","# Events","Avg/Event","Mean","SD","Max","Min"]
+            disp=disp.round(1).reset_index(drop=True); disp.index=range(1,len(disp)+1)
+            st.dataframe(disp, use_container_width=True, height=600)
+            tbl_note("Mean and SD are computed across individual count records, not event totals.")
+ 
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # DATA TABLE
 # ══════════════════════════════════════════════════════════════════
@@ -1018,11 +1229,11 @@ elif page == "Data Table":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Data Table</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Browse and explore the complete raw dataset. Every record in the database is shown here. Use the filters to narrow down by segment, location, category, or date range.</div>', unsafe_allow_html=True)
-
+ 
     with st.expander("Filter Data", expanded=True):
         lf=render_filters(long, kp="dt")
     stat_strip(long,lf)
-
+ 
     section_title("Raw Survey Records")
     st.markdown('<div class="sec-sub">One row per trash item category per survey event. Use column headers to sort. Maximum 5,000 rows displayed.</div>', unsafe_allow_html=True)
     cols=[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in lf.columns]
@@ -1032,7 +1243,7 @@ elif page == "Data Table":
     disp.index=range(1,len(disp)+1)
     st.dataframe(disp, use_container_width=True, height=560)
     tbl_note(f"Showing {min(len(lf),5000):,} of {len(lf):,} rows matching current filters. Each row represents one item type recorded at one survey event. To see all data, export as CSV from the Export page.")
-
+ 
     section_title("Filtered Summary — Category Breakdown")
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records above, grouped by trash category.</div>', unsafe_allow_html=True)
     sum_cat=lf.groupby("trash_group")["n"].agg(Total="sum",Records="count").reset_index()
@@ -1042,7 +1253,7 @@ elif page == "Data Table":
     sum_cat.columns=["Category","Total Items","# Records","% of Filtered Total"]
     st.dataframe(sum_cat, use_container_width=True, height=360)
     tbl_note("This table summarizes the filtered records shown above. Change the filters to update both this table and the raw records.")
-
+ 
     section_title("Filtered Summary — Location Breakdown")
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records grouped by survey location.</div>', unsafe_allow_html=True)
     sum_loc=lf.groupby(["site_label","seg"]).agg(Total=("n","sum"),Events=("event_id","nunique")).reset_index()
@@ -1053,7 +1264,7 @@ elif page == "Data Table":
     st.dataframe(sum_loc, use_container_width=True, height=380)
     tbl_note("This table shows the same filtered records aggregated by location. Useful for seeing which sites are most represented in the current filter selection.")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # DATA ENTRY
 # ══════════════════════════════════════════════════════════════════
@@ -1061,7 +1272,7 @@ elif page == "Data Entry":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">New Survey Entry</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Submit a completed field survey directly into the cloud database. Data is saved immediately and reflected in all charts and tables. Double-check all values before submitting — entries cannot be deleted from this interface.</div>', unsafe_allow_html=True)
-
+ 
     with st.form("survey_form", clear_on_submit=False):
         st.markdown('<div class="form-sec"><div class="form-sec-title">Event Information</div>', unsafe_allow_html=True)
         ec1,ec2,ec3,ec4=st.columns(4)
@@ -1076,10 +1287,10 @@ elif page == "Data Entry":
         rec_other=""
         if recorder=="Other — type below": rec_other=st.text_input("Recorder full name")
         st.markdown('</div>', unsafe_allow_html=True)
-
+ 
         recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
         site_final=site_new.strip() if site_new.strip() else site_sel
-
+ 
         st.markdown('<div class="form-sec"><div class="form-sec-title">Trash Item Counts — Enter the count for each item found. Leave at 0 if not present.</div>', unsafe_allow_html=True)
         counts={}
         for grp_name,items in TRASH_GROUPS.items():
@@ -1088,15 +1299,15 @@ elif page == "Data Entry":
             for i,item in enumerate(items):
                 with cols[i%n]: counts[item]=st.number_input(item,min_value=0,value=0,step=1,key=f"c_{grp_name}_{item}")
         st.markdown('</div>', unsafe_allow_html=True)
-
+ 
         st.markdown('<div class="form-sec"><div class="form-sec-title">Field Notes (optional)</div>', unsafe_allow_html=True)
         st.text_area("Observations, site conditions, notable findings",height=90,placeholder="e.g. Recent flooding, concentrated debris near outfall, unusual items found...")
         st.markdown('</div>', unsafe_allow_html=True)
-
+ 
         total_preview=sum(counts.values())
         st.markdown(f'<div class="live-total"><div class="live-total-n">{total_preview:,}</div><div class="live-total-l">total items counted in this entry</div></div>', unsafe_allow_html=True)
         submitted=st.form_submit_button("Save Survey Entry to Database",use_container_width=True)
-
+ 
     if submitted:
         if not event_id.strip(): st.error("Event ID is required.")
         elif not site_final: st.error("Survey location is required.")
@@ -1113,7 +1324,7 @@ elif page == "Data Entry":
                 st.success(f"Saved — Event {event_id} · {site_final} · {survey_date.strftime('%B %d, %Y')} · {total_preview:,} items")
             except Exception as e: st.error(f"Could not save: {e}")
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ══════════════════════════════════════════════════════════════════
 # EXPORT
 # ══════════════════════════════════════════════════════════════════
@@ -1121,15 +1332,15 @@ elif page == "Export":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Export Data</div>', unsafe_allow_html=True)
     st.markdown('<div class="pg-lead">Download clean, formatted datasets from the live database. All three formats are ready to open in Excel, Google Sheets, R, Python, or ArcGIS.</div>', unsafe_allow_html=True)
-
+ 
     long_exp=long[[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in long.columns]].copy()
     long_exp=long_exp.rename(columns={"n":"count","seg":"river_segment","site_label":"location"})
-
+ 
     et_exp=make_et(long)
-
+ 
     site_exp=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),avg=("n","mean")).reset_index()
     site_exp=site_exp.sort_values("total",ascending=False)
-
+ 
     exports=[
         ("Long Format — Every Record",long_exp,"scr_trash_long_format.csv",
          "One row per item category per survey event. The most complete format — best for custom analysis in R, Python, or Excel pivot tables. Contains every count entry with its associated location, date, and segment.",
@@ -1156,7 +1367,7 @@ elif page == "Export":
                 st.dataframe(df_exp.head(30), use_container_width=True, height=220)
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
-
+ 
 # ── FOOTER ────────────────────────────────────────────────────────
 st.markdown(f"""<div class="ftr"><div class="ftr-in">
   <div style="display:flex;align-items:center;gap:16px;">
@@ -1169,7 +1380,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
     Dashboard v5.0 · Cloud Edition
   </div>
 </div></div>""", unsafe_allow_html=True)
-
+ 
 with st.expander("Account"):
     st.write(f"Signed in as **{prof.get('full_name','')}** ({prof.get('username','')})")
     c1,c2=st.columns(2)
