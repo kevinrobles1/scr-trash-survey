@@ -283,7 +283,7 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # ──────────────────────────────────────────────────────────────────
 def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     fig.update_layout(
-        height=h, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        height=h, paper_bgcolor="white", plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family="DM Sans, sans-serif", color=C["text"], size=12),
         margin=dict(l=10,r=10,t=56 if title else 32,b=80),
         title=dict(text=title, font=dict(family="Cormorant Garamond, serif", size=16, color=C["green"]),
@@ -640,6 +640,27 @@ def load_data():
     long["site_label"]=long.get("site_label",pd.Series("Unknown",index=long.index)).fillna("Unknown")
     long["lat"]=pd.to_numeric(long.get("lat",np.nan),errors="coerce") if "lat" in long.columns else np.nan
     long["lon"]=pd.to_numeric(long.get("lon",np.nan),errors="coerce") if "lon" in long.columns else np.nan
+
+    # ── COORDINATE CORRECTIONS — verified against Excel Site sheet ──
+    # These are confirmed data-entry errors found in the source data.
+    # Zero coords (events 20,187,188,189): no GPS recorded — null out
+    zero_mask = (long["lat"]==0.0) | (long["lon"]==0.0)
+    long.loc[zero_mask, "lat"] = np.nan
+    long.loc[zero_mask, "lon"] = np.nan
+    # Event 78 (Riverview Blvd, West Freeway): lon -111.990556 → -110.990556 (off by 1 degree)
+    if "event_id" in long.columns:
+        m78 = long["event_id"].astype(str) == "78"
+        long.loc[m78 & (long["lon"] < -111.5), "lon"] = -110.990556
+        # Event 249 (Navajo and Riverview): lat 32.345760 → 32.245760 (off by 0.1 degree)
+        m249 = long["event_id"].astype(str) == "249"
+        long.loc[m249 & (long["lat"] > 32.3), "lat"] = 32.245760
+        # Event 197 (St. Mary's and Riverside): lon -110.963360 → -110.985360 (typo)
+        m197 = long["event_id"].astype(str) == "197"
+        long.loc[m197 & (long["lon"] > -110.97) & (long["lon"] < -110.96), "lon"] = -110.985360
+        # Event 334 (Near Verdugo Park): lat 32.110259 → 32.210259 (off by 0.1 degree)
+        m334 = long["event_id"].astype(str) == "334"
+        long.loc[m334 & (long["lat"] < 32.15), "lat"] = 32.210259
+    # ────────────────────────────────────────────────────────────────
     long["seg"]=long["site_label"].map({s:seg for seg,sites in RIVER_SEGMENTS.items() for s in sites}).fillna("Other")
     long["trash_group"]=long["trash_group"].fillna("Misc")
     long["trash_item"]=long["trash_item"].fillna("Unknown")
@@ -959,11 +980,17 @@ if nav_val != cur:
     st.session_state["page"] = nav_val
     st.rerun()
 # Also hide the radio
-st.markdown("""<style>
-div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {
+st.markdown(f"""<style>
+div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;
-    position:absolute!important;opacity:0!important;pointer-events:none!important;
-}
+    position:fixed!important;top:-9999px!important;left:-9999px!important;
+    opacity:0!important;pointer-events:none!important;visibility:hidden!important;
+    width:0!important;min-height:0!important;max-height:0!important;
+}}
+div[role="radiogroup"] {{ display:none!important; }}
+div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) * {{
+    display:none!important;
+}}
 </style>""", unsafe_allow_html=True)
 
 page = st.session_state["page"]
@@ -1021,7 +1048,7 @@ if page == "Overview":
         if len(grp)>0:
             fig=px.pie(grp,values="n",names="trash_group",hole=.44,color_discrete_sequence=PAL)
             fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=9.5,pull=[.04]+[0]*(len(grp)-1))
-            fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
+            fig.update_layout(height=300,paper_bgcolor="white",showlegend=False,margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"ov_pie")
         cat_color_legend()
         card_close()
@@ -1031,8 +1058,12 @@ if page == "Overview":
         card_open("Top 15 Most Frequently Recorded Items",
                   "Ranked by cumulative count across all survey events and locations.")
         top=lf.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
-        fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["water"]])
-        fb(fig,"Total Count",None,h=420,title="Top 15 Items by Total Count"); show(fig,"ov_top")
+        top_tot=max(top["n"].sum(),1)
+        top["pct"]=(100*top["n"]/top_tot).round(1)
+        top["label"]=[f"{int(v):,} ({p}%)" for v,p in zip(top["n"],top["pct"])]
+        fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["water"]],text="label")
+        fig.update_traces(textposition="outside",textfont_size=10)
+        fb(fig,"Total Count",None,h=440,title="Top 15 Items by Total Count"); show(fig,"ov_top")
         cat_color_legend()
         card_close()
     with c4:
@@ -1091,6 +1122,17 @@ elif page == "Map":
         ev_geo=et[et["lat"].notna()&et["lon"].notna()] if "lat" in et.columns else pd.DataFrame()
         if len(ev_geo)>0: render_map(ev_geo,"lat","lon","site_label",["event_id","site_label","date","total"],"total",seg_col="seg")
         else: st.info("No individual event coordinates in database.")
+
+    st.markdown(
+        f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
+        f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
+        'Map colors — <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden. '
+        '<span style="color:#f59534;font-weight:700;">Orange</span> and '
+        '<span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. '
+        'Segment map uses fixed colors per reach (see legend). '
+        'Click any circle to see site details and exact counts.</div>',
+        unsafe_allow_html=True
+    )
 
     section_title("Sites with GPS Coordinates")
     st.markdown('<div class="sec-sub">All survey locations that have latitude/longitude data. Sorted by total items recorded descending.</div>', unsafe_allow_html=True)
@@ -1469,7 +1511,7 @@ elif page == "Categories":
         with c2c:
             fig=px.pie(cups,values="n",names="trash_item",color_discrete_sequence=PAL,hole=.4)
             fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=11)
-            fig.update_layout(height=340,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,
+            fig.update_layout(height=340,paper_bgcolor="white",showlegend=False,
                 margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"cups_pie")
         cat_color_legend()
@@ -1521,7 +1563,7 @@ elif page == "Categories":
             fig=px.pie(r_tot,values="n",names="recyclable",hole=.5,
                 color_discrete_map={"Recyclable":C["water"],"Non-Recyclable":C["brick"]})
             fig.update_traces(textinfo="percent+label",textfont_size=12)
-            fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,
+            fig.update_layout(height=300,paper_bgcolor="white",showlegend=False,
                 margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"rec_pie")
         with c2c:
@@ -1555,7 +1597,7 @@ elif page == "Categories":
             fig=px.pie(f_tot,values="n",names="floatable",hole=.5,
                 color_discrete_map={"Floatable":"#2471a3","Non-Floatable":"#7f8c8d"})
             fig.update_traces(textinfo="percent+label",textfont_size=12)
-            fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,
+            fig.update_layout(height=300,paper_bgcolor="white",showlegend=False,
                 margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"flt_pie")
         with c2c:
@@ -1932,8 +1974,11 @@ elif page == "Locations":
             card_open("Total Items by River Segment",
                       "Sum of all recorded items across all events and sites within each named segment. Only sites with segment labels are included.")
             seg_tot=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["n"].sum().reset_index()
-            fig=px.bar(seg_tot,x="seg",y="n",color="seg",color_discrete_map=SEG_COLORS,category_orders={"seg":SEG_ORDER})
-            fb(fig,"Segment","Total Items",h=320,leg=False,title="Total Items by River Segment"); show(fig,"loc_seg")
+            seg_tot["pct"]=(100*seg_tot["n"]/max(seg_tot["n"].sum(),1)).round(1)
+            seg_tot["label"]=[f"{int(v):,} ({p}%)" for v,p in zip(seg_tot["n"],seg_tot["pct"])]
+            fig=px.bar(seg_tot,x="seg",y="n",color="seg",text="label",color_discrete_map=SEG_COLORS,category_orders={"seg":SEG_ORDER})
+            fig.update_traces(textposition="outside",textfont_size=10)
+            fb(fig,"Segment","Total Items",h=340,leg=False,title="Total Items by River Segment"); show(fig,"loc_seg")
             fig_note("Cumulative sum of all recorded items within each river segment.",
                 "Identifies which reach contributes most to the overall corridor burden.",
                 "Taller bars = more total trash. This is influenced by both the number of sites and their individual burden.",
@@ -2458,23 +2503,36 @@ elif page == "About":
         """, unsafe_allow_html=True)
 
     st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
-    p1,p2,p3 = st.columns(3)
-    for col, url, cap in zip([p1,p2,p3],[
-        "https://sonoraninstitute.org/files/Hatcher_181128_404-1600x900.jpg",
-        "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg",
-        "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
-    ],[
-        "Riparian habitat restoration · ©Bill Hatcher / Sonoran Institute",
-        "Santa Cruz River, April 2018 · ©Bill Hatcher / Sonoran Institute",
-        "River corridor near Carmen, Arizona · ©Bill Hatcher / Sonoran Institute"
-    ]):
-        with col:
-            st.markdown(f"""<img src="{url}"
-            style="width:100%;height:200px;object-fit:cover;border-radius:10px;
-            box-shadow:0 3px 14px rgba(0,0,0,.13);">
-            <div style="font-size:11px;color:{C['muted']};font-style:italic;
-            text-align:center;margin-top:7px;line-height:1.5;">{cap}</div>""",
-            unsafe_allow_html=True)
+
+    # Horizontal scrollable photo carousel
+    carousel_photos = [
+        ("https://sonoraninstitute.org/files/Hatcher_181128_404-1600x900.jpg",
+         "Riparian habitat restoration · ©Bill Hatcher / Sonoran Institute"),
+        ("https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg",
+         "Santa Cruz River, April 2018 · ©Bill Hatcher / Sonoran Institute"),
+        ("https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg",
+         "River corridor near Carmen, AZ · ©Bill Hatcher / Sonoran Institute"),
+        ("https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg",
+         "Field survey crew, Santa Cruz River corridor, 2019"),
+        ("https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg",
+         "Santa Cruz River · ©Jeff Smith / Sonoran Institute, 2014"),
+    ]
+    imgs_html = "".join(
+        f'<div style="flex:0 0 320px;scroll-snap-align:start;">' +
+        f'<img src="{url}" style="width:320px;height:210px;object-fit:cover;' +
+        f'border-radius:10px;box-shadow:0 3px 14px rgba(0,0,0,.13);">' +
+        f'<div style="font-size:11px;color:{C["muted"]};font-style:italic;' +
+        f'text-align:center;margin-top:7px;line-height:1.5;padding:0 4px;">{cap}</div></div>'
+        for url, cap in carousel_photos
+    )
+    st.markdown(
+        '<style>.scr2{scrollbar-width:thin}.scr2::-webkit-scrollbar{height:5px}'
+        '</style>'
+        f'<div class="scr2" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;">'
+        + imgs_html +
+        f'</div><div style="text-align:center;font-size:11px;color:{C["muted"]};margin-top:6px;">Scroll right to see more →</div>',
+        unsafe_allow_html=True
+    )
 
     st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
     section_title("About This Database")
@@ -2553,24 +2611,15 @@ elif page == "About":
             </div>""", unsafe_allow_html=True)
 
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
-    pa, pb = st.columns(2)
-    with pa:
-        st.markdown(f"""<img src="https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg"
-        style="width:100%;height:260px;object-fit:cover;border-radius:10px;
-        box-shadow:0 4px 18px rgba(0,0,0,.13);">
-        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:7px;">
-        Santa Cruz River · ©Jeff Smith / Sonoran Institute, 2014</div>""", unsafe_allow_html=True)
-    with pb:
-        st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
-        padding:32px 36px;height:260px;display:flex;flex-direction:column;
-        justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;
-        color:{C['green']};line-height:1.3;margin-bottom:14px;font-style:italic;">
-        "The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years —
-        and can flow again with your support."</div>
-        <div style="font-size:11px;color:{C['muted']};font-family:'DM Mono',monospace;
-        text-transform:uppercase;letter-spacing:1px;">— Sonoran Institute</div>
-        </div>""", unsafe_allow_html=True)
+    st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
+    padding:32px 48px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;
+    color:{C['green']};line-height:1.3;margin-bottom:14px;font-style:italic;max-width:700px;margin:0 auto 14px;">
+    "The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years —
+    and can flow again with your support."</div>
+    <div style="font-size:11px;color:{C['muted']};font-family:'DM Mono',monospace;
+    text-transform:uppercase;letter-spacing:1px;">— Sonoran Institute</div>
+    </div>""", unsafe_allow_html=True)
 
     st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
     section_title("Program Team")
