@@ -971,7 +971,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
         background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
         border-radius:0;
         padding:28px 160px 30px;
-        margin:0 0 18px;
+        margin:-8px 0 18px;
         position:relative;
         overflow:hidden;
         box-shadow:none;">
@@ -1704,10 +1704,17 @@ if(bounds.length>1) map.fitBounds(bounds,{{padding:[30,30]}});
 # APP START
 # ──────────────────────────────────────────────────────────────────
 # ── Language init — must happen before anything renders ──
-# Read lang from query param if present (set by header EN/ES spans)
+# Handle query params — lang switch and sign out
 _qp_lang = st.query_params.get("lang", None)
+_qp_so   = st.query_params.get("signout", None)
+if _qp_so == "1":
+    st.session_state["auth"] = False
+    st.session_state["prof"] = None
+    st.query_params.clear()
+    st.rerun()
 if _qp_lang in ("en", "es"):
     st.session_state["lang"] = _qp_lang
+    st.query_params.pop("lang", None)
 elif "lang" not in st.session_state:
     st.session_state["lang"] = "en"
 
@@ -1734,17 +1741,17 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
       <span class="hdr-pos">{prof.get('position_title','')}</span>
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:4px;">
         <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
-        <span onclick="(()=>{{var u=new URL(window.parent.location.href);u.searchParams.set('lang','en');window.parent.location.href=u.toString();}})()"
+        <span onclick="(()=>{{var u=new URL(window.location.href);u.searchParams.set('lang','en');window.location.href=u.toString();}})()"
           style="{_btn_sty}color:{_en_col};text-decoration:{_en_dec};"
           onmouseover="this.style.color='rgba(255,255,255,.9)'"
           onmouseout="this.style.color='{_en_col}'">EN</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
-        <span onclick="(()=>{{var u=new URL(window.parent.location.href);u.searchParams.set('lang','es');window.parent.location.href=u.toString();}})()"
+        <span onclick="(()=>{{var u=new URL(window.location.href);u.searchParams.set('lang','es');window.location.href=u.toString();}})()"
           style="{_btn_sty}color:{_es_col};text-decoration:{_es_dec};"
           onmouseover="this.style.color='rgba(255,255,255,.9)'"
           onmouseout="this.style.color='{_es_col}'">ES</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
-        <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='Sign Out'||b.textContent.trim()==='Sign Out')b.click();}})}})()"
+        <span onclick="(()=>{{var u=new URL(window.location.href);u.searchParams.set('signout','1');window.location.href=u.toString();}})()"
           style="{_btn_sty}color:rgba(255,255,255,.35);text-decoration:none;"
           onmouseover="this.style.color='rgba(255,255,255,.8)'"
           onmouseout="this.style.color='rgba(255,255,255,.35)'">Sign Out</span>
