@@ -668,14 +668,6 @@ footer{{display:none!important;}}
 }}
 
 
-/* ── KILL GAP between header/nav and content ── */
-[data-testid="stMainBlockContainer"] {padding-top:0!important;}
-[data-testid="stMainBlockContainer"]>div:first-child {margin-top:0!important;padding-top:0!important;}
-[data-testid="stAppViewBlockContainer"] {padding-top:0!important;margin-top:0!important;}
-div.block-container {padding-top:0!important;}
-section[data-testid="stMain"]>div {padding-top:0!important;}
-header[data-testid="stHeader"] {display:none!important;}
-
 /* ── KILL ALL GAPS — NUCLEAR ── */
 .stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["cream"]};}}
 section[data-testid="stMain"] {{padding-top:0!important;margin-top:0!important;}}
