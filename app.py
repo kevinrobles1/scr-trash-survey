@@ -97,7 +97,7 @@ TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset"
         "Saige Thompson","Stephanie Winick","Damon Shorty","Julia Olson",
         "Isabella Feldmann","KyeongHee Kim","Joe Cuffori","Brian Jones"]
 
-PAGES = ["Overview","About","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
+PAGES = ["About","Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
 
 C = dict(
     forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
@@ -348,6 +348,48 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # ──────────────────────────────────────────────────────────────────
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
+def _clean_hover(fig):
+    """Apply readable hover labels to every trace in a figure.
+    Replaces default Plotly tooltip codes with clean, professional text."""
+    for trace in fig.data:
+        t = trace.type if hasattr(trace, "type") else ""
+        # Skip if a custom hovertemplate already set
+        if hasattr(trace, "hovertemplate") and trace.hovertemplate and "%{" in str(trace.hovertemplate):
+            # Already customized — but clean up any <extra></extra> that shows "trace X"
+            existing = str(trace.hovertemplate)
+            if "<extra></extra>" not in existing:
+                trace.hovertemplate = existing + "<extra></extra>"
+            continue
+        # Bar charts (vertical)
+        if t in ("bar",) and getattr(trace,"orientation",None) != "h":
+            trace.hovertemplate = (
+                "<b>%{x}</b><br>"
+                + (f"{trace.name}: " if trace.name and trace.name != "0" else "")
+                + "%{y:,.0f} items<extra></extra>"
+            )
+        # Horizontal bar charts
+        elif t == "bar" and getattr(trace,"orientation",None) == "h":
+            trace.hovertemplate = (
+                "<b>%{y}</b><br>"
+                + (f"{trace.name}: " if trace.name and trace.name != "0" else "")
+                + "%{x:,.0f} items<extra></extra>"
+            )
+        # Scatter / line
+        elif t == "scatter":
+            trace.hovertemplate = (
+                "<b>%{x|%B %Y}</b><br>"
+                + (f"{trace.name}: " if trace.name and trace.name != "0" else "")
+                + "%{y:,.0f} items<extra></extra>"
+            )
+        # Pie / donut
+        elif t == "pie":
+            trace.hovertemplate = (
+                "<b>%{label}</b><br>"
+                "Share: %{percent}<br>"
+                "Items: %{value:,.0f}<extra></extra>"
+            )
+    return fig
+
 def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     fig.update_layout(
         height=h, paper_bgcolor="white", plot_bgcolor="rgba(0,0,0,0)",
@@ -359,9 +401,14 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
                     font=dict(size=10),orientation="h",yanchor="top",y=-0.12,
                     xanchor="left",x=0) if leg else dict(visible=False),
         xaxis_title=xt, yaxis_title=yt,
+        hoverlabel=dict(
+            bgcolor="white", bordercolor=C["divider"],
+            font=dict(family="DM Sans, sans-serif", size=12.5, color=C["text"]),
+        ),
     )
     fig.update_xaxes(showgrid=False,zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     fig.update_yaxes(showgrid=True,gridcolor=C["sand2"],zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
+    _clean_hover(fig)
     return fig
 
 def show(fig, key=None):
@@ -394,20 +441,35 @@ def section_title(text):
     st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:28px 0 16px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
 
 def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
-    """Consistent dark-green hero banner for every page — same aesthetic as About."""
-    img_overlay = f"""background:url('{img_url}') center/cover no-repeat;""" if img_url else ""
+    """Full-bleed hero banner — same size and aesthetic as About page."""
+    # Always use the main river image as background
+    bg_img = img_url or "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg"
     st.markdown(f"""
-    <div style="background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
-    border-radius:0 0 14px 14px;padding:28px 160px;margin:0 0 18px;
-    position:relative;overflow:hidden;">
-    <div style="position:absolute;inset:0;{img_overlay}opacity:.12;border-radius:0 0 14px 14px;"></div>
-    <div style="position:relative;z-index:2;max-width:900px;">
-      <div style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;
-      text-transform:uppercase;color:{C["mint"]};margin-bottom:8px;">{eyebrow}</div>
-      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
-      color:white;line-height:1.1;letter-spacing:-.02em;margin-bottom:8px;">{title}</div>
-      <div style="font-size:13.5px;color:rgba(255,255,255,.65);line-height:1.75;max-width:680px;">{subtitle}</div>
-    </div></div>""", unsafe_allow_html=True)
+    <div style="
+        background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
+        border-radius:0 0 16px 16px;
+        padding:48px 160px 44px;
+        margin:0 0 22px;
+        position:relative;
+        overflow:hidden;
+        box-shadow:0 6px 32px rgba(0,0,0,.22);">
+      <!-- River photo overlay at 18% opacity, identical to About hero -->
+      <div style="position:absolute;inset:0;
+        background:url('{bg_img}') center/cover no-repeat;
+        opacity:.18;border-radius:0 0 16px 16px;"></div>
+      <!-- Subtle dot-grid texture -->
+      <div style="position:absolute;inset:0;
+        background-image:radial-gradient(circle at 1px 1px,rgba(93,168,50,.05) 1px,transparent 0);
+        background-size:28px 28px;"></div>
+      <!-- Content -->
+      <div style="position:relative;z-index:2;max-width:820px;">
+        <div style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;
+          text-transform:uppercase;color:{C["mint"]};margin-bottom:14px;">{eyebrow}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:700;
+          color:white;line-height:1.08;letter-spacing:-.02em;margin-bottom:12px;">{title}</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.68);line-height:1.85;max-width:660px;">{subtitle}</div>
+      </div>
+    </div>""", unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────────────────────────
 # AUTH
@@ -1503,7 +1565,7 @@ elif page == "Map":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Trends":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    page_banner("Temporal Analysis", "How Trash Levels Change Over Time", "Monthly, annual, and seasonal patterns across the full survey record. Use the selector below to explore different dimensions of time-based change.", "https://sonoraninstitute.org/files/Hatcher_181106_1751-scaled.jpg")
+    page_banner("Temporal Analysis", "How Trash Levels Change Over Time", "Monthly, annual, and seasonal patterns across the full survey record. Use the selector below to explore different dimensions of time-based change.", "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="tr", cats=False)
@@ -2396,7 +2458,7 @@ elif page == "Locations":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Table":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    page_banner("Raw Dataset", "Browse the Complete Survey Record", "Every recorded count from every survey event. Filter by segment, location, category, or date. Switch between wide format (Excel-like) and long format below.", None)
+    page_banner("Raw Dataset", "Browse the Complete Survey Record", "Every recorded count from every survey event. Filter by segment, location, category, or date. Switch between wide format (Excel-like) and long format below.", "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander("Filter Data", expanded=True):
         lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
@@ -2862,7 +2924,7 @@ elif page == "Data Entry":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Export":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    page_banner("Data Export", "Download the Database", "Clean, formatted CSVs ready for Excel, R, Python, or ArcGIS. Three formats available: raw long-form, event totals, and site summaries.", None)
+    page_banner("Data Export", "Download the Database", "Clean, formatted CSVs ready for Excel, R, Python, or ArcGIS. Three formats available: raw long-form, event totals, and site summaries.", "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     long_exp=long[[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in long.columns]].copy()
     long_exp=long_exp.rename(columns={"n":"count","seg":"river_segment","site_label":"location"})
