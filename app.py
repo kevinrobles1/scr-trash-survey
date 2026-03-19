@@ -132,7 +132,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:2px solid {C["mint"]};box-shadow:0 4px 28px rgba(0,0,0,.25);}}
-.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 44px;
+.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 44px 14px 124px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -162,7 +162,7 @@ footer{{display:none!important;}}
 }}
 
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:36px 96px 100px 108px;}}
+.body{{max-width:1480px;margin:0 auto;padding:36px 96px 100px 124px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -981,10 +981,42 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign-out always visible below header
-_c1, _c2 = st.columns([9, 1])
-with _c2:
-    if st.button("Sign Out", key="_hdr_signout"):
+# Sign-out — styled as hdr-pill, lives in its own full-width dark strip
+st.markdown(f"""<style>
+/* Sign-out strip sits flush against the header */
+div[data-testid="stHorizontalBlock"]:has(button[data-testid="baseButton-secondary"]) {{
+    background:{C["forest"]}!important;
+    padding:0 44px 0 124px!important;
+    margin:0!important;
+    display:flex!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    min-height:36px!important;
+    border-bottom:1px solid rgba(255,255,255,.07)!important;
+}}
+/* Sign-out button — styled like the hdr-pill */
+button[data-testid="baseButton-secondary"] {{
+    background:transparent!important;
+    border:1px solid rgba(255,255,255,.28)!important;
+    border-radius:20px!important;
+    color:rgba(255,255,255,.65)!important;
+    font-family:'DM Mono',monospace!important;
+    font-size:9.5px!important;
+    letter-spacing:1.2px!important;
+    text-transform:uppercase!important;
+    padding:3px 14px!important;
+    line-height:1.4!important;
+    transition:all .15s!important;
+}}
+button[data-testid="baseButton-secondary"]:hover {{
+    background:rgba(255,255,255,.08)!important;
+    border-color:rgba(255,255,255,.5)!important;
+    color:white!important;
+}}
+</style>""", unsafe_allow_html=True)
+_so1, _so2 = st.columns([14, 1])
+with _so2:
+    if st.button("Sign Out", key="_hdr_so"):
         st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
 
 # ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
@@ -1010,7 +1042,7 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 44px !important;
+    padding:0 44px 0 124px !important;
     max-width:1480px !important;
     margin:0 auto !important;
     border:none !important;
@@ -1122,7 +1154,7 @@ if page == "Overview":
     c1,c2 = st.columns([3,2])
     with c1:
         card_open("Monthly Items Recorded Over Time",
-                  "Each bar represents one calendar month. Gray bars indicate months where no surveys were conducted. The dashed gold line shows the 3-month rolling average to reveal long-term trends.")
+                  "Green bars = survey conducted · Gray = no survey that month (trash still present — see note below) · Gold dashed line = 3-month rolling average")
         ts=lf.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
         if len(ts)>0:
             full=pd.date_range(ts["date"].min(),ts["date"].max(),freq="MS")
@@ -1133,6 +1165,7 @@ if page == "Overview":
             fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Month Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
             fb(fig,"Month","Total Items",h=300,title="Monthly Items Recorded"); show(fig,"ov_ts")
         last_updated_insight(lf, chart_type="monthly")
+        st.markdown('<div style="background:white;border:1px solid #e8a62044;border-left:4px solid #e8a620;border-radius:0 8px 8px 0;padding:12px 16px;margin:8px 0 16px;font-size:13px;line-height:1.75;color:#18180f;"><strong>About gaps in the monthly record:</strong> Gray bars or missing months — especially June, July, and August — <strong>do not mean there was no trash</strong> on the river. They mean no survey was conducted that month. Survey coverage typically decreases in summer due to reduced student volunteer availability, high heat, and lower program capacity. Trash accumulates year-round regardless of whether surveys are conducted. Do not interpret survey gaps as evidence of cleaner river conditions.</div>', unsafe_allow_html=True)
         card_close()
     with c2:
         card_open("Share by Trash Category",
@@ -1165,13 +1198,20 @@ if page == "Overview":
         if "seg" in lf.columns:
             sg=lf[lf["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
             sg["seg"]=pd.Categorical(sg["seg"],SEG_ORDER,ordered=True); sg=sg.sort_values("seg")
-            fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER})
+            # Color each category by its environmental classification
+            grp_color_map = {g:
+                C["water"] if g in RECYCLABLE_GROUPS else
+                C["brick"] if g in HEALTH_HAZARD_GROUPS else
+                C["amber"] if g in FLOATABLE_GROUPS else
+                C["green"] for g in sg["trash_group"].unique()}
+            fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",
+                color_discrete_map=grp_color_map,category_orders={"seg":SEG_ORDER})
             fig.update_layout(
-                legend=dict(orientation="v",yanchor="top",y=1,xanchor="left",x=1.02,
-                    font=dict(size=10),bgcolor="rgba(255,255,255,.95)",
-                    bordercolor=C["divider"],borderwidth=1))
-            fb(fig,"River Segment","Total Items",h=480,leg=False,title="Items by River Segment and Category"); show(fig,"ov_seg")
-            cat_color_legend()
+                legend=dict(orientation="h",yanchor="top",y=-0.16,xanchor="left",x=0,
+                    font=dict(size=10,family="DM Sans"),title_text="Category",
+                    bgcolor="rgba(255,255,255,.95)",bordercolor=C["divider"],borderwidth=1),
+                margin=dict(l=10,r=10,t=56,b=110))
+            show(fig,"ov_seg")
         card_close()
 
     section_title("Category Summary Table")
@@ -1309,6 +1349,7 @@ elif page == "Trends":
             "Best figure for seeing the broad timeline — peaks, gaps, and overall direction.",
             "Green bars = survey conducted. Gray = no survey that month. Gold line = 3-month rolling average.",
             "Gray bars do not mean zero trash — they mean no survey. Rolling average treats gaps as zero.")
+        st.markdown('<div style="background:white;border:1px solid #e8a62044;border-left:4px solid #e8a620;border-radius:0 8px 8px 0;padding:12px 16px;margin:8px 0 16px;font-size:13px;line-height:1.75;color:#18180f;"><strong>About gaps in the monthly record:</strong> Gray bars or missing months — especially June, July, and August — <strong>do not mean there was no trash</strong> on the river. They mean no survey was conducted that month. Survey coverage typically decreases in summer due to reduced student volunteer availability, high heat, and lower program capacity. Trash accumulates year-round regardless of whether surveys are conducted. Do not interpret survey gaps as evidence of cleaner river conditions.</div>', unsafe_allow_html=True)
 
     elif sel_trend == "Annual Totals by Year":
         yr=df.dropna(subset=["year"]).groupby("year")["n"].sum().reset_index(); yr["year"]=yr["year"].astype(str)
@@ -2155,15 +2196,67 @@ elif page == "Data Table":
         lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
     stat_strip(long,lf)
 
-    section_title("Raw Survey Records")
-    st.markdown('<div class="sec-sub">One row per trash item category per survey event. Use column headers to sort. Maximum 5,000 rows displayed.</div>', unsafe_allow_html=True)
-    cols=[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in lf.columns]
-    rename={"event_id":"Event ID","date":"Date","seg":"Segment","site_label":"Location",
-            "trash_group":"Category","trash_item":"Item","n":"Count","surveyed_m2":"Area (m2)","recorder":"Recorder"}
-    disp=lf[cols].rename(columns=rename).sort_values(["Date","Event ID"],na_position="last").head(5000)
-    disp.index=range(1,len(disp)+1)
-    st.dataframe(disp, use_container_width=True, height=560)
-    tbl_note(f"Showing {min(len(lf),5000):,} of {len(lf):,} rows matching current filters. Each row represents one item type recorded at one survey event. To see all data, export as CSV from the Export page.")
+    # Two view modes — long (default) and wide (Excel-like)
+    dt_view = st.radio(
+        "Table format",
+        ["Wide format — one row per event, each item as a column (like Excel)",
+         "Long format — one row per item per event"],
+        horizontal=True, key="dt_view_mode"
+    )
+
+    section_title("Survey Records")
+    if "Wide" in dt_view:
+        st.markdown('<div class="sec-sub">One row per survey event. Columns show each of the 56 recorded item types plus event metadata — exactly like the original Excel format. Zero = item was not found that visit.</div>', unsafe_allow_html=True)
+
+        # Build pivot: one row per event, items as columns
+        if "trash_item" in lf.columns and "n" in lf.columns and "event_id" in lf.columns:
+            # Get event metadata
+            meta_cols = [c for c in ["event_id","date","site_label","surveyed_m2","recorder","seg"] if c in lf.columns]
+            meta = lf[meta_cols].drop_duplicates("event_id").copy()
+            meta["date_str"] = meta["date"].dt.strftime("%Y-%m-%d") if "date" in meta.columns else ""
+
+            # Build the column order matching Excel (TRASH_GROUPS order)
+            item_order = []
+            for grp, items in TRASH_GROUPS.items():
+                for item in items:
+                    item_order.append(item)
+
+            # Pivot
+            pivot = lf.pivot_table(
+                index="event_id", columns="trash_item", values="n", aggfunc="sum", fill_value=0
+            ).reset_index()
+
+            # Reorder columns to match Excel
+            available_items = [i for i in item_order if i in pivot.columns]
+            extra_items = [c for c in pivot.columns if c != "event_id" and c not in item_order]
+            pivot = pivot[["event_id"] + available_items + extra_items]
+
+            # Merge with metadata
+            meta_sm = meta[["event_id","date_str","site_label","surveyed_m2"]].copy() if "surveyed_m2" in meta.columns else meta[["event_id","date_str","site_label"]].copy()
+            meta_sm.columns = ["Event ID","Date","Location"] + (["Area (m²)"] if "surveyed_m2" in meta.columns else [])
+            pivot = pivot.rename(columns={"event_id":"Event ID"})
+            wide = meta_sm.merge(pivot, on="Event ID", how="left")
+            wide = wide.sort_values("Date", ascending=False).reset_index(drop=True)
+            wide.index = range(1, len(wide)+1)
+            st.dataframe(wide, use_container_width=True, height=580)
+            tbl_note(
+                f"Showing {len(wide):,} events × {len(wide.columns)-1} columns. "
+                "Columns follow the Excel survey protocol order. "
+                "Each number = count of that item found during that event. "
+                "0 = item was not recorded (not necessarily absent). "
+                "Scroll right to see all 56 item columns."
+            )
+        else:
+            st.info("Wide format requires item-level data. Check filters.")
+    else:
+        st.markdown('<div class="sec-sub">One row per trash item category per survey event. Use column headers to sort. Maximum 5,000 rows displayed.</div>', unsafe_allow_html=True)
+        cols=[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in lf.columns]
+        rename={"event_id":"Event ID","date":"Date","seg":"Segment","site_label":"Location",
+                "trash_group":"Category","trash_item":"Item","n":"Count","surveyed_m2":"Area (m2)","recorder":"Recorder"}
+        disp=lf[cols].rename(columns=rename).sort_values(["Date","Event ID"],na_position="last").head(5000)
+        disp.index=range(1,len(disp)+1)
+        st.dataframe(disp, use_container_width=True, height=560)
+        tbl_note(f"Showing {min(len(lf),5000):,} of {len(lf):,} rows matching current filters. Each row = one item type at one survey event. Switch to Wide format above to see all items as columns like the original Excel sheet.")
 
     section_title("Filtered Summary — Category Breakdown")
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records above, grouped by trash category.</div>', unsafe_allow_html=True)
