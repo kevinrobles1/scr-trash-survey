@@ -162,7 +162,7 @@ footer{{display:none!important;}}
 }}
 
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:36px 88px 100px 88px;}}
+.body{{max-width:1480px;margin:0 auto;padding:36px 96px 100px 108px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -478,7 +478,7 @@ def auth_gate():
         st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
         <div class="auth-ttl">Sign in to<br>your account</div>
         <div class="auth-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>""", unsafe_allow_html=True)
-        t1,t2,t3,t4 = st.tabs(["Sign In","Create Account","Forgot Password","Look Up Username"])
+        t1,t2,t3,t4,t5 = st.tabs(["Sign In","Create Account","Forgot Password","Look Up Username","Volunteer Entry"])
 
         with t1:
             with st.form("_login"):
@@ -574,6 +574,47 @@ def auth_gate():
                         else:
                             st.error("No account found matching that name and security answer. Names are case-sensitive. Try your full name exactly as you typed it when registering.")
             st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-top:12px;line-height:1.7;padding:10px 12px;background:{C["sand"]};border-radius:6px;">Note: Email-based password reset is not available. This dashboard runs without an email service. The security question system is the recovery method. If you are completely locked out, contact Kevin Robles to reset your account manually in Supabase.</div>', unsafe_allow_html=True)
+
+        with t5:
+            st.markdown(f'''<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;
+            border-radius:8px;padding:16px 18px;margin-bottom:16px;line-height:1.75;font-size:13px;">
+            <strong style="color:{C["green"]};">Welcome, Volunteer!</strong><br>
+            You don't need an account to submit trash counts. Fill in your information below
+            and click <strong>Start Volunteer Entry</strong> to access the data entry form.
+            You will only be able to submit counts — you cannot view, edit, or delete existing data.
+            </div>''', unsafe_allow_html=True)
+            with st.form("_vol"):
+                vc1,vc2 = st.columns(2)
+                v_name   = vc1.text_input("Your Full Name *", placeholder="e.g. Maria Garcia")
+                v_org    = vc2.text_input("Organization / Group", placeholder="e.g. Tucson Audubon, UA Service Day")
+                vc3,vc4  = st.columns(2)
+                v_phone  = vc3.text_input("Phone or Email (optional)", placeholder="In case we need to follow up")
+                v_exp    = vc4.selectbox("Survey experience level",
+                    ["First time today","Participated before (1-3 times)","Regular volunteer (4+ times)"])
+                v_how    = st.text_input("How did you hear about this volunteer opportunity?",
+                    placeholder="e.g. Sonoran Institute newsletter, UA class, friend")
+                v_note   = st.text_area("Any other notes about yourself or your group",
+                    height=70, placeholder="e.g. Bringing 5 people, UA Environmental Studies class")
+                st.markdown(f'<div style="font-size:11px;color:{C["muted"]};margin-top:8px;line-height:1.6;">By submitting, you confirm that the data you enter reflects actual field counts from today&#39;s survey. Your name will appear on submitted entries.</div>', unsafe_allow_html=True)
+                if st.form_submit_button("Start Volunteer Entry", use_container_width=True):
+                    if not v_name.strip():
+                        st.error("Please enter your full name.")
+                    else:
+                        st.session_state["auth"] = True
+                        st.session_state["prof"] = {
+                            "user_id": None,
+                            "username": "volunteer",
+                            "full_name": v_name.strip(),
+                            "position_title": f"Volunteer · {v_org.strip()}" if v_org.strip() else "Volunteer",
+                            "is_volunteer": True,
+                            "volunteer_org": v_org.strip(),
+                            "volunteer_exp": v_exp,
+                            "volunteer_how": v_how.strip(),
+                            "volunteer_notes": v_note.strip(),
+                            "volunteer_contact": v_phone.strip(),
+                        }
+                        st.session_state["page"] = "Data Entry"
+                        st.rerun()
 
         st.markdown(f"""<div class="auth-ftr"><span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>Cloud database secured by Supabase · Passwords encrypted</div>""",unsafe_allow_html=True)
     st.stop()
@@ -2098,11 +2139,32 @@ elif page == "Data Table":
 # DATA ENTRY
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Entry":
+    is_vol = prof.get("is_volunteer", False)
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Survey Data Entry & Management</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Submit new survey entries and manage existing ones. Entries can be deleted by Event ID. All changes are reflected immediately in charts and tables.</div>', unsafe_allow_html=True)
 
-    entry_tab, manage_tab = st.tabs(["Add New Entry", "Manage / Delete Entries"])
+    if is_vol:
+        # Volunteer banner
+        st.markdown(f'''<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;
+        border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:{C["mint"]};flex-shrink:0;"></div>
+        <div style="font-size:13px;color:{C["text"]};line-height:1.6;">
+        Volunteer session — <strong>{prof.get("full_name","")}</strong>
+        {" · " + prof.get("volunteer_org","") if prof.get("volunteer_org") else ""}
+        &nbsp;·&nbsp; You can submit survey counts only.
+        To access all features, <a href="/" style="color:{C["green"]};font-weight:600;">sign in with a staff account</a>.
+        </div></div>''', unsafe_allow_html=True)
+        st.markdown('<div class="pg-title">Volunteer Survey Entry</div>', unsafe_allow_html=True)
+        st.markdown('<div class="pg-lead">Thank you for volunteering! Fill in the counts for each item found during your survey plot. Your submission goes directly into the database and will be reviewed by Sonoran Institute staff.</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="pg-title">Survey Data Entry & Management</div>', unsafe_allow_html=True)
+        st.markdown('<div class="pg-lead">Submit new survey entries and manage existing ones. Entries can be deleted by Event ID. All changes are reflected immediately in charts and tables.</div>', unsafe_allow_html=True)
+
+    if is_vol:
+        # Volunteers only see the entry form — no tabs, no manage section
+        entry_tab = st.container()
+        manage_tab = None
+    else:
+        entry_tab, manage_tab = st.tabs(["Add New Entry", "Manage / Delete Entries"])
 
     # ── TAB 1: ADD NEW ENTRY ─────────────────────────────────────
     with entry_tab:
@@ -2167,6 +2229,8 @@ elif page == "Data Entry":
                         "counts": {k:v for k,v in counts.items() if v>0},
                         "field_notes": field_notes,
                         "total": total_preview,
+                        "submitted_by": prof.get("full_name","Unknown"),
+                        "submitted_by_username": prof.get("username",""),
                     }
                     st.session_state["entry_step"] = 2
                     st.rerun()
@@ -2200,6 +2264,10 @@ elif page == "Data Entry":
                 f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;padding:14px 16px;">' +
                 f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};margin-bottom:6px;">Recorder</div>' +
                 f'<div style="font-size:1rem;font-family:Cormorant Garamond,serif;font-weight:700;color:{C["text"]};">{snap["recorder_final"] or "—"}</div></div>' +
+        f'<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;padding:14px 16px;">' +
+        f'<div style="font-size:9px;font-family:DM Mono,monospace;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};margin-bottom:6px;">Submitted By</div>' +
+        f'<div style="font-size:1rem;font-family:Cormorant Garamond,serif;font-weight:700;color:{C["green"]};">{snap.get("submitted_by","Unknown")}</div>' +
+        f'<div style="font-size:10px;color:{C["muted"]};">@{snap.get("submitted_by_username","")}</div></div>' +
                 '</div>',
                 unsafe_allow_html=True
             )
@@ -2281,7 +2349,8 @@ elif page == "Data Entry":
                             "site_label":snap["site_final"],
                             "location_description":snap["site_final"],
                             "recorder":snap["recorder_final"],
-                            "surveyed_m2":float(snap["area_m2"]) if snap["area_m2"] else None
+                            "surveyed_m2":float(snap["area_m2"]) if snap["area_m2"] else None,
+                            "submitted_by":snap.get("submitted_by",""),
                         }).execute()
                         all_counts=snap["counts"]
                         rows=[{"event_id":int(snap["event_id"]),"trash_group":g,"trash_item":item,"count_value":float(v)}
@@ -2304,8 +2373,9 @@ elif page == "Data Entry":
                     st.rerun()
 
     # ── TAB 2: MANAGE / DELETE ───────────────────────────────────
-    with manage_tab:
-        st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};
+    if not is_vol and manage_tab is not None:
+        with manage_tab:
+         st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};
         border-left:4px solid {C['brick']};border-radius:0 8px 8px 0;
         padding:14px 18px;margin-bottom:20px;font-size:13.5px;color:{C['text']};line-height:1.7;">
         <strong>About deletion:</strong> Deleting an event removes it from both
@@ -2319,11 +2389,31 @@ elif page == "Data Entry":
         st.markdown('<div class="sec-sub">Browse all events currently in the database. Search by Event ID or location name to find what you need.</div>', unsafe_allow_html=True)
 
         # Build event summary from loaded data
+        # Pull recorder info from site_events for "Added By" column
+        if not se.empty and "recorder" in se.columns:
+            se_rec = se[["event_id","recorder"]].drop_duplicates("event_id")
+            se_rec["event_id"] = se_rec["event_id"].astype(str)
+        else:
+            se_rec = pd.DataFrame(columns=["event_id","recorder"])
+        # Also pull submitted_by if available
+        if not se.empty and "submitted_by" in se.columns:
+            se_sub = se[["event_id","submitted_by"]].drop_duplicates("event_id")
+            se_sub["event_id"] = se_sub["event_id"].astype(str)
+        else:
+            se_sub = pd.DataFrame(columns=["event_id","submitted_by"])
+
         ev_summary = long.groupby(["event_id","date","site_label"]).agg(
             total_items=("n","sum"),
             categories=("trash_group","nunique")
         ).reset_index()
+        ev_summary["event_id"] = ev_summary["event_id"].astype(str)
         ev_summary["date_str"] = ev_summary["date"].dt.strftime("%B %d, %Y").fillna("Unknown date")
+        ev_summary = ev_summary.merge(se_rec, on="event_id", how="left")
+        ev_summary = ev_summary.merge(se_sub, on="event_id", how="left")
+        # Build "Added by" display: prefer submitted_by, fall back to recorder
+        ev_summary["added_by"] = ev_summary["submitted_by"].fillna("").str.strip()
+        no_sub = ev_summary["added_by"] == ""
+        ev_summary.loc[no_sub, "added_by"] = ev_summary.loc[no_sub, "recorder"].fillna("Unknown")
         ev_summary = ev_summary.sort_values("date", ascending=False).reset_index(drop=True)
 
         # Search filter
@@ -2336,8 +2426,8 @@ elif page == "Data Entry":
             ev_filtered = ev_summary.copy()
 
         # Display table
-        disp_ev = ev_filtered[["event_id","date_str","site_label","total_items","categories"]].copy()
-        disp_ev.columns = ["Event ID","Date","Location","Total Items","Categories Recorded"]
+        disp_ev = ev_filtered[["event_id","date_str","site_label","added_by","total_items","categories"]].copy()
+        disp_ev.columns = ["Event ID","Date","Location","Added By","Total Items","Categories Recorded"]
         disp_ev.index = range(1, len(disp_ev)+1)
         st.dataframe(disp_ev, use_container_width=True, height=360)
         tbl_note(f"Showing {len(ev_filtered):,} of {len(ev_summary):,} events. Use the search box above to filter.")
