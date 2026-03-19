@@ -298,6 +298,8 @@ TR = {
         "tr_ey":"Temporal Analysis",
         "tr_title":"How Trash Levels Change Over Time",
         "tr_sub":"Monthly, annual, and seasonal patterns across the full survey record.",
+        "cat_summary":"Category Summary Table",
+        "cat_summary_sub":"Total items, number of individual records, and average count per record for each trash category.",
 
 
     },
@@ -617,7 +619,7 @@ header[data-testid="stHeader"]{{height:0!important;min-height:0!important;displa
 [data-testid="stToolbar"]{{display:none!important;}}
 [data-testid="stDecoration"]{{display:none!important;}}
 footer{{display:none!important;}}
-.stApp{{background:{C["cream"]};}}
+.stApp{{background:{C["sand"]};}}
 /* Kill browser/Streamlit default blue link color globally */
 .stApp a, .stApp a:visited, .stMarkdownContainer a, .stMarkdownContainer a:visited,
 [data-testid="stMarkdownContainer"] a, [data-testid="stMarkdownContainer"] a:visited {{
@@ -635,7 +637,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:none;margin-bottom:0;box-shadow:none;}}
-.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 48px;
+.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 56px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -663,7 +665,7 @@ footer{{display:none!important;}}
 /* Hide the actual Streamlit radio group — nav is rendered via iframe */
 .nav-radio-hide div[role="radiogroup"]{{
     position:absolute!important;opacity:0!important;
-    pointer-events:auto!important;height:0!important;overflow:hidden!important;
+    pointer-events:none!important;height:0!important;overflow:hidden!important;
 }}
 
 /* ── KILL ALL GAPS — NUCLEAR ── */
@@ -705,13 +707,13 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:24px 48px 80px 48px;background:{C["cream"]};}}
+.body{{max-width:1480px;margin:0 auto;padding:28px 56px 80px 56px;background:{C["cream"]};}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
 .sec-hd{{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;
           color:{C["text"]};margin-bottom:4px;letter-spacing:-.01em;}}
-.sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:20px;line-height:1.7;}}
+.sec-sub{{font-size:12px;color:{C["muted"]};margin-bottom:22px;line-height:1.8;}}
 @media print {{
     /* Show the full page on print, not just the visible viewport */
     .stApp {{ overflow:visible!important; }}
@@ -734,14 +736,14 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     h1, h2, h3 {{ page-break-after:avoid; }}
     .js-plotly-plot {{ page-break-inside:avoid; }}
 }}
-.tbl-note{{font-size:12px;color:{C["muted"]};line-height:1.7;padding:10px 0 2px;
+.tbl-note{{font-size:12px;color:{C["muted"]};line-height:1.8;padding:14px 0 6px;
            border-top:1px solid {C["sand3"]};margin-top:10px;font-style:italic;}}
 
 /* ── KPI GRID ── */
 .kpi-grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}}
 .kpi-grid-4{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}}
 .kpi{{background:#fff;border:1px solid {C["sand3"]};border-radius:10px;
-      padding:20px 22px 16px;position:relative;overflow:hidden;
+      padding:22px 24px 18px;position:relative;overflow:hidden;
       box-shadow:0 2px 10px rgba(0,0,0,.04);transition:box-shadow .2s,transform .2s;}}
 .kpi:hover{{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-2px);}}
 .kpi::after{{content:'';position:absolute;top:0;left:0;right:0;height:3px;
@@ -755,14 +757,14 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
 
 /* ── CARDS ── */
 .card{{background:#fff;border:1px solid {C["sand3"]};border-radius:12px;
-       padding:32px 32px 24px;margin-bottom:32px;box-shadow:0 2px 14px rgba(0,0,0,.05);}}
+       padding:32px 36px 28px;margin-bottom:36px;box-shadow:0 2px 14px rgba(0,0,0,.05);}}
 .card-hd{{display:flex;align-items:flex-start;justify-content:space-between;
           padding-bottom:14px;margin-bottom:20px;border-bottom:1px solid {C["sand3"]};}}
 
 /* ── STAT STRIP ── */
 .stat-strip{{display:flex;gap:0;background:#fff;border:1px solid {C["sand3"]};
              border-radius:10px;overflow:hidden;margin-bottom:24px;
-             box-shadow:0 2px 10px rgba(0,0,0,.04);position:relative;z-index:1;}}
+             box-shadow:0 2px 10px rgba(0,0,0,.04);}}
 .stat-item{{flex:1;padding:18px 16px;border-right:1px solid {C["sand3"]};text-align:center;}}
 .stat-item:last-child{{border-right:none;}}
 .stat-v{{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;
@@ -813,9 +815,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 .streamlit-expanderHeader{{font-family:'DM Sans',sans-serif!important;
   font-size:12.5px!important;font-weight:700!important;color:{C["green"]}!important;
   letter-spacing:.3px!important;}}
-/* Expander container styling */
-div[data-testid="stExpander"]{{background:{C["cream"]}!important;border:1px solid {C["sand3"]}!important;
-  border-radius:10px!important;overflow:hidden!important;}}
+div[data-testid="stExpander"]{{background:{C["cream"]}!important;border:1px solid {C["sand3"]}!important;border-radius:10px!important;}}
 div[data-testid="stExpander"] details{{background:{C["cream"]}!important;border:none!important;}}
 div[data-testid="stExpander"] summary{{background:{C["cream"]}!important;}}
 div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{background:{C["cream"]}!important;}}
@@ -831,7 +831,7 @@ div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{background:{
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
       padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1480px;margin:0 auto;padding:0 48px;}}
+.ftr-in{{max-width:1480px;margin:0 auto;padding:0 56px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
 .ftr-a:hover{{color:{C["mint"]};}}
@@ -878,20 +878,20 @@ def _clean_hover(fig):
         if t == "bar":
             if getattr(trace, "orientation", None) == "h":
                 # Horizontal bar — y is category label, x is value
-                trace.hovertemplate = nm_prefix + "%{y}<br>Count: %{x:,.0f} items<extra></extra>"
+                trace.hovertemplate = nm_prefix + "%{y}<br>Total items: %{x:,.0f}<extra></extra>"
             else:
                 # Vertical bar — x is category/date, y is value
-                trace.hovertemplate = nm_prefix + "%{x}<br>Count: %{y:,.0f} items<extra></extra>"
+                trace.hovertemplate = nm_prefix + "%{x}<br>Total items: %{y:,.0f}<extra></extra>"
 
         elif t == "scatter":
             # Try date format first; if x is not a date Plotly ignores the format gracefully
-            trace.hovertemplate = nm_prefix + "%{x}<br>Count: %{y:,.0f} items<extra></extra>"
+            trace.hovertemplate = nm_prefix + "%{x}<br>Total items: %{y:,.0f}<extra></extra>"
 
         elif t == "pie":
             trace.hovertemplate = (
                 "<b>%{label}</b><br>"
-                "Share of total: %{percent}<br>"
-                "Items recorded: %{value:,.0f}"
+                "Share: %{percent}<br>"
+                "Items: %{value:,.0f}"
                 "<extra></extra>"
             )
 
@@ -899,7 +899,7 @@ def _clean_hover(fig):
             trace.hovertemplate = (
                 "<b>%{y}</b><br>"
                 "Year: %{x}<br>"
-                "Items: %{z:,.0f}"
+                "Total items: %{z:,.0f}"
                 "<extra></extra>"
             )
 
@@ -907,13 +907,13 @@ def _clean_hover(fig):
             trace.hovertemplate = "%{text}<extra></extra>"
 
         elif t == "box":
-            trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Range: %{lowerfence:,.0f} – %{upperfence:,.0f}<extra></extra>"
+            trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Low: %{lowerfence:,.0f}<br>High: %{upperfence:,.0f}<extra></extra>"
 
         elif t == "violin":
             trace.hovertemplate = nm_prefix + "%{y:,.0f}<extra></extra>"
 
         elif t == "histogram":
-            trace.hovertemplate = "Range: %{x}<br>Count: %{y:,.0f}<extra></extra>"
+            trace.hovertemplate = "Bin: %{x}<br>Count: %{y:,.0f}<extra></extra>"
 
     return fig
 
@@ -972,7 +972,7 @@ def tbl_note(text):
     st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
 
 def section_title(text):
-    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:36px 0 18px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.35rem;font-weight:700;color:{C["green"]};margin:44px 0 20px;padding-bottom:12px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
 
 def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     """Full-bleed hero banner — same size and aesthetic as About page."""
@@ -982,7 +982,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     <div style="
         background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
         border-radius:0;
-        padding:28px 48px 30px;
+        padding:32px 56px 34px;
         margin:0;
         position:relative;
         overflow:hidden;
@@ -1530,7 +1530,7 @@ def fig_note(what, why, read, extra=""):
     """Render a styled interpretation box under a chart."""
     extra_html = f'<p style="color:{C["muted"]};margin:4px 0;font-size:13px;"><strong>Additional context:</strong> {extra}</p>' if extra else ""
     st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["green"]};
-    border-radius:0 8px 8px 0;padding:20px 24px;margin:16px 0 28px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+    border-radius:0 8px 8px 0;padding:22px 28px;margin:20px 0 32px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
     <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:{C["green"]};margin-bottom:10px;">How to read this figure</div>
     <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>What it shows:</strong> {what}</p>
     <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>Why it is useful:</strong> {why}</p>
@@ -1778,8 +1778,28 @@ st.markdown("""<style>
 div.stButton:has(button[key="_hdr_so"]),
 div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
     position:fixed!important;left:-9999px!important;top:-9999px!important;
-    opacity:0!important;pointer-events:none!important;
+    opacity:0!important;pointer-events:auto!important;
     height:0!important;width:0!important;overflow:hidden!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
+    background:rgba(122,143,53,.15)!important;
+    color:rgba(255,255,255,.85)!important;
+    border:1px solid rgba(255,255,255,.2)!important;
+    font-size:10px!important;
+    letter-spacing:1px!important;
+    text-transform:uppercase!important;
+    font-family:'DM Mono',monospace!important;
+    padding:5px 14px!important;
+    border-radius:16px!important;
+    backdrop-filter:blur(8px)!important;
+    cursor:pointer!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button:hover,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
+    background:rgba(180,60,30,.6)!important;
+    color:white!important;
+    border-color:rgba(255,255,255,.4)!important;
 }
 </style>""", unsafe_allow_html=True)
 
@@ -1799,7 +1819,7 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     z-index:200 !important;
     border-bottom:none !important;
     margin-top:0 !important;
-    box-shadow:0 30px 0 0 {C["forest"]},0 3px 14px rgba(0,0,0,.35) !important;
+    box-shadow:0 0 0 30px {C["forest"]},0 3px 14px rgba(0,0,0,.35) !important;
     margin:0 !important;
     margin-top:0 !important;
     margin-bottom:0 !important;
@@ -1812,7 +1832,7 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 48px !important;justify-content:flex-start !important;
+    padding:0 56px !important;justify-content:flex-start !important;
     max-width:1480px !important;
     margin:0 auto !important;
     border:none !important;
@@ -3178,19 +3198,13 @@ elif page == "Data Entry":
     is_vol = prof.get("is_volunteer", False)
 
     if is_vol:
-        page_banner(
-            "Volunteer Survey Entry",
-            "Submit Your Trash Counts",
+        page_banner("Volunteer Survey Entry", "Submit Your Trash Counts",
             "Thank you for volunteering with the Sonoran Institute!",
-            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
-        )
+            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg")
     else:
-        page_banner(
-            "Field Data Entry",
-            "Survey Data Entry & Management",
-            "Submit new survey entries and manage existing records. All changes save directly to the live database.",
-            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
-        )
+        page_banner("Field Data Entry", "Survey Data Entry & Management",
+            "Submit new survey entries and manage existing records.",
+            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg")
 
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
@@ -3742,7 +3756,7 @@ elif page == "About":
     # Hero banner (full-bleed, outside body div)
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
-    border-radius:0;padding:44px 48px;margin-bottom:0;position:relative;overflow:hidden;">
+    border-radius:0;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;
     background:url('https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg')
     center/cover no-repeat;opacity:.18;border-radius:14px;"></div>
@@ -3760,10 +3774,10 @@ elif page == "About":
     section_title(T("why_river_title"))
     c1, c2 = st.columns([3,2])
     with c1:
-        st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:1.9;">
-        <p style="margin:0 0 14px;">{T("about_p1")}</p>
-        <p style="margin:0 0 14px;">{T("about_p2")}</p>
-        <p style="margin:0 0 14px;">{T("about_p3")}</p>
+        st.markdown(f"""<div style="font-size:14.5px;color:{C['text']};line-height:2;">
+        <p style="margin:0 0 18px;">{T("about_p1")}</p>
+        <p style="margin:0 0 18px;">{T("about_p2")}</p>
+        <p style="margin:0 0 18px;">{T("about_p3")}</p>
         <p style="margin:0;">{T("about_p4")}</p>
         </div>""", unsafe_allow_html=True)
     with c2:
@@ -3807,7 +3821,7 @@ elif page == "About":
         unsafe_allow_html=True
     )
 
-    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
     section_title(T("about_db_title"))
 
     s1,s2,s3,s4 = st.columns(4)
@@ -3817,15 +3831,15 @@ elif page == "About":
         [T("stat_items_note"),T("stat_events_note"),T("stat_locs_note"),T("stat_period_note")]):
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
-            padding:18px 20px 14px;text-align:center;position:relative;overflow:hidden;
+            padding:22px 20px 18px;text-align:center;position:relative;overflow:hidden;
             box-shadow:0 2px 10px rgba(0,0,0,.04);">
             <div style="position:absolute;top:0;left:0;right:0;height:3px;
             background:linear-gradient(90deg,{C['green']},{C['mint']});"></div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;
             color:{C['green']};line-height:1;">{val}</div>
-            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
-            color:{C['muted']};font-family:'DM Mono',monospace;margin-top:6px;">{lbl}</div>
-            <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+            color:{C['muted']};font-family:'DM Mono',monospace;margin-top:10px;">{lbl}</div>
+            <div style="font-size:11px;color:{C['muted']};margin-top:6px;">{note}</div>
             </div>""", unsafe_allow_html=True)
 
     _ab1, _ab2 = st.columns([1, 2])
@@ -3837,10 +3851,10 @@ elif page == "About":
           {T("about_field_caption")}</div>""", unsafe_allow_html=True)
     with _ab2:
         st.markdown(f"""
-        <div style="font-size:14px;color:{C['text']};line-height:1.9;padding-top:8px;">
-          <p style="margin:0 0 16px;">{T("about_db_p1")}</p>
-          <p style="margin:0 0 16px;">{T("about_db_p2")}</p>
-          <p style="margin:0 0 16px;">{T("about_db_p3")}</p>
+        <div style="font-size:14px;color:{C['text']};line-height:1.95;padding-top:8px;">
+          <p style="margin:0 0 20px;">{T("about_db_p1")}</p>
+          <p style="margin:0 0 20px;">{T("about_db_p2")}</p>
+          <p style="margin:0 0 20px;">{T("about_db_p3")}</p>
           <p style="margin:0;">{T("about_db_p4")}</p>
         </div>""", unsafe_allow_html=True)
 
@@ -3859,15 +3873,15 @@ elif page == "About":
         with (rc1 if i%2==0 else rc2):
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
             border-left:4px solid {color};border-radius:0 10px 10px 0;
-            padding:16px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;
-            color:{C['text']};margin-bottom:5px;">{title}</div>
-            <div style="font-size:13px;color:{C['muted']};line-height:1.7;">{text}</div>
+            padding:20px 22px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
+            color:{C['text']};margin-bottom:8px;">{title}</div>
+            <div style="font-size:13.5px;color:{C['muted']};line-height:1.85;">{text}</div>
             </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
     st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
-    padding:20px 36px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+    padding:28px 40px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
     <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;
     color:{C['green']};line-height:1.3;margin-bottom:14px;font-style:italic;max-width:700px;margin:0 auto 14px;">
     {T("about_quote")}</div>
@@ -3885,16 +3899,16 @@ elif page == "About":
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
             border-top:4px solid {color};border-radius:10px;
-            padding:20px 20px 18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
-            color:{C['text']};margin-bottom:3px;">{name}</div>
+            padding:26px 24px 22px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;
+            color:{C['text']};margin-bottom:8px;">{name}</div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
-            color:{color};font-family:'DM Mono',monospace;margin-bottom:7px;">{role}</div>
-            <div style="font-size:12.5px;color:{C['muted']};line-height:1.7;">{desc}</div>
+            color:{color};font-family:'DM Mono',monospace;margin-bottom:12px;">{role}</div>
+            <div style="font-size:13px;color:{C['muted']};line-height:1.85;">{desc}</div>
             </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};border-radius:10px;
-    padding:16px 22px;margin-top:12px;font-size:13px;color:{C['muted']};line-height:1.8;">
+    padding:20px 26px;margin-top:20px;font-size:13.5px;color:{C['muted']};line-height:1.9;">
     <strong style="color:{C['text']};">Sonoran Institute</strong> · 5049 E Broadway Blvd., Suite 127,
     Tucson, AZ 85711 · (520) 290-0828 ·
     <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank"
