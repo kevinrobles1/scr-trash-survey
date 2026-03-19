@@ -1776,39 +1776,6 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign out button — off-screen but clickable via JS
-st.markdown("""<style>
-div.stButton:has(button[key="_hdr_so"]),
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
-    position:fixed!important;top:12px!important;right:16px!important;
-    z-index:9999!important;opacity:1!important;pointer-events:auto!important;
-    width:auto!important;height:auto!important;overflow:visible!important;
-    left:auto!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
-    background:rgba(122,143,53,.15)!important;
-    color:rgba(255,255,255,.85)!important;
-    border:1px solid rgba(255,255,255,.2)!important;
-    font-size:10px!important;
-    letter-spacing:1px!important;
-    text-transform:uppercase!important;
-    font-family:'DM Mono',monospace!important;
-    padding:5px 14px!important;
-    border-radius:16px!important;
-    backdrop-filter:blur(8px)!important;
-    cursor:pointer!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button:hover,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
-    background:rgba(180,60,30,.6)!important;
-    color:white!important;
-    border-color:rgba(255,255,255,.4)!important;
-}
-</style>""", unsafe_allow_html=True)
-
-if st.button("Sign Out", key="_hdr_so"):
-    st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
 
 # ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
