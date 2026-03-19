@@ -4012,6 +4012,3 @@ with st.expander(T("acct_session")):
             st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
     with _a3:
         st.caption(T("acct_signout_note"))
-            st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
-    with _a3:
-        st.caption(T("acct_signout_note"))
