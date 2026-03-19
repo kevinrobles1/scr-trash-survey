@@ -824,8 +824,80 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 ::-webkit-scrollbar-track{{background:{C["sand"]};}}
 ::-webkit-scrollbar-thumb{{background:{C["sand3"]};border-radius:3px;}}
 ::-webkit-scrollbar-thumb:hover{{background:{C["sage"]};}}
-@keyframes fadeUp{{from{{opacity:0;transform:translateY(10px);}}to{{opacity:1;transform:none;}}}}
-.fade-up{{animation:fadeUp .35s ease both;}}
+/* ── TRANSITIONS & ANIMATIONS ── */
+@keyframes fadeUp{{from{{opacity:0;transform:translateY(18px);}}to{{opacity:1;transform:none;}}}}
+@keyframes fadeIn{{from{{opacity:0;}}to{{opacity:1;}}}}
+@keyframes slideInRight{{from{{opacity:0;transform:translateX(24px);}}to{{opacity:1;transform:none;}}}}
+@keyframes scaleIn{{from{{opacity:0;transform:scale(.96);}}to{{opacity:1;transform:none;}}}}
+@keyframes countUp{{from{{opacity:0;transform:translateY(8px);}}to{{opacity:1;transform:none;}}}}
+.fade-up{{animation:fadeUp .5s cubic-bezier(.22,.61,.36,1) both;}}
+
+/* Staggered card reveals — each card animates slightly after the previous */
+.card{{animation:fadeUp .5s cubic-bezier(.22,.61,.36,1) both;}}
+.kpi-grid>.kpi:nth-child(1){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .05s both;}}
+.kpi-grid>.kpi:nth-child(2){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .1s both;}}
+.kpi-grid>.kpi:nth-child(3){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .15s both;}}
+.kpi-grid>.kpi:nth-child(4){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .2s both;}}
+.kpi-grid>.kpi:nth-child(5){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .25s both;}}
+
+/* Stat strip stagger */
+.stat-strip>.stat-item:nth-child(1){{animation:countUp .4s ease .05s both;}}
+.stat-strip>.stat-item:nth-child(2){{animation:countUp .4s ease .12s both;}}
+.stat-strip>.stat-item:nth-child(3){{animation:countUp .4s ease .19s both;}}
+.stat-strip>.stat-item:nth-child(4){{animation:countUp .4s ease .26s both;}}
+
+/* Chart containers fade in smoothly */
+div[data-testid="stPlotlyChart"]{{animation:scaleIn .45s cubic-bezier(.22,.61,.36,1) both;}}
+
+/* Dataframe tables slide in */
+div[data-testid="stDataFrame"]{{animation:fadeUp .4s cubic-bezier(.22,.61,.36,1) both;}}
+
+/* Expander open/close */
+div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{
+    animation:fadeUp .3s cubic-bezier(.22,.61,.36,1) both;}}
+
+/* Section titles fade in */
+.sec-hd,.sec-sub{{animation:fadeIn .4s ease both;}}
+
+/* Card hover — smooth lift */
+.card{{transition:box-shadow .25s ease,transform .25s ease;}}
+.card:hover{{box-shadow:0 8px 32px rgba(0,0,0,.1);transform:translateY(-3px);}}
+
+/* Smooth hover on stat strip items */
+.stat-item{{transition:background .2s ease;}}
+.stat-item:hover{{background:rgba(147,164,69,.04);}}
+
+/* KPI card lift already exists but enhance the timing */
+.kpi{{transition:box-shadow .3s cubic-bezier(.22,.61,.36,1),transform .3s cubic-bezier(.22,.61,.36,1);}}
+
+/* Smooth button transitions */
+.stButton>button,.stDownloadButton>button{{transition:all .25s cubic-bezier(.22,.61,.36,1)!important;}}
+
+/* Nav tab transitions — smooth underline slide */
+div[role="radiogroup"] > label {{
+    transition:color .2s ease,border-color .25s ease,background .2s ease !important;}}
+
+/* Footer links smooth hover */
+.ftr-a{{transition:color .2s ease,transform .15s ease;}}
+.ftr-a:hover{{transform:translateX(2px);}}
+.ftr-social-icon{{transition:all .25s cubic-bezier(.22,.61,.36,1);}}
+.ftr-social-icon:hover{{transform:translateY(-2px);}}
+
+/* Page banner entrance — slight zoom from background */
+@keyframes bannerReveal{{from{{opacity:0;}}to{{opacity:.18;}}}}
+
+/* Input focus glow animation */
+div[data-baseweb="select"]>div:focus-within,div[data-baseweb="input"]>div:focus-within{{
+  transition:border-color .2s ease,box-shadow .2s ease!important;}}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {{
+    *,.card,.kpi,.stat-item,.fade-up,div[data-testid="stPlotlyChart"],
+    div[data-testid="stDataFrame"],.sec-hd,.sec-sub {{
+        animation-duration:0.01s!important;
+        transition-duration:0.01s!important;
+    }}
+}}
 
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
@@ -866,7 +938,6 @@ def _clean_hover(fig):
         t = getattr(trace, "type", "")
         nm = trace.name if hasattr(trace,"name") and trace.name and str(trace.name) not in ("0","","None") else ""
         nm_prefix = f"<b>{nm}</b><br>" if nm else ""
-
         if t == "bar":
             if getattr(trace, "orientation", None) == "h":
                 trace.hovertemplate = nm_prefix + "<b>%{y}</b><br>Total items: %{x:,.0f}<extra></extra>"
@@ -890,7 +961,6 @@ def _clean_hover(fig):
             ht = getattr(trace, "hovertemplate", None)
             if ht and "<extra></extra>" not in str(ht):
                 trace.hovertemplate = str(ht) + "<extra></extra>"
-
     return fig
 
 def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
@@ -982,7 +1052,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
       <!-- River photo overlay at 18% opacity, identical to About hero -->
       <div style="position:absolute;inset:0;
         background:url('{bg_img}') center/cover no-repeat;
-        opacity:.18;border-radius:0 0 16px 16px;"></div>
+        opacity:0;border-radius:0 0 16px 16px;animation:bannerReveal .8s ease .15s both;"></div>
       <!-- Subtle dot-grid texture -->
       <div style="position:absolute;inset:0;
         background-image:radial-gradient(circle at 1px 1px,rgba(93,168,50,.05) 1px,transparent 0);
@@ -1671,7 +1741,6 @@ def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=56
     d=df.copy()
     d[lat]=pd.to_numeric(d[lat],errors="coerce"); d[lon]=pd.to_numeric(d[lon],errors="coerce")
     d=d[d[lat].notna()&d[lon].notna()]
-    # Filter outliers outside Tucson metro area
     d=d[(d[lat]>31.5)&(d[lat]<33.0)&(d[lon]>-112.0)&(d[lon]<-110.0)]
     if len(d)==0: st.info("No rows with valid GPS coordinates in the Tucson area."); return
     vals=pd.to_numeric(d[metric_col],errors="coerce") if metric_col in d.columns else pd.Series([0]*len(d))
@@ -1775,11 +1844,30 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
 # Sign out button — off-screen but clickable via JS
 st.markdown("""<style>
 div.stButton:has(button[key="_hdr_so"]),
-div.stButton:has(button[key="_hdr_so"]) button {
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
     position:absolute!important;left:-9999px!important;top:-9999px!important;
     width:1px!important;height:1px!important;opacity:0!important;
     overflow:hidden!important;pointer-events:none!important;
-    padding:0!important;margin:0!important;border:none!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
+    background:rgba(122,143,53,.15)!important;
+    color:rgba(255,255,255,.85)!important;
+    border:1px solid rgba(255,255,255,.2)!important;
+    font-size:10px!important;
+    letter-spacing:1px!important;
+    text-transform:uppercase!important;
+    font-family:'DM Mono',monospace!important;
+    padding:5px 14px!important;
+    border-radius:16px!important;
+    backdrop-filter:blur(8px)!important;
+    cursor:pointer!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button:hover,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
+    background:rgba(180,60,30,.6)!important;
+    color:white!important;
+    border-color:rgba(255,255,255,.4)!important;
 }
 </style>""", unsafe_allow_html=True)
 
@@ -2145,7 +2233,7 @@ elif page == "Map":
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
         f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
-        'Map colors: <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden, <span style="color:#f59534;font-weight:700;">Orange</span> and <span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. Click any circle to see site details and exact counts.<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count across all survey events determines its color. The color scale uses logarithmic spacing so differences among lower-count sites are visible. This reflects cumulative litter load, not density per square meter.</div>',
+        'Map colors: <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden, <span style="color:#f59534;font-weight:700;">Orange</span> and <span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. Click any circle for details.<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count across all survey events determines its color. Logarithmic scaling ensures differences among lower-count sites are visible. This reflects cumulative litter load, not density per square meter.</div>',
         unsafe_allow_html=True
     )
 
