@@ -97,7 +97,7 @@ TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset"
         "Saige Thompson","Stephanie Winick","Damon Shorty","Julia Olson",
         "Isabella Feldmann","KyeongHee Kim","Joe Cuffori","Brian Jones"]
 
-PAGES = ["Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export","About"]
+PAGES = ["Overview","About","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
 
 C = dict(
     forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
@@ -173,11 +173,18 @@ section[data-testid="stMain"] > div > div,
 [data-testid="stMainBlockContainer"],
 [data-testid="stAppViewBlockContainer"],
 [data-testid="stAppViewContainer"],
-div[class*="block-container"] {{
+div[class*="block-container"],
+div[class*="appview-container"] > section > div {{
     padding-top:0!important;
     padding-bottom:0!important;
     margin-top:0!important;
     margin-bottom:0!important;
+}}
+/* Streamlit v1.x main container — the real gap culprit */
+.stMainBlockContainer > div,
+.stMainBlockContainer > div > div {{
+    padding-top:0!important;
+    margin-top:0!important;
 }}
 /* Every vertical stack */
 [data-testid="stVerticalBlock"],
@@ -191,13 +198,35 @@ div[class*="block-container"] {{
     padding-bottom:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:36px 96px 100px 124px;}}
+.body{{max-width:1480px;margin:0 auto;padding:10px 96px 100px 124px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
 .sec-hd{{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;
           color:{C["text"]};margin-bottom:2px;letter-spacing:-.01em;}}
 .sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:14px;line-height:1.6;}}
+@media print {{
+    /* Show the full page on print, not just the visible viewport */
+    .stApp {{ overflow:visible!important; }}
+    section.main, .block-container, [data-testid="stMainBlockContainer"] {{
+        overflow:visible!important;
+        height:auto!important;
+        max-height:none!important;
+    }}
+    [data-testid="stVerticalBlock"] {{
+        overflow:visible!important;
+        height:auto!important;
+    }}
+    /* Hide Streamlit chrome */
+    header[data-testid="stHeader"],
+    div[data-testid="stToolbar"],
+    div[data-testid="stDecoration"],
+    footer, .stDeployButton, button {{ display:none!important; }}
+    /* Page breaks */
+    .body {{ padding:20px!important; }}
+    h1, h2, h3 {{ page-break-after:avoid; }}
+    .js-plotly-plot {{ page-break-inside:avoid; }}
+}}
 .tbl-note{{font-size:12px;color:{C["muted"]};line-height:1.7;padding:10px 0 2px;
            border-top:1px solid {C["sand3"]};margin-top:10px;font-style:italic;}}
 
@@ -328,6 +357,20 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
 
 def show(fig, key=None):
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
+    # Automatic "Data current as of..." badge — uses real database latest date
+    try:
+        _ldate = st.session_state.get("_db_latest_date","")
+        _today = date.today().strftime("%B %d, %Y")
+        if _ldate:
+            _badge = f"Data current as of <strong>{_ldate}</strong> &nbsp;·&nbsp; Dashboard refreshed {_today}"
+        else:
+            _badge = f"Dashboard refreshed {_today}"
+        st.markdown(
+            f'<div style="font-size:10.5px;color:{C["muted"]};font-family:DM Mono,monospace;' +
+            f'letter-spacing:.3px;padding:2px 0 6px;text-align:right;opacity:.75;">{_badge}</div>',
+            unsafe_allow_html=True
+        )
+    except Exception: pass
 
 def card_open(title, subtitle=""):
     sub = f'<div class="sec-sub">{subtitle}</div>' if subtitle else ""
@@ -730,6 +773,9 @@ def load_data():
         # Event 334 (Near Verdugo Park): lat 32.110259 → 32.210259 (off by 0.1 degree)
         m334 = long["event_id"].astype(str) == "334"
         long.loc[m334 & (long["lat"] < 32.15), "lat"] = 32.210259
+        # Event 15 (Santa Cruz): lon -110.080527 → -110.980527 (missing digit — all SCR sites ~-110.98x)
+        m15 = long["event_id"].astype(str) == "15"
+        long.loc[m15 & (long["lon"] > -110.5), "lon"] = -110.980527
     # ────────────────────────────────────────────────────────────────
     long["seg"]=long["site_label"].map({s:seg for seg,sites in RIVER_SEGMENTS.items() for s in sites}).fillna("Other")
     long["trash_group"]=long["trash_group"].fillna("Misc")
@@ -1155,6 +1201,16 @@ with st.spinner("Loading from database…"):
     except Exception as e: st.error(f"Database error: {e}"); st.stop()
 
 et = make_et(long)
+
+# Cache the latest survey date globally — used by the "Data current as of" badge on every chart
+try:
+    _latest = long["date"].dropna().max() if "date" in long.columns else None
+    if _latest is not None and not pd.isna(_latest):
+        st.session_state["_db_latest_date"] = pd.Timestamp(_latest).strftime("%B %Y")
+    else:
+        st.session_state["_db_latest_date"] = ""
+except Exception:
+    st.session_state["_db_latest_date"] = ""
 
 # ══════════════════════════════════════════════════════════════════
 # OVERVIEW
@@ -1923,7 +1979,7 @@ elif page == "Categories":
                 texttemplate="%{z:.0f}",
                 textfont=dict(size=10),
                 showscale=True,
-                colorbar=dict(title="Total Items",titlefont=dict(size=11))
+                colorbar=dict(title=dict(text="Total Items",font=dict(size=11)))
             ))
             fb(fig,"Year","Category",h=580,leg=False,
                 title="Annual Item Totals by Category — Heatmap (Darker = More Items)"); show(fig,"yoy_heat")
@@ -2269,18 +2325,25 @@ elif page == "Data Table":
             meta = lf[meta_cols].drop_duplicates("event_id").copy()
             meta["date_str"] = meta["date"].dt.strftime("%Y-%m-%d") if "date" in meta.columns else ""
 
-            # Build the column order matching Excel (TRASH_GROUPS order)
+            # Build group-prefixed item key to avoid duplicates
+            # (e.g. "Bottles" appears in Beer, Liquor, Soda, Water, Sports Drinks, Juice)
+            lf_wide = lf.copy()
+            lf_wide["item_col"] = lf_wide["trash_group"].fillna("") + " — " + lf_wide["trash_item"].fillna("")
+
+            # Build ordered column list matching Excel group order
             item_order = []
             for grp, items in TRASH_GROUPS.items():
                 for item in items:
-                    item_order.append(item)
+                    col_name = f"{grp} — {item}"
+                    item_order.append(col_name)
 
-            # Pivot
-            pivot = lf.pivot_table(
-                index="event_id", columns="trash_item", values="n", aggfunc="sum", fill_value=0
+            # Pivot using the prefixed key — no duplicates possible
+            pivot = lf_wide.pivot_table(
+                index="event_id", columns="item_col", values="n", aggfunc="sum", fill_value=0
             ).reset_index()
+            pivot.columns.name = None
 
-            # Reorder columns to match Excel
+            # Reorder columns to match Excel protocol order
             available_items = [i for i in item_order if i in pivot.columns]
             extra_items = [c for c in pivot.columns if c != "event_id" and c not in item_order]
             pivot = pivot[["event_id"] + available_items + extra_items]
@@ -2791,7 +2854,7 @@ elif page == "About":
         Annual fish survey, Santa Cruz River · ©Bill Hatcher / Sonoran Institute, 2020</div>
         """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
 
     # Horizontal scrollable photo carousel
     carousel_photos = [
@@ -2823,7 +2886,7 @@ elif page == "About":
         unsafe_allow_html=True
     )
 
-    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
     section_title("About This Database")
 
     s1,s2,s3,s4 = st.columns(4)
@@ -2844,7 +2907,7 @@ elif page == "About":
             <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
             </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
     c3, c4 = st.columns([2,3])
     with c3:
         st.markdown(f"""<img src="https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg"
@@ -2871,7 +2934,7 @@ elif page == "About":
         and construction waste (illegal dumping indicator).</p>
         </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     section_title("Why Longitudinal Trash Data Matters")
 
     reasons = [
@@ -2899,9 +2962,9 @@ elif page == "About":
             <div style="font-size:13px;color:{C['muted']};line-height:1.7;">{text}</div>
             </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
-    padding:32px 48px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+    padding:20px 36px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
     <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;
     color:{C['green']};line-height:1.3;margin-bottom:14px;font-style:italic;max-width:700px;margin:0 auto 14px;">
     "The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years —
@@ -2910,7 +2973,7 @@ elif page == "About":
     text-transform:uppercase;letter-spacing:1px;">— Sonoran Institute</div>
     </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     section_title("Program Team")
     tc1, tc2, tc3 = st.columns(3)
     for col, name, role, desc, color in zip([tc1,tc2,tc3],
