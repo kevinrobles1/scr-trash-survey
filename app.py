@@ -1350,38 +1350,36 @@ if page == "Overview":
     # 6 impact cards rendered with st.columns — works in Streamlit reliably
     _cards = [
         ("#2471a3", "Regulatory Compliance",
-         "ADEQ stormwater permits and EPA Section 319 nonpoint source pollution programs require "
-         "<strong>documented evidence of active litter management</strong>. This dataset is that evidence — "
-         "with standardized methodology, multi-year records, and site-level resolution that satisfies "
-         "agency requirements. Without longitudinal data, the Sonoran Institute cannot demonstrate "
-         "compliance or progress to regulators."),
+         "ADEQ stormwater permits and EPA Section 319 both require agencies to see <strong>proof that "
+         "litter is being actively managed</strong>, not just cleaned up after the fact. "
+         "This dataset provides that proof. Standardized methods, consistent locations, and four years "
+         "of records give regulators exactly what they need to confirm the program is real and working."),
         ("#e8a620", "Grant Funding",
-         "Federal and foundation grants for river restoration require <strong>baseline data and "
-         "demonstrated monitoring capacity</strong>. This database establishes both — showing which "
-         "reaches are most impacted, whether interventions are reducing counts over time, and what "
-         "types of waste dominate. This is the exact framing that secures funding from EPA, NRCS, "
-         "and private conservation foundations."),
+         "Funders want to see that a problem is understood before they pay to fix it. "
+         "This database shows <strong>which river reaches carry the most trash, which categories dominate, "
+         "and whether prior cleanups made a difference</strong>. That is the evidence base that EPA, "
+         "NRCS, and conservation foundations require before committing restoration dollars."),
         ("#b5451b", "Public Health",
-         "Syringe and pharmaceutical counts are not abstract statistics — they represent "
-         "<strong>direct needle-stick hazards for field crews and the public</strong>. Documented "
-         "health hazard records support requests for targeted social services, cleanup resource "
-         "allocation, and protocol upgrades. The data makes the case that observation alone cannot."),
+         "Syringes found during surveys are not a data point. They are a <strong>safety risk for every "
+         "person who walks the river corridor</strong>. Having a documented count over time supports "
+         "requests for social service intervention, informs field crew protocols, and gives public "
+         "health agencies the numbers they need to prioritize resources along the corridor."),
         ("#1e4d1e", "Targeted Cleanup",
-         "Not every site needs the same response. High-mean, low-variability sites are "
-         "<strong>chronic hotspots</strong> requiring routine cleanup. High-variability sites "
-         "signal episodic dumping events that need source investigation. This distinction — "
-         "only visible through longitudinal data — determines how limited cleanup resources "
-         "are allocated most effectively."),
+         "Some sites are consistently heavily littered. Others spike after storms or encampment events. "
+         "These two situations require completely different responses. <strong>Longitudinal data is the "
+         "only way to tell them apart.</strong> Without it, cleanup crews go where they always go "
+         "rather than where the need is greatest right now."),
         ("#2d6a2d", "Policy &amp; Advocacy",
-         "Approximately <strong>63% of recorded items are floatable</strong> — they enter the river "
-         "during monsoon events and travel downstream. Approximately 16% are technically recyclable "
-         "per City of Tucson standards but end up as litter. These numbers are quantified arguments "
-         "for bottle bills, extended producer responsibility legislation, and stormwater ordinances."),
+         "About <strong>63% of items recorded float</strong>, meaning a monsoon storm carries them "
+         "directly into the river. About 16% are recyclable under Tucson city standards but are being "
+         "discarded as litter instead. Both figures are concrete, citable numbers that can be taken "
+         "into conversations about packaging policy, bottle deposit programs, and stormwater rules."),
         ("#6c4f8a", "Urban Wildlife Refuge",
-         "Sonoran Institute and The Wilderness Society are pursuing an <strong>Urban National Wildlife "
-         "Refuge designation</strong> for the Santa Cruz River. Demonstrating active, sustained, and "
-         "measurable litter monitoring is a prerequisite for that designation. This database is part "
-         "of the institutional record that makes the case to the U.S. Fish and Wildlife Service."),
+         "Sonoran Institute and The Wilderness Society are working to establish a <strong>Santa Cruz "
+         "River Urban National Wildlife Refuge</strong>. The U.S. Fish and Wildlife Service needs to "
+         "see that the river is being actively protected, not just restored. A four-year litter "
+         "monitoring record with consistent methodology is exactly the kind of evidence that "
+         "supports that case."),
     ]
 
     _ic1, _ic2, _ic3 = st.columns(3)
