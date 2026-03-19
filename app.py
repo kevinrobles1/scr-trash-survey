@@ -1705,6 +1705,7 @@ auth_gate()
 prof=st.session_state.get("prof") or {}
 
 # HEADER — sign out sits inside header HTML, triggers hidden Streamlit button
+_lang = st.session_state.get("lang","en")
 _en_col  = "rgba(255,255,255,.9)"  if _lang=="en" else "rgba(255,255,255,.35)"
 _es_col  = "rgba(255,255,255,.9)"  if _lang=="es" else "rgba(255,255,255,.35)"
 _en_dec  = "underline" if _lang=="en" else "none"
@@ -1849,7 +1850,6 @@ div[role="radiogroup"] > label > div:last-child p {{
 </style>""", unsafe_allow_html=True)
 
 # Resolve page display names in current language
-_lang = st.session_state.get("lang","en")
 _page_labels = [T(p) for p in PAGES]
 _cur_idx = PAGES.index(st.session_state["page"]) if st.session_state["page"] in PAGES else 0
 
