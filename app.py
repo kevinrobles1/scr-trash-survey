@@ -793,7 +793,7 @@ div[data-baseweb="select"]>div,div[data-baseweb="input"]>div,
   border-radius:7px!important;font-size:13.5px!important;
   font-family:'DM Sans',sans-serif!important;transition:border-color .15s!important;}}
 div[data-baseweb="select"]>div:focus-within,div[data-baseweb="input"]>div:focus-within{{
-  border-color:{C["sage"]}!important;box-shadow:0 0 0 3px rgba(93,168,50,.1)!important;}}
+  border-color:{C["green"]}!important;box-shadow:0 0 0 3px rgba(147,164,69,.15)!important;}}
 label{{font-size:12px!important;font-weight:600!important;color:{C["med"]}!important;letter-spacing:.3px!important;}}
 
 /* ── BUTTONS ── */
@@ -1767,9 +1767,14 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Hidden sign-out button — triggered by header HTML span
+# Sign out button — off-screen but clickable via JS
 st.markdown("""<style>
-div.stButton { display:none !important; }
+div.stButton:has(button[key="_hdr_so"]),
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
+    position:fixed!important;left:-9999px!important;top:-9999px!important;
+    opacity:0!important;pointer-events:auto!important;
+    height:1px!important;width:1px!important;overflow:hidden!important;
+}
 </style>""", unsafe_allow_html=True)
 
 if st.button("Sign Out", key="_hdr_so"):
@@ -2203,7 +2208,8 @@ elif page == "Trends":
         },
     }
 
-    sel_trend = st.selectbox("Select a figure to display", list(TREND_FIGS.keys()), key="trend_sel")
+    st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:4px;">↓ Choose chart</div>', unsafe_allow_html=True)
+    sel_trend = st.selectbox("Select a figure to display", list(TREND_FIGS.keys()), key="trend_sel", label_visibility="collapsed")
 
     # Description card
     fd = TREND_FIGS[sel_trend]
@@ -2362,7 +2368,8 @@ elif page == "Categories":
         "Category Group Summary Table":                         ("Data Tables",        "All 19 groups with total, rank, %, records, mean, and all environmental classifications.", "Use as the primary summary table in any report or presentation."),
     }
 
-    sel_cat = st.selectbox("Select a figure to display", list(CAT_FIGS.keys()), key="cat_fig_sel")
+    st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:4px;">↓ Choose chart</div>', unsafe_allow_html=True)
+    sel_cat = st.selectbox("Select a figure to display", list(CAT_FIGS.keys()), key="cat_fig_sel", label_visibility="collapsed")
     grp_label, desc, why = CAT_FIGS[sel_cat]
 
     # Description card
