@@ -265,6 +265,12 @@ TR = {
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
         "acct_session":"Account & Session",
+        # KPI strip
+        "kpi_items":"Total Items Recorded","kpi_items_note":"across all survey events",
+        "kpi_events":"Survey Events","kpi_events_note":"individual field visits",
+        "kpi_locs":"Unique Locations","kpi_locs_note":"registered site names",
+        "kpi_cats":"Trash Categories","kpi_cats_note":"of 19 groups · 56 items",
+        "kpi_period":"Survey Period","kpi_period_note":"date range",
         # Page banners — all pages
         "loc_ey":"Site Analysis",
         "loc_title":"Where the Trash Is — and How Much",
@@ -1698,7 +1704,12 @@ if(bounds.length>1) map.fitBounds(bounds,{{padding:[30,30]}});
 # APP START
 # ──────────────────────────────────────────────────────────────────
 # ── Language init — must happen before anything renders ──
-if "lang" not in st.session_state: st.session_state["lang"] = "en"
+# Read lang from query param if present (set by header EN/ES spans)
+_qp_lang = st.query_params.get("lang", None)
+if _qp_lang in ("en", "es"):
+    st.session_state["lang"] = _qp_lang
+elif "lang" not in st.session_state:
+    st.session_state["lang"] = "en"
 
 inject_css()
 auth_gate()
@@ -1723,12 +1734,12 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
       <span class="hdr-pos">{prof.get('position_title','')}</span>
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:4px;">
         <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
-        <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='__EN__'||b.textContent.trim()==='__EN__')b.click();}})}})()"
+        <span onclick="(()=>{{var u=new URL(window.parent.location.href);u.searchParams.set('lang','en');window.parent.location.href=u.toString();}})()"
           style="{_btn_sty}color:{_en_col};text-decoration:{_en_dec};"
           onmouseover="this.style.color='rgba(255,255,255,.9)'"
           onmouseout="this.style.color='{_en_col}'">EN</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
-        <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='__ES__'||b.textContent.trim()==='__ES__')b.click();}})}})()"
+        <span onclick="(()=>{{var u=new URL(window.parent.location.href);u.searchParams.set('lang','es');window.parent.location.href=u.toString();}})()"
           style="{_btn_sty}color:{_es_col};text-decoration:{_es_dec};"
           onmouseover="this.style.color='rgba(255,255,255,.9)'"
           onmouseout="this.style.color='{_es_col}'">ES</span>
@@ -1742,15 +1753,9 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Hidden sign-out button — visual is embedded in header HTML above
+# Hidden sign-out button — triggered by header HTML span
 st.markdown("""<style>
-/* Collapse the Streamlit sign-out button row entirely */
-div.element-container:has(button[data-testid="baseButton-secondary"]),
-div.stButton:has(button[key="_hdr_so"]) {
-    height:0!important;overflow:hidden!important;margin:0!important;
-    padding:0!important;min-height:0!important;max-height:0!important;
-    visibility:hidden!important;position:absolute!important;
-}
+div.stButton { display:none !important; }
 </style>""", unsafe_allow_html=True)
 
 if st.button("Sign Out", key="_hdr_so"):
@@ -1861,24 +1866,7 @@ _nav_choice = st.radio(
 page = PAGES[_page_labels.index(_nav_choice)] if _nav_choice in _page_labels else PAGES[0]
 st.session_state["page"] = page
 
-# Language buttons — hidden, triggered by header HTML spans
-st.markdown("""<style>
-div[data-testid="stHorizontalBlock"]:has(button[data-testid="baseButton-secondary"]:not([kind])),
-div.stButton:has(button[key="_lang_en_hdr"]),
-div.stButton:has(button[key="_lang_es_hdr"]) {
-    height:0!important;overflow:hidden!important;margin:0!important;
-    padding:0!important;min-height:0!important;max-height:0!important;
-    visibility:hidden!important;position:absolute!important;opacity:0!important;
-}
-</style>""", unsafe_allow_html=True)
-
-_lc1, _lc2, _lc3 = st.columns([12,1,1])
-with _lc2:
-    if st.button("__EN__", key="_lang_en_hdr"):
-        st.session_state["lang"]="en"; st.rerun()
-with _lc3:
-    if st.button("__ES__", key="_lang_es_hdr"):
-        st.session_state["lang"]="es"; st.rerun()
+# Language switching handled via URL query params (see lang init above)
 
 # LOAD DATA
 with st.spinner("Loading from database…"):
