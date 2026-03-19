@@ -162,7 +162,7 @@ footer{{display:none!important;}}
 }}
 
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:36px 44px 100px;}}
+.body{{max-width:1480px;margin:0 auto;padding:36px 60px 100px 60px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -285,7 +285,7 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     fig.update_layout(
         height=h, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family="DM Sans, sans-serif", color=C["text"], size=12),
-        margin=dict(l=6,r=6,t=44 if title else 28,b=6),
+        margin=dict(l=10,r=10,t=56 if title else 32,b=10),
         title=dict(text=title, font=dict(family="Cormorant Garamond, serif", size=16, color=C["green"]),
                    x=0, xanchor="left", pad=dict(l=0)) if title else None,
         legend=dict(bgcolor="rgba(255,255,255,.95)",bordercolor=C["divider"],borderwidth=1,
@@ -369,6 +369,21 @@ def verify_security_answer(username, answer):
         if not stored or not ans_salt: return False
         return secrets.compare_digest(stored, _hash(answer.strip().lower(), ans_salt))
     except: return False
+
+def get_username_by_fullname(full_name, sec_answer):
+    """Look up username by full name + security answer — lets users recover forgotten usernames."""
+    try:
+        r = get_sb().table("users").select("username,full_name,security_answer_hash,security_answer_salt").execute()
+        if not r.data: return None
+        for row in r.data:
+            if row.get("full_name","").strip().lower() == full_name.strip().lower():
+                ans_hash = row.get("security_answer_hash","")
+                ans_salt = row.get("security_answer_salt","")
+                if ans_hash and ans_salt:
+                    if secrets.compare_digest(ans_hash, _hash(sec_answer.strip().lower(), ans_salt)):
+                        return row["username"]
+        return None
+    except: return None
 
 def reset_password(username, new_password):
     """Set a new password for a user (called after security answer verified)."""
@@ -463,7 +478,7 @@ def auth_gate():
         st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
         <div class="auth-ttl">Sign in to<br>your account</div>
         <div class="auth-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>""", unsafe_allow_html=True)
-        t1,t2,t3 = st.tabs(["Sign In","Create Account","Forgot Password"])
+        t1,t2,t3,t4 = st.tabs(["Sign In","Create Account","Forgot Password","Look Up Username"])
 
         with t1:
             with st.form("_login"):
@@ -541,6 +556,24 @@ def auth_gate():
                                 st.success(msg)
                                 st.session_state["reset_step"]=1
                             else: st.error(msg)
+
+        with t4:
+            st.markdown(f'<div style="font-size:13px;color:{C["muted"]};margin-bottom:16px;line-height:1.7;">If you remember your full name and security answer but forgot your username, enter them below. Your username will be shown if they match.</div>', unsafe_allow_html=True)
+            with st.form("_lookup"):
+                lu_name = st.text_input("Your full name (as entered when you created your account)")
+                lu_ans  = st.text_input("Your security question answer")
+                if st.form_submit_button("Find My Username", use_container_width=True):
+                    if not lu_name.strip():
+                        st.error("Please enter your full name.")
+                    elif not lu_ans.strip():
+                        st.error("Please enter your security answer.")
+                    else:
+                        found = get_username_by_fullname(lu_name, lu_ans)
+                        if found:
+                            st.success(f"Your username is: **{found}**")
+                        else:
+                            st.error("No account found matching that name and security answer. Names are case-sensitive. Try your full name exactly as you typed it when registering.")
+            st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-top:12px;line-height:1.7;padding:10px 12px;background:{C["sand"]};border-radius:6px;">Note: Email-based password reset is not available. This dashboard runs without an email service. The security question system is the recovery method. If you are completely locked out, contact Kevin Robles to reset your account manually in Supabase.</div>', unsafe_allow_html=True)
 
         st.markdown(f"""<div class="auth-ftr"><span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>Cloud database secured by Supabase · Passwords encrypted</div>""",unsafe_allow_html=True)
     st.stop()
@@ -727,6 +760,30 @@ def last_updated_insight(df, chart_type="general", site=None, category=None):
 
     st.markdown(f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};border-radius:6px;border-left:3px solid {C["sage"]};margin:8px 0 16px;line-height:1.7;">{msg}</div>', unsafe_allow_html=True)
 
+def cat_color_legend():
+    """Universal category color guide — shown above every category table/chart."""
+    st.markdown(
+        f'<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;' +
+        f'background:white;border:1px solid {C["sand3"]};border-radius:8px;' +
+        f'padding:10px 16px;margin:10px 0 16px;font-size:12px;">' +
+        f'<span style="font-weight:700;font-size:11px;font-family:DM Mono,monospace;' +
+        f'text-transform:uppercase;letter-spacing:1px;color:{C["muted"]};margin-right:4px;">Category Colors:</span>' +
+        f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
+        f'<span style="width:11px;height:11px;border-radius:50%;background:{C["water"]};display:inline-block;"></span>' +
+        f'<span style="color:{C["text"]};">Recyclable</span> <span style="color:{C["muted"]};font-size:10px;">(City of Tucson standard)</span></span>' +
+        f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
+        f'<span style="width:11px;height:11px;border-radius:50%;background:{C["brick"]};display:inline-block;"></span>' +
+        f'<span style="color:{C["text"]};">Health Hazard</span> <span style="color:{C["muted"]};font-size:10px;">(Rx, Drugs, Nicotine, Toiletries)</span></span>' +
+        f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
+        f'<span style="width:11px;height:11px;border-radius:50%;background:{C["amber"]};display:inline-block;"></span>' +
+        f'<span style="color:{C["text"]};">Floatable</span> <span style="color:{C["muted"]};font-size:10px;">(river health / ADEQ risk)</span></span>' +
+        f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
+        f'<span style="width:11px;height:11px;border-radius:50%;background:{C["green"]};display:inline-block;"></span>' +
+        f'<span style="color:{C["text"]};">Other Non-Recyclable</span></span>' +
+        '</div>',
+        unsafe_allow_html=True
+    )
+
 def color_legend(title="Trash Burden", mode="gradient"):
     """Render a color legend below a map or chart."""
     if mode == "gradient":
@@ -853,9 +910,20 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
     <div><div class="hdr-name">Santa Cruz River Trash Survey</div>
          <div class="hdr-sub">Sonoran Institute · River Restoration Program</div></div>
   </div>
-  <div class="hdr-user"><strong>{prof.get('full_name','')}</strong>{prof.get('position_title','')}
-  <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div></div>
+  <div class="hdr-user">
+    <div style="text-align:right;line-height:1.5;">
+      <strong>{prof.get('full_name','')}</strong>
+      <span style="display:block;font-size:11px;color:rgba(255,255,255,.55);">{prof.get('position_title','')}</span>
+      <div class="hdr-pill" style="margin-top:4px;"><span class="hdr-dot"></span>&nbsp;Live Database</div>
+    </div>
+  </div>
 </div></div>""", unsafe_allow_html=True)
+
+# Sign-out always visible below header
+_c1, _c2 = st.columns([9, 1])
+with _c2:
+    if st.button("Sign Out", key="_hdr_signout"):
+        st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
 
 # ── NAV BAR via components.html (perfect rendering, no CSS battles) ──
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
@@ -977,6 +1045,7 @@ if page == "Overview":
 
     section_title("Category Summary Table")
     st.markdown('<div class="sec-sub">Total items, number of individual records, and average count per record for each trash category. Sorted by total count descending.</div>', unsafe_allow_html=True)
+    cat_color_legend()
     summary=lf.groupby("trash_group")["n"].agg(Total="sum",Records="count",Average="mean").reset_index()
     summary["% of Total"]=(100*summary["Total"]/max(summary["Total"].sum(),1)).round(1)
     summary=summary.sort_values("Total",ascending=False).round(1).reset_index(drop=True)
@@ -1265,6 +1334,7 @@ elif page == "Categories":
             unsafe_allow_html=True
         )
         last_updated_insight(df,"general")
+        cat_color_legend()
         fig_note(
             "Cumulative total of every recorded item in each of the 19 category groups across all survey events.",
             "Food Packaging dominates because it has 11 sub-types — but Clothing at #2 is a strong signal of encampment activity. Plastic Bags is technically its own group.",
@@ -1647,6 +1717,7 @@ elif page == "Categories":
             st.info("No segment data.")
 
     elif sel_cat == "Full Item-Level Statistics Table":
+        cat_color_legend()
         item_tbl=df.groupby(["trash_group","trash_item"])["n"].agg(Total="sum",Records="count",Mean="mean").reset_index()
         item_tbl["% of All Items"]=(100*item_tbl["Total"]/total_all).round(2)
         item_tbl["Recyclable"]=item_tbl["trash_group"].map(lambda g: "Yes" if g in RECYCLABLE_GROUPS else "No")
@@ -1659,6 +1730,7 @@ elif page == "Categories":
         tbl_note("Every individual item type with cumulative statistics. Records = number of data entries. Mean per Record = average count per entry (not per event). % is relative to the current filter. Recyclable = City of Tucson standard. Floatable = river health risk. Health Hazard = direct human contact risk.")
 
     elif sel_cat == "Category Group Summary Table":
+        cat_color_legend()
         grp_tbl=df.groupby("trash_group")["n"].agg(Total="sum",Records="count",Mean="mean").reset_index()
         grp_tbl["% of Total"]=(100*grp_tbl["Total"]/total_all).round(1)
         grp_tbl["Rank"]=grp_tbl["Total"].rank(ascending=False).astype(int)
@@ -1871,7 +1943,7 @@ elif page == "Data Table":
     st.markdown('<div class="pg-lead">Browse and explore the complete raw dataset. Every record in the database is shown here. Use the filters to narrow down by segment, location, category, or date range.</div>', unsafe_allow_html=True)
 
     with st.expander("Filter Data", expanded=True):
-        lf=render_filters(long, kp="dt")
+        lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
     stat_strip(long,lf)
 
     section_title("Raw Survey Records")
@@ -1886,6 +1958,7 @@ elif page == "Data Table":
 
     section_title("Filtered Summary — Category Breakdown")
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records above, grouped by trash category.</div>', unsafe_allow_html=True)
+    cat_color_legend()
     sum_cat=lf.groupby("trash_group")["n"].agg(Total="sum",Records="count").reset_index()
     sum_cat["% of Filtered Total"]=(100*sum_cat["Total"]/max(sum_cat["Total"].sum(),1)).round(1)
     sum_cat=sum_cat.sort_values("Total",ascending=False).reset_index(drop=True)
@@ -2268,11 +2341,19 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-with st.expander("Account"):
-    st.write(f"Signed in as **{prof.get('full_name','')}** ({prof.get('username','')})")
-    c1,c2=st.columns(2)
-    with c1:
-        if st.button("Refresh Data"): load_data.clear(); st.rerun()
-    with c2:
-        if st.button("Sign Out"):
+with st.expander("Account & Session"):
+    st.markdown(
+        f'<div style="font-size:13px;color:{C["text"]};margin-bottom:8px;">' +
+        f'Signed in as <strong>{prof.get("full_name","")}</strong> &nbsp;·&nbsp; ' +
+        f'Username: <code>{prof.get("username","")}</code> &nbsp;·&nbsp; ' +
+        f'Role: {prof.get("position_title","")}</div>',
+        unsafe_allow_html=True
+    )
+    _a1, _a2, _a3 = st.columns(3)
+    with _a1:
+        if st.button("Refresh Data", key="_ftr_refresh"): load_data.clear(); st.rerun()
+    with _a2:
+        if st.button("Sign Out", key="_ftr_signout"):
             st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
+    with _a3:
+        st.caption("Sign out button also available top-right")
