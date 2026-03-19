@@ -265,7 +265,10 @@ TR = {
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
         "acct_session":"Account & Session",
-        # Page banners — Overview / Map / Trends
+        # Page banners — Overview / Map / Trends / Categories
+        "cat_ey":"Item & Category Analysis",
+        "cat_title":"What Kind of Trash We Find",
+        "cat_sub":"Deep dive into the 19 category groups and 56 individual item types recorded across all surveys.",
         "ov_ey":"Sonoran Institute · Tucson, Arizona",
         "ov_title":"Santa Cruz River Trash Survey",
         "ov_sub":"Longitudinal survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across multiple sites and reaches — program led by Luke Cole, Sonoran Institute.",
