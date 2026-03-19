@@ -601,7 +601,7 @@ C = dict(
     sky="#1a5276", water="#2471a3",
     text="#18180f", med="#3a3a28", muted="#686854", divider="#cec6b0", white="#ffffff",
 )
-PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],"#6c4f8a","#2e8b8b",C["mint"],"#888877",C["earth"],"#c0392b","#16a085"]
+PAL = ["#93a445","#2471a3","#b5451b","#e8a620","#a8b85a","#6c4f8a","#2e8b8b","#d4a017","#888877","#8b4513","#c0392b","#16a085","#e07b4c","#4a7c59","#9b59b6","#34759a","#cc6677","#557a44","#af6e3d"]
 
 st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon="🌊",
                    layout="wide", initial_sidebar_state="collapsed")
@@ -861,7 +861,7 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
 def _clean_hover(fig):
-    """Force clean, professional hover labels on EVERY trace. No exceptions."""
+    """Apply readable hover labels to every trace. Called by show() on all charts."""
     for trace in fig.data:
         t = getattr(trace, "type", "")
         nm = trace.name if hasattr(trace,"name") and trace.name and str(trace.name) not in ("0","","None") else ""
@@ -895,10 +895,7 @@ def _clean_hover(fig):
             trace.hovertemplate = "Bin: %{x}<br>Frequency: %{y:,.0f}<extra></extra>"
 
         else:
-            # Catch-all for any other trace type
-            ht = getattr(trace, "hovertemplate", None)
-            if ht and "<extra></extra>" not in str(ht):
-                trace.hovertemplate = str(ht).rstrip() + "<extra></extra>"
+            trace.hovertemplate = nm_prefix + "%{x}: %{y}<extra></extra>"
 
     return fig
 
@@ -918,56 +915,34 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
             font=dict(family="DM Sans, sans-serif", size=12.5, color=C["text"]),
         ),
     )
-    # Clean raw column names in axis titles
-    _nm = {"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item",
-        "total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)",
-        "events":"Events","sd":"Standard Deviation","mean":"Mean Items",
-        "share":"Share (%)","recyclable":"Classification","floatable":"Classification",
-        "site_display":"Survey Site","cv_pct":"CV (%)","month_name":"Month","year_str":"Year"}
-    if xt and xt in _nm: xt = _nm[xt]
-    if yt and yt in _nm: yt = _nm[yt]
     fig.update_xaxes(showgrid=False,zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     fig.update_yaxes(showgrid=True,gridcolor=C["sand2"],zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     _clean_hover(fig)
     return fig
 
 def show(fig, key=None):
-    # Force clean hovers on every chart
     _clean_hover(fig)
-    # Clean raw column names from axis titles and legend titles
-    _name_map = {"n":"Total Items","seg":"River Segment","trash_group":"Category",
+    # Clean raw column names from axis titles and legends
+    _nm = {"n":"Total Items","seg":"River Segment","trash_group":"Category",
         "trash_item":"Item","site_label":"Location","year_str":"Year",
         "month_name":"Month","total":"Total Items","avg":"Average Items",
         "weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation",
-        "se":"Standard Error","cv_pct":"Coefficient of Variation (%)",
-        "mean":"Mean Items per Event","site_display":"Survey Site",
-        "share":"Share of Total (%)","recyclable":"Classification",
-        "floatable":"Classification","avg_per_event":"Avg Items per Event",
-        "count_value":"Count","per_m2":"Items per m\u00b2","year":"Year",
-        "date":"Date","north_rank":"Position","plot_total":"Items per Event",
-        "count":"Count","n_plots":"Number of Events","Total":"Total Items",
-        "Category":"Category","Item":"Item","Cup Type":"Cup Type"}
+        "se":"Standard Error","cv_pct":"CV (%)","mean":"Mean Items per Event",
+        "site_display":"Survey Site","share":"Share of Total (%)","recyclable":"Classification",
+        "floatable":"Classification","avg_per_event":"Avg Items per Event","year":"Year",
+        "date":"Date","count":"Count","Total":"Total Items","Category":"Category",
+        "Item":"Item","Cup Type":"Cup Type"}
     for ax_name in ["xaxis","yaxis","xaxis2","yaxis2"]:
         try:
             ax = fig.layout[ax_name]
-            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _name_map:
-                ax.title.text = _name_map[ax.title.text]
+            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm:
+                ax.title.text = _nm[ax.title.text]
         except: pass
-    # Clean legend title
     try:
         if fig.layout.legend and fig.layout.legend.title:
             lt = fig.layout.legend.title.text
-            if lt and lt in _name_map:
-                fig.layout.legend.title.text = _name_map[lt]
+            if lt and lt in _nm: fig.layout.legend.title.text = _nm[lt]
     except: pass
-    # Also clean colorbar titles
-    for trace in fig.data:
-        try:
-            if hasattr(trace, "colorbar") and trace.colorbar and trace.colorbar.title:
-                if trace.colorbar.title.text in _name_map:
-                    trace.colorbar.title.text = _name_map[trace.colorbar.title.text]
-        except: pass
-    # Apply consistent hoverlabel style
     fig.update_layout(hoverlabel=dict(
         bgcolor="white", bordercolor="#d8ceba",
         font=dict(family="DM Sans, sans-serif", size=12.5, color="#18180f"),
@@ -3778,7 +3753,6 @@ elif page == "Export":
 # ══════════════════════════════════════════════════════════════════
 elif page == "About":
 
-    # Hero banner
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
     border-radius:0;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
