@@ -600,9 +600,7 @@ C = dict(
 )
 PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],"#6c4f8a","#2e8b8b",C["mint"],"#888877",C["earth"],"#c0392b","#16a085"]
 
-# Sonoran Institute hummingbird favicon (PIL-generated)
 from PIL import Image as _PILImg, ImageDraw as _PILDraw
-import io as _pio, base64 as _pb64
 _fi = _PILImg.new("RGBA",(32,32),(0,0,0,0))
 _fd = _PILDraw.Draw(_fi)
 _fd.ellipse([1,1,30,30],fill=(122,143,53))
