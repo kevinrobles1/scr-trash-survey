@@ -559,8 +559,8 @@ TR = {
         "dt_ey":"Base de Datos Completa",
         "dt_title":"Explorar el Registro Completo de Encuestas",
         "dt_sub":"Cada conteo registrado de cada evento de encuesta. Filtra por segmento, ubicación, categoría o fecha.",
-        "dt_wide":"Formato Amplio — una fila por evento, cada artículo como columna (como Excel)",
-        "dt_long":"Formato Largo — una fila por artículo por evento",
+        "dt_wide":"Formato Amplio: una fila por evento, cada artículo como columna (como Excel)",
+        "dt_long":"Formato Largo: una fila por artículo por evento",
         # Data Entry
         "de_ey":"Entrada de Datos de Campo",
         "de_title":"Entrada y Gestión de Datos de Encuesta",
@@ -863,13 +863,13 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
 def _clean_hover(fig):
-    """Apply readable hover labels to every trace. Called by show() on all charts."""
+    """Apply clean, professional hover labels to every trace."""
     for trace in fig.data:
         t = getattr(trace, "type", "")
         nm = trace.name if hasattr(trace,"name") and trace.name and str(trace.name) not in ("0","","None") else ""
         nm_prefix = f"<b>{nm}</b><br>" if nm else ""
 
-        # If already has a clean custom template, just ensure <extra></extra> is present
+        # If already has a custom template, just ensure <extra></extra> is present
         ht = getattr(trace, "hovertemplate", None)
         if ht and "%{" in str(ht):
             if "<extra></extra>" not in str(ht):
@@ -878,21 +878,18 @@ def _clean_hover(fig):
 
         if t == "bar":
             if getattr(trace, "orientation", None) == "h":
-                # Horizontal bar — y is category label, x is value
-                trace.hovertemplate = nm_prefix + "%{y}<br>Total items: %{x:,.0f}<extra></extra>"
+                trace.hovertemplate = nm_prefix + "<b>%{y}</b><br>Total items: %{x:,.0f}<extra></extra>"
             else:
-                # Vertical bar — x is category/date, y is value
-                trace.hovertemplate = nm_prefix + "%{x}<br>Total items: %{y:,.0f}<extra></extra>"
+                trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
 
         elif t == "scatter":
-            # Try date format first; if x is not a date Plotly ignores the format gracefully
-            trace.hovertemplate = nm_prefix + "%{x}<br>Total items: %{y:,.0f}<extra></extra>"
+            trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
 
         elif t == "pie":
             trace.hovertemplate = (
                 "<b>%{label}</b><br>"
-                "Share of total: %{percent}<br>"
-                "Items recorded: %{value:,.0f}"
+                "Share: %{percent}<br>"
+                "Total items: %{value:,.0f}"
                 "<extra></extra>"
             )
 
@@ -900,7 +897,7 @@ def _clean_hover(fig):
             trace.hovertemplate = (
                 "<b>%{y}</b><br>"
                 "Year: %{x}<br>"
-                "Items: %{z:,.0f}"
+                "Total items: %{z:,.0f}"
                 "<extra></extra>"
             )
 
@@ -908,13 +905,13 @@ def _clean_hover(fig):
             trace.hovertemplate = "%{text}<extra></extra>"
 
         elif t == "box":
-            trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Low: %{lowerfence:,.0f}<br>High: %{upperfence:,.0f}<extra></extra>"
+            trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Lowest: %{lowerfence:,.0f}<br>Highest: %{upperfence:,.0f}<extra></extra>"
 
         elif t == "violin":
-            trace.hovertemplate = nm_prefix + "%{y:,.0f}<extra></extra>"
+            trace.hovertemplate = nm_prefix + "Value: %{y:,.0f}<extra></extra>"
 
         elif t == "histogram":
-            trace.hovertemplate = "Bin: %{x}<br>Count: %{y:,.0f}<extra></extra>"
+            trace.hovertemplate = "Bin: %{x}<br>Frequency: %{y:,.0f}<extra></extra>"
 
     return fig
 
@@ -1976,7 +1973,7 @@ if page == "Overview":
     c1,c2 = st.columns([3,2])
     with c1:
         card_open("Monthly Items Recorded Over Time",
-                  "Green bars = survey conducted · Gray = no survey that month (trash still present; see note below) · Gold dashed line = 3-month rolling average")
+                  "Green bars = survey conducted · Gray = no survey that month (trash still present, see note below) · Gold dashed line = 3-month rolling average")
         ts=lf.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
         if len(ts)>0:
             full=pd.date_range(ts["date"].min(),ts["date"].max(),freq="MS")
@@ -2223,7 +2220,7 @@ elif page == "Trends":
         },
         "Average Items Per Survey Event Over Time": {
             "desc": "Monthly mean of total items per field visit. Dotted line = grand mean across the full record.",
-            "why": "Adjusts for varying survey frequency — fairer than raw totals when the number of events per month changes.",
+            "why": "Adjusts for varying survey frequency. Fairer than raw totals when the number of events per month changes.",
         },
         "Items by River Segment (Quarterly)": {
             "desc": "Quarterly item totals for each named river segment. Each color = one segment.",
@@ -2292,7 +2289,7 @@ elif page == "Trends":
             fb(fig,"Month","Avg Items / Event",h=420,title="Average Items Per Survey Event (Monthly)"); show(fig,"tr_avg")
             last_updated_insight(df, chart_type="general")
             fig_note("Monthly mean of total items per field visit across all sites.",
-                "More interpretable than raw totals when survey frequency varies.",
+                "More interpretable than raw totals when survey frequency varies between months.",
                 "Points above the dotted line = heavier-than-average months.",
                 "Grand mean = average across all months in the full record.")
         else: st.info("No event-level data available.")
@@ -2385,7 +2382,7 @@ elif page == "Categories":
         "Floatable vs Non-Floatable: River Health Risk":       ("Environmental Risk", "Categories classified by whether they float and enter waterways during rain or flooding events.", "~63% of items are floatable — directly relevant to ADEQ stormwater permits and EPA Section 319 reporting."),
         "Health Hazard Items: Rx, Drugs, Nicotine, Toiletries":("Environmental Risk", "Items with direct public health risk: syringes, drug packaging, cigarettes, lighters, and toiletries.", "Syringes create needle-stick hazard for field staff. These require special handling protocols."),
         "Bulk and Large Debris: Appliances, Construction, Auto": ("Environmental Risk", "Large items requiring equipment: appliances, furniture, tires, car parts, construction debris.", "By item count modest, but by weight and removal cost they far exceed smaller categories."),
-        "Category Risk Profile: Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk, the priority removal targets."),
+        "Category Risk Profile: Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk: the priority removal targets."),
         "Category Trends Over Time: Top 6 (Quarterly)":         ("Trends by Category", "Quarterly time series for the 6 highest-volume categories.", "Shows whether category composition is stable or shifting over the program period."),
         "Year over Year Change by Category":                    ("Trends by Category", "Heatmap + stacked bar showing each category's annual item total. Heatmap is the correct chart type — 19 categories × 5 years would be 95 bars if grouped.", "Reveals which categories are increasing, decreasing, or stable year over year. Darker cells = more items."),
         "Category Composition: How Mix Changed by Year":       ("Trends by Category", "100% stacked bars showing each category's share per year. Removes total survey size effect.", "More ecologically meaningful than raw totals for detecting true composition shifts."),
@@ -2455,7 +2452,7 @@ elif page == "Categories":
         fig=go.Figure(go.Bar(x=top["n"],y=top["trash_item"],orientation="h",
             marker_color=colors,
             customdata=top[["trash_group","pct"]].values,
-            hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Count: %{x:,}<br>Share: %{customdata[1]}%<extra></extra>"))
+            hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Total items: %{x:,.0f}<br>Share of all: %{customdata[1]}%<extra></extra>"))
         fb(fig,"Total Count","Item",h=max(900,20*len(top)),leg=False,
             title="All 56 Individual Item Types by Total Count"); show(fig,"cat_all56")
         cat_color_legend()
@@ -2511,7 +2508,7 @@ elif page == "Categories":
         fig=go.Figure(go.Bar(x=avg_cat["avg"],y=avg_cat["trash_group"],orientation="h",
             marker_color=avg_cat["color"],text=avg_cat["avg"].round(1),textposition="outside"))
         fb(fig,"Avg Items per Event","",h=max(560,32*len(avg_cat)),leg=False,
-            title="Average Items per Survey Event: All 19 Categories"); show(fig,"cat_avg2")
+            title="Average Items per Survey Event: All Categories"); show(fig,"cat_avg2")
         cat_color_legend()
         fig_note("Mean total items per survey event for each category.",
             "Adjusts for recording frequency — a category recorded across 100 events is compared fairly to one recorded across 20.",
@@ -2569,7 +2566,7 @@ elif page == "Categories":
             text=[f"{int(v):,} ({p}%)" for v,p in zip(fp["n"],fp["pct"])])
         fig.update_traces(textposition="outside")
         fb(fig,"Total Items","Item Type",h=max(440,36*len(fp)),leg=False,
-            title="Food Packaging: All 11 Sub-Types Ranked"); show(fig,"fp_items")
+            title="Food Packaging: All 11 Sub-Types"); show(fig,"fp_items")
         last_updated_insight(df,"category","Food Packaging")
         cat_color_legend()
         fig_note("Food Packaging is the single largest category at 10,694 items, spanning 11 distinct sub-types.",
@@ -2734,7 +2731,7 @@ elif page == "Categories":
             color_discrete_map={"Recyclable":C["water"],"Floatable":"#2471a3","Health Hazard":C["brick"],"Bulk Debris":C["earth"]},
             category_orders={"Category":list(reversed(GROUP_ORDER))})
         fb(fig,"Total Items","",h=max(540,30*len(risk_df)),
-            title="Category Risk Profile: Volume vs Risk Dimensions"); show(fig,"risk_scatter")
+            title="Category Risk Profile: Volume vs Risk"); show(fig,"risk_scatter")
         cat_color_legend()
         fig_note("Each dot = a category flagged with a risk dimension. Larger and further right = more items.",
             "Shows which categories combine high volume with high environmental or health risk.",
@@ -2772,14 +2769,14 @@ elif page == "Categories":
                 y=pivot.index.tolist(),
                 colorscale=[[0,"#f8f5ef"],[0.3,C["mint"]],[0.7,C["green"]],[1,C["forest"]]],
                 hoverongaps=False,
-                hovertemplate="<b>%{y}</b><br>Year: %{x}<br>Items: %{z:,.0f}<extra></extra>",
+                hovertemplate="<b>%{y}</b><br>Year: %{x}<br>Total items: %{z:,.0f}<extra></extra>",
                 texttemplate="%{z:.0f}",
                 textfont=dict(size=10),
                 showscale=True,
                 colorbar=dict(title=dict(text="Total Items",font=dict(size=11)))
             ))
             fb(fig,"Year","Category",h=580,leg=False,
-                title="Annual Item Totals by Category (Darker = More Items)"); show(fig,"yoy_heat")
+                title="Annual Item Totals by Category (Heatmap)"); show(fig,"yoy_heat")
 
             # B: Stacked bar for total comparison across years
             fig2=px.bar(yoy,x="year_str",y="n",color="trash_group",barmode="stack",
@@ -2808,7 +2805,7 @@ elif page == "Categories":
             ord_cats=[g for g in GROUP_ORDER if g in yp["trash_group"].unique()]
             fig=px.bar(yp,x="year_str",y="share",color="trash_group",barmode="stack",
                 color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
-            fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year: Proportional Shares"); show(fig,"comp_yr")
+            fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year: Proportional"); show(fig,"comp_yr")
             cat_color_legend()
             fig_note("100% stacked bars — each bar totals 100%, showing category SHARE each year.",
                 "Removes the effect of varying survey effort and shows whether the MIX of items is changing.",
@@ -2932,7 +2929,7 @@ elif page == "Locations":
     color_legend("River Segment Colors", mode="segments")
 
     loc_tab1, loc_tab2, loc_tab3, loc_tab4 = st.tabs([
-        "North to South — Mean", "North to South — Variability",
+        "North to South: Mean", "North to South: Variability",
         "Segment Comparison", "Full Statistics Table"
     ])
 
@@ -2979,13 +2976,13 @@ elif page == "Locations":
                           "SD measures how much individual events vary at each site. A site with SD=0 had exactly the same count every visit. High SD = unpredictable or patchy litter.")
                 fig=px.bar(ns_show,x="sd",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
                 fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
-                fb(fig,"Standard Deviation","Site",h=max(500,24*len(ns_show)),title="Within-Site Variability (SD): North to South"); show(fig,"ns_sd")
+                fb(fig,"Standard Deviation","Site",h=max(500,24*len(ns_show)),title="Within-Site Variability: North to South"); show(fig,"ns_sd")
                 fig_note("Standard deviation of total items per event at each site.",
                     "High SD indicates inconsistency — some visits found a lot of trash, others very little.",
                     "Longer bars = more variable sites. A site can have a low mean but high SD if trash events are sporadic.",
                     "SD is not comparable across sites with very different means. Use CV for that.")
             with c2v:
-                card_open("Coefficient of Variation (CV) by Site: North to South",
+                card_open("Coefficient of Variation by Site: North to South",
                           "CV = SD ÷ Mean × 100. It normalizes variability so sites with different mean burden can be fairly compared.")
                 ns_show_cv = ns_show[ns_show["cv"].notna()].copy()
                 ns_show_cv["cv_pct"]=(ns_show_cv["cv"]*100).round(1)
@@ -2998,7 +2995,7 @@ elif page == "Locations":
                         "CV < 30% = relatively consistent. CV 30–100% = moderate variability. CV > 100% = highly unpredictable.",
                         "A clean site with CV=150% is more unpredictable than a heavy site with CV=25%.")
 
-            card_open("Range of Items per Event by Site: North to South",
+            card_open("Range of Items per Event: North to South",
                       "Range = maximum items recorded minus minimum items recorded across all events at that site. Simple and easy to communicate in presentations.")
             fig=px.bar(ns_show,x="range",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
             fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
@@ -3204,7 +3201,7 @@ elif page == "Data Entry":
             "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg")
     else:
         page_banner("Field Data Entry", "Survey Data Entry and Management",
-            "Submit new survey entries and manage existing records. All changes save directly to the live database.",
+            "Submit new survey entries and manage existing records.",
             "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg")
 
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
@@ -3217,8 +3214,8 @@ elif page == "Data Entry":
         Volunteer session: <strong>{prof.get("full_name","")}</strong>
         {" · " + prof.get("volunteer_org","") if prof.get("volunteer_org") else ""}
         &nbsp;·&nbsp; You can submit survey counts only.
+        To access all features, <a href="/" style="color:{C["green"]};font-weight:600;">sign in with a staff account</a>.
         </div></div>''', unsafe_allow_html=True)
-
     if is_vol:
         # Volunteers only see the entry form — no tabs, no manage section
         entry_tab = st.container()
@@ -3774,7 +3771,7 @@ elif page == "About":
     section_title(T("why_river_title"))
     c1, c2 = st.columns([3,2])
     with c1:
-        st.markdown(f"""<div style="font-size:14.5px;color:{C['text']};line-height:2.05;">
+        st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:2.05;">
         <p style="margin:0 0 20px;">{T("about_p1")}</p>
         <p style="margin:0 0 20px;">{T("about_p2")}</p>
         <p style="margin:0 0 20px;">{T("about_p3")}</p>
@@ -3851,7 +3848,7 @@ elif page == "About":
           {T("about_field_caption")}</div>""", unsafe_allow_html=True)
     with _ab2:
         st.markdown(f"""
-        <div style="font-size:14.5px;color:{C['text']};line-height:2.05;padding-top:8px;">
+        <div style="font-size:14px;color:{C['text']};line-height:2.05;padding-top:8px;">
           <p style="margin:0 0 22px;">{T("about_db_p1")}</p>
           <p style="margin:0 0 22px;">{T("about_db_p2")}</p>
           <p style="margin:0 0 22px;">{T("about_db_p3")}</p>
