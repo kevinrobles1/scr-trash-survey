@@ -987,54 +987,106 @@ with _c2:
     if st.button("Sign Out", key="_hdr_signout"):
         st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
 
-# ── NAV BAR via components.html (perfect rendering, no CSS battles) ──
+# ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
-cur = st.session_state["page"]
 
-nav_items = "".join(f"""<div class="ni {'active' if p==cur else ''}" onclick="choose('{p}')">{p}</div>""" for p in PAGES)
-components.html(f"""<style>
-*{{margin:0;padding:0;box-sizing:border-box;}}
-body{{background:{C["forest"]};font-family:'DM Sans',sans-serif;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      box-shadow:0 3px 14px rgba(0,0,0,.35);}}
-.nav{{max-width:1480px;margin:0 auto;padding:0 44px;display:flex;gap:0;}}
-.ni{{padding:14px 20px;font-size:11px;font-weight:700;letter-spacing:1.2px;
-     text-transform:uppercase;color:rgba(255,255,255,.6);
-     border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap;
-     transition:all .15s;}}
-.ni:hover{{color:white;background:rgba(255,255,255,.06);border-bottom-color:rgba(255,255,255,.25);}}
-.ni.active{{color:#5da832;border-bottom-color:#5da832;background:rgba(93,168,50,.08);}}
-</style>
-<div class="nav">{nav_items}</div>
-<script>
-function choose(p){{
-  // post message to parent Streamlit
-  window.parent.postMessage({{type:'streamlit:setComponentValue',value:p}},'*');
-}}
-</script>""", height=50)
-
-# Invisible radio to actually drive Streamlit state from the nav clicks
-# We use session state directly — nav clicks go through postMessage → component value
-nav_val = st.radio("_nav", PAGES, index=PAGES.index(cur),
-                   label_visibility="collapsed", horizontal=True, key="_nav_radio")
-if nav_val != cur:
-    st.session_state["page"] = nav_val
-    st.rerun()
-# Also hide the radio
+# The radio IS the nav — CSS removes dots and makes it look like tabs
 st.markdown(f"""<style>
+/* ── Nav wrapper ── */
 div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
-    height:0!important;overflow:hidden!important;margin:0!important;padding:0!important;
-    position:fixed!important;top:-9999px!important;left:-9999px!important;
-    opacity:0!important;pointer-events:none!important;visibility:hidden!important;
-    width:0!important;min-height:0!important;max-height:0!important;
+    background:{C["forest"]} !important;
+    position:sticky !important;
+    top:0 !important;
+    z-index:200 !important;
+    border-bottom:1px solid rgba(255,255,255,.1) !important;
+    box-shadow:0 3px 14px rgba(0,0,0,.35) !important;
+    margin:0 !important;
+    padding:0 !important;
+    width:100% !important;
 }}
-div[role="radiogroup"] {{ display:none!important; }}
-div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) * {{
-    display:none!important;
+/* Make the radiogroup fill the full width */
+div[role="radiogroup"] {{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    gap:0 !important;
+    background:transparent !important;
+    padding:0 44px !important;
+    max-width:1480px !important;
+    margin:0 auto !important;
+    border:none !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+}}
+/* Each option wrapper */
+div[role="radiogroup"] > label {{
+    display:flex !important;
+    align-items:center !important;
+    padding:14px 20px !important;
+    font-family:'DM Sans',sans-serif !important;
+    font-size:11px !important;
+    font-weight:700 !important;
+    letter-spacing:1.2px !important;
+    text-transform:uppercase !important;
+    color:rgba(255,255,255,.65) !important;
+    border-bottom:3px solid transparent !important;
+    cursor:pointer !important;
+    white-space:nowrap !important;
+    transition:color .15s,border-color .15s,background .15s !important;
+    background:transparent !important;
+    border-radius:0 !important;
+    margin:0 !important;
+    line-height:1 !important;
+    min-height:0 !important;
+}}
+div[role="radiogroup"] > label:hover {{
+    color:white !important;
+    background:rgba(255,255,255,.06) !important;
+    border-bottom-color:rgba(255,255,255,.3) !important;
+}}
+/* Selected / active tab */
+div[role="radiogroup"] > label[data-baseweb="radio"]:has(input:checked),
+div[role="radiogroup"] > label:has(input:checked) {{
+    color:{C["mint"]} !important;
+    border-bottom-color:{C["mint"]} !important;
+    background:rgba(93,168,50,.08) !important;
+}}
+/* Hide the radio circle dot completely */
+div[role="radiogroup"] > label > div:first-child {{
+    display:none !important;
+    width:0 !important;
+    height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+}}
+div[role="radiogroup"] input[type="radio"] {{
+    display:none !important;
+}}
+/* The text span inside label */
+div[role="radiogroup"] > label > div:last-child {{
+    margin:0 !important;
+    padding:0 !important;
+}}
+div[role="radiogroup"] > label > div:last-child p {{
+    font-family:'DM Sans',sans-serif !important;
+    font-size:11px !important;
+    font-weight:700 !important;
+    letter-spacing:1.2px !important;
+    text-transform:uppercase !important;
+    margin:0 !important;
+    color:inherit !important;
+    line-height:1 !important;
 }}
 </style>""", unsafe_allow_html=True)
 
-page = st.session_state["page"]
+page = st.radio(
+    "nav",
+    PAGES,
+    index=PAGES.index(st.session_state["page"]),
+    horizontal=True,
+    label_visibility="collapsed",
+    key="main_nav"
+)
+st.session_state["page"] = page
 
 # LOAD DATA
 with st.spinner("Loading from database…"):
