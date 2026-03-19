@@ -602,36 +602,6 @@ C = dict(
     text="#18180f", med="#3a3a28", muted="#686854", divider="#cec6b0", white="#ffffff",
 )
 PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],"#6c4f8a","#2e8b8b",C["mint"],"#888877",C["earth"],"#c0392b","#16a085"]
-# ── CHART AXIS LABELS (maps raw column names to professional labels) ──
-PX_LABELS = {
-    "n": "Total Items",
-    "seg": "River Segment",
-    "trash_group": "Category",
-    "trash_item": "Item",
-    "site_label": "Location",
-    "event_id": "Event ID",
-    "date": "Date",
-    "year": "Year",
-    "year_str": "Year",
-    "month_name": "Month",
-    "total": "Total Items",
-    "avg": "Average Items",
-    "avg_per_event": "Avg Items per Event",
-    "events": "Number of Events",
-    "weight_oz": "Weight (oz)",
-    "recyclable": "Classification",
-    "floatable": "Classification",
-    "sd": "Standard Deviation",
-    "se": "Standard Error",
-    "cv_pct": "Coefficient of Variation (%)",
-    "range": "Range (Max minus Min)",
-    "mean": "Mean Items per Event",
-    "site_display": "Survey Site",
-    "share": "Share of Total (%)",
-    "plot_total": "Items per Event",
-    "north_rank": "Position (North to South)",
-}
-
 
 st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon="🌊",
                    layout="wide", initial_sidebar_state="collapsed")
@@ -847,9 +817,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
   font-size:12.5px!important;font-weight:700!important;color:{C["green"]}!important;
   letter-spacing:.3px!important;}}
 div[data-testid="stExpander"]{{background:{C["cream"]}!important;border:1px solid {C["sand3"]}!important;border-radius:10px!important;}}
-div[data-testid="stExpander"] details{{background:{C["cream"]}!important;border:none!important;}}
-div[data-testid="stExpander"] summary{{background:{C["cream"]}!important;}}
-div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{background:{C["cream"]}!important;}}
+div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{background:{C["cream"]}!important;border:none!important;}}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{{width:5px;height:5px;}}
@@ -893,46 +861,26 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
 def _clean_hover(fig):
-    """Apply readable hover labels to every trace. Called by show() on all charts."""
+    """Force clean, professional hover labels on EVERY trace. No exceptions."""
     for trace in fig.data:
         t = getattr(trace, "type", "")
         nm = trace.name if hasattr(trace,"name") and trace.name and str(trace.name) not in ("0","","None") else ""
         nm_prefix = f"<b>{nm}</b><br>" if nm else ""
 
-        # If already has a clean custom template, just ensure <extra></extra> is present
-        ht = getattr(trace, "hovertemplate", None)
-        if ht and "%{" in str(ht):
-            if "<extra></extra>" not in str(ht):
-                trace.hovertemplate = str(ht).rstrip() + "<extra></extra>"
-            continue
-
         if t == "bar":
             if getattr(trace, "orientation", None) == "h":
-                # Horizontal bar — y is category label, x is value
                 trace.hovertemplate = nm_prefix + "<b>%{y}</b><br>Total items: %{x:,.0f}<extra></extra>"
             else:
-                # Vertical bar — x is category/date, y is value
                 trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
 
         elif t == "scatter":
-            # Try date format first; if x is not a date Plotly ignores the format gracefully
             trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
 
         elif t == "pie":
-            trace.hovertemplate = (
-                "<b>%{label}</b><br>"
-                "Share: %{percent}<br>"
-                "Total items: %{value:,.0f}"
-                "<extra></extra>"
-            )
+            trace.hovertemplate = "<b>%{label}</b><br>Share: %{percent}<br>Total items: %{value:,.0f}<extra></extra>"
 
         elif t == "heatmap":
-            trace.hovertemplate = (
-                "<b>%{y}</b><br>"
-                "Year: %{x}<br>"
-                "Items: %{z:,.0f}"
-                "<extra></extra>"
-            )
+            trace.hovertemplate = "<b>%{y}</b><br>Year: %{x}<br>Total items: %{z:,.0f}<extra></extra>"
 
         elif t in ("scattergeo", "scattermapbox"):
             trace.hovertemplate = "%{text}<extra></extra>"
@@ -946,6 +894,12 @@ def _clean_hover(fig):
         elif t == "histogram":
             trace.hovertemplate = "Bin: %{x}<br>Frequency: %{y:,.0f}<extra></extra>"
 
+        else:
+            # Catch-all for any other trace type
+            ht = getattr(trace, "hovertemplate", None)
+            if ht and "<extra></extra>" not in str(ht):
+                trace.hovertemplate = str(ht).rstrip() + "<extra></extra>"
+
     return fig
 
 def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
@@ -958,56 +912,62 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
         legend=dict(bgcolor="rgba(255,255,255,.95)",bordercolor=C["divider"],borderwidth=1,
                     font=dict(size=10),orientation="h",yanchor="top",y=-0.12,
                     xanchor="left",x=0) if leg else dict(visible=False),
-        xaxis_title=None, yaxis_title=None,  # Set via update_xaxes/update_yaxes below
+        xaxis_title=xt, yaxis_title=yt,
         hoverlabel=dict(
             bgcolor="white", bordercolor=C["divider"],
             font=dict(family="DM Sans, sans-serif", size=12.5, color=C["text"]),
         ),
     )
-    # Clean raw column names from axis labels
-    _axis_map = {"n":"Total Items","seg":"River Segment","trash_group":"Category",
-        "trash_item":"Item","site_label":"Location","year_str":"Year",
-        "month_name":"Month","total":"Total Items","avg":"Average Items",
-        "weight_oz":"Weight (oz)","events":"Events","sd":"Standard Deviation",
-        "cv_pct":"CV (%)","mean":"Mean Items","site_display":"Survey Site",
-        "share":"Share (%)","recyclable":"Classification","floatable":"Classification"}
-    for ax_attr in ["xaxis","yaxis"]:
-        ax = fig.layout[ax_attr]
-        if ax.title and ax.title.text and ax.title.text in _axis_map:
-            ax.title.text = _axis_map[ax.title.text]
-    if xt and xt in _axis_map: xt = _axis_map[xt]
-    if yt and yt in _axis_map: yt = _axis_map[yt]
-    fig.update_xaxes(showgrid=False,zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]),title=xt if xt else None)
-    fig.update_yaxes(showgrid=True,gridcolor=C["sand2"],zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]),title=yt if yt else None)
+    # Clean raw column names in axis titles
+    _nm = {"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item",
+        "total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)",
+        "events":"Events","sd":"Standard Deviation","mean":"Mean Items",
+        "share":"Share (%)","recyclable":"Classification","floatable":"Classification",
+        "site_display":"Survey Site","cv_pct":"CV (%)","month_name":"Month","year_str":"Year"}
+    if xt and xt in _nm: xt = _nm[xt]
+    if yt and yt in _nm: yt = _nm[yt]
+    fig.update_xaxes(showgrid=False,zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
+    fig.update_yaxes(showgrid=True,gridcolor=C["sand2"],zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
     _clean_hover(fig)
     return fig
 
 def show(fig, key=None):
-    # Apply clean hovers to every chart regardless of whether fb() was called
+    # Force clean hovers on every chart
     _clean_hover(fig)
-    # Clean raw column names from ALL axis labels
-    _ax_map = {"n":"Total Items","seg":"River Segment","trash_group":"Category",
+    # Clean raw column names from axis titles and legend titles
+    _name_map = {"n":"Total Items","seg":"River Segment","trash_group":"Category",
         "trash_item":"Item","site_label":"Location","year_str":"Year",
         "month_name":"Month","total":"Total Items","avg":"Average Items",
-        "weight_oz":"Weight (oz)","events":"Events","sd":"Standard Deviation",
-        "cv_pct":"CV (%)","mean":"Mean Items","site_display":"Survey Site",
-        "share":"Share (%)","recyclable":"Classification","floatable":"Classification",
-        "avg_per_event":"Avg Items per Event","plot_total":"Items per Event",
-        "count_value":"Count","per_m2":"Items per m²","north_rank":"Position",
-        "year":"Year","date":"Date","Total Items/M2":"Items per m²"}
-    for ax_name in ["xaxis","yaxis"]:
+        "weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation",
+        "se":"Standard Error","cv_pct":"Coefficient of Variation (%)",
+        "mean":"Mean Items per Event","site_display":"Survey Site",
+        "share":"Share of Total (%)","recyclable":"Classification",
+        "floatable":"Classification","avg_per_event":"Avg Items per Event",
+        "count_value":"Count","per_m2":"Items per m\u00b2","year":"Year",
+        "date":"Date","north_rank":"Position","plot_total":"Items per Event",
+        "count":"Count","n_plots":"Number of Events","Total":"Total Items",
+        "Category":"Category","Item":"Item","Cup Type":"Cup Type"}
+    for ax_name in ["xaxis","yaxis","xaxis2","yaxis2"]:
         try:
             ax = fig.layout[ax_name]
-            if ax.title and hasattr(ax.title,"text") and ax.title.text in _ax_map:
-                ax.title.text = _ax_map[ax.title.text]
+            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _name_map:
+                ax.title.text = _name_map[ax.title.text]
         except: pass
-    # Also clean legend title
+    # Clean legend title
     try:
-        lt = fig.layout.legend.title
-        if lt and hasattr(lt,"text") and lt.text in _ax_map:
-            lt.text = _ax_map[lt.text]
+        if fig.layout.legend and fig.layout.legend.title:
+            lt = fig.layout.legend.title.text
+            if lt and lt in _name_map:
+                fig.layout.legend.title.text = _name_map[lt]
     except: pass
-    # Apply consistent hoverlabel style globally
+    # Also clean colorbar titles
+    for trace in fig.data:
+        try:
+            if hasattr(trace, "colorbar") and trace.colorbar and trace.colorbar.title:
+                if trace.colorbar.title.text in _name_map:
+                    trace.colorbar.title.text = _name_map[trace.colorbar.title.text]
+        except: pass
+    # Apply consistent hoverlabel style
     fig.update_layout(hoverlabel=dict(
         bgcolor="white", bordercolor="#d8ceba",
         font=dict(family="DM Sans, sans-serif", size=12.5, color="#18180f"),
@@ -2117,20 +2077,12 @@ if page == "Overview":
                 C["amber"] if g in FLOATABLE_GROUPS else
                 C["green"] for g in sg["trash_group"].unique()}
             fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",
-                color_discrete_map=grp_color_map,category_orders={"seg":SEG_ORDER},
-                labels={"n":"Total Items","seg":"River Segment","trash_group":"Category"})
+                color_discrete_map=grp_color_map,category_orders={"seg":SEG_ORDER})
             fig.update_layout(
-                height=400,paper_bgcolor="white",plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="DM Sans, sans-serif",color=C["text"],size=12),
-                xaxis_title="River Segment",yaxis_title="Total Items",
                 legend=dict(orientation="h",yanchor="top",y=-0.16,xanchor="left",x=0,
                     font=dict(size=10,family="DM Sans"),title_text="Category",
                     bgcolor="rgba(255,255,255,.95)",bordercolor=C["divider"],borderwidth=1),
-                margin=dict(l=10,r=10,t=56,b=110),
-                hoverlabel=dict(bgcolor="white",bordercolor=C["divider"],
-                    font=dict(family="DM Sans, sans-serif",size=12.5,color=C["text"])))
-            fig.update_xaxes(showgrid=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
-            fig.update_yaxes(showgrid=True,gridcolor=C["sand2"],linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
+                margin=dict(l=10,r=10,t=56,b=110))
             show(fig,"ov_seg")
         card_close()
 
@@ -2333,7 +2285,7 @@ elif page == "Trends":
 
     elif sel_trend == "Annual Totals by Year":
         yr=df.dropna(subset=["year"]).groupby("year")["n"].sum().reset_index(); yr["year"]=yr["year"].astype(str)
-        fig=px.bar(yr,x="year",y="n",color_discrete_sequence=[C["green"]],text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+        fig=px.bar(yr,x="year",y="n",color_discrete_sequence=[C["green"]],text="n")
         fig.update_traces(texttemplate="%{text:,}",textposition="outside")
         fb(fig,"Year","Total Items",h=420,title="Annual Totals by Survey Year"); show(fig,"tr_yr")
         last_updated_insight(df, chart_type="annual")
@@ -2347,7 +2299,7 @@ elif page == "Trends":
         md["year_str"]=md["year"].astype(str)
         fig=px.bar(md,x="month_name",y="n",color="year_str",barmode="group",
             category_orders={"month_name":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},
-            color_discrete_sequence=PAL,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            color_discrete_sequence=PAL)
         fb(fig,"Month","Total Items",h=460,title="Month by Month Comparison Across Years"); show(fig,"tr_mby")
         last_updated_insight(df, chart_type="monthly")
         fig_note("The same calendar months compared across survey years.",
@@ -2359,7 +2311,7 @@ elif page == "Trends":
         ef=make_et(lf)
         if not ef.empty and "date" in ef.columns:
             ev2=ef.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["total"].mean().reset_index(name="avg")
-            fig=px.line(ev2,x="date",y="avg",markers=True,color_discrete_sequence=[C["water"]],labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            fig=px.line(ev2,x="date",y="avg",markers=True,color_discrete_sequence=[C["water"]])
             fig.add_hline(y=ev2["avg"].mean(),line_dash="dot",line_color=C["earth"],
                 annotation_text=f"Grand mean: {ev2['avg'].mean():.0f}",annotation_font_size=11)
             fb(fig,"Month","Avg Items / Event",h=420,title="Average Items Per Survey Event (Monthly)"); show(fig,"tr_avg")
@@ -2373,7 +2325,7 @@ elif page == "Trends":
     elif sel_trend == "Items by River Segment (Quarterly)":
         if "seg" in df.columns:
             sg=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
-            fig=px.line(sg,x="date",y="n",color="seg",markers=True,color_discrete_map=SEG_COLORS,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            fig=px.line(sg,x="date",y="n",color="seg",markers=True,color_discrete_map=SEG_COLORS)
             fb(fig,"Quarter","Items",h=420,title="Items by River Segment (Quarterly)"); show(fig,"tr_seg")
             color_legend("Segment Colors", mode="segments")
             last_updated_insight(df, chart_type="general")
@@ -2388,7 +2340,7 @@ elif page == "Trends":
             dated=wt.dropna(subset=["weight_oz","date"])
             if len(dated)>0:
                 wtrend=dated.groupby(pd.Grouper(key="date",freq="MS"))["weight_oz"].sum().reset_index()
-                fig=px.bar(wtrend,x="date",y="weight_oz",color_discrete_sequence=[C["earth"]],labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                fig=px.bar(wtrend,x="date",y="weight_oz",color_discrete_sequence=[C["earth"]])
                 fb(fig,"Month","Weight (oz)",h=420,title="Weight of Trash Collected (Monthly)"); show(fig,"tr_wt")
                 last_updated_insight(wt.rename(columns={"weight_oz":"n"}), chart_type="monthly")
                 fig_note("Monthly total weight of trash collected (ounces).",
@@ -2500,7 +2452,7 @@ elif page == "Categories":
             text=[f"{int(v):,} ({p}%)" for v,p in zip(ct["n"],ct["pct"])],
             textposition="outside"))
         fb(fig,"Total Items","Category",h=max(560,32*len(ct)),leg=False,
-            title="All 19 Trash Categories — Total Items Recorded, Ranked"); show(fig,"cat_all19")
+            title="All 19 Trash Categories: Total Items Recorded"); show(fig,"cat_all19")
         st.markdown(
             f'<div style="font-size:12px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};border-radius:6px;margin:8px 0;">'
             f'Color guide: <span style="color:{C["water"]};font-weight:700;">Blue</span> = Recyclable (per City of Tucson) &nbsp;|&nbsp;'
@@ -2530,7 +2482,7 @@ elif page == "Categories":
             customdata=top[["trash_group","pct"]].values,
             hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Total items: %{x:,.0f}<br>Share of all: %{customdata[1]}%<extra></extra>"))
         fb(fig,"Total Count","Item",h=max(900,20*len(top)),leg=False,
-            title="All 56 Individual Item Types — Ranked by Total Count"); show(fig,"cat_all56")
+            title="All 56 Individual Item Types by Total Count"); show(fig,"cat_all56")
         cat_color_legend()
         fig_note(
             "Every item type in the 56-item survey protocol, ranked from rarest to most common.",
@@ -2546,7 +2498,7 @@ elif page == "Categories":
         fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=10)
         fig.update_layout(height=540,paper_bgcolor="rgba(0,0,0,0)",font=dict(family="DM Sans"),
             margin=dict(l=8,r=8,t=36,b=8),
-            title=dict(text="Category Composition — Share of All Recorded Items",
+            title=dict(text="Category Composition: Share of All Recorded Items",
                 font=dict(family="Cormorant Garamond, serif",size=16,color=C["green"]),x=0))
         show(fig,"cat_pie2")
         last_updated_insight(df,"general")
@@ -2562,12 +2514,12 @@ elif page == "Categories":
         c1c,c2c=st.columns(2)
         with c1c:
             fig=px.bar(top10.sort_values("n"),x="n",y="trash_group",orientation="h",
-                color_discrete_sequence=[C["brick"]],text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color_discrete_sequence=[C["brick"]],text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
             fb(fig,"Total Items","",h=380,leg=False,title="Top 10 Heaviest Categories"); show(fig,"cat_top10")
         with c2c:
             fig=px.bar(bot9.sort_values("n"),x="n",y="trash_group",orientation="h",
-                color_discrete_sequence=[C["sage"]],text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color_discrete_sequence=[C["sage"]],text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
             fb(fig,"Total Items","",h=380,leg=False,title="Bottom 9 Categories"); show(fig,"cat_bot9")
         cat_color_legend()
@@ -2584,7 +2536,7 @@ elif page == "Categories":
         fig=go.Figure(go.Bar(x=avg_cat["avg"],y=avg_cat["trash_group"],orientation="h",
             marker_color=avg_cat["color"],text=avg_cat["avg"].round(1),textposition="outside"))
         fb(fig,"Avg Items per Event","",h=max(560,32*len(avg_cat)),leg=False,
-            title="Average Items per Survey Event — All 19 Categories"); show(fig,"cat_avg2")
+            title="Average Items per Survey Event: All Categories"); show(fig,"cat_avg2")
         cat_color_legend()
         fig_note("Mean total items per survey event for each category.",
             "Adjusts for recording frequency — a category recorded across 100 events is compared fairly to one recorded across 20.",
@@ -2597,15 +2549,15 @@ elif page == "Categories":
         with c1c:
             bt=bev.groupby("trash_group")["n"].sum().sort_values(ascending=True).reset_index()
             fig=px.bar(bt,x="n",y="trash_group",orientation="h",
-                color_discrete_sequence=[C["water"]],text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color_discrete_sequence=[C["water"]],text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Category",h=380,leg=False,title="Beverage Categories — Totals"); show(fig,"bev_grp")
+            fb(fig,"Total","Category",h=380,leg=False,title="Beverage Categories: Totals"); show(fig,"bev_grp")
         with c2c:
             bi=bev.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
             fig=px.bar(bi,x="n",y="trash_item",color="trash_group",orientation="h",
-                color_discrete_sequence=PAL,text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color_discrete_sequence=PAL,text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Item",h=500,title="Beverage Items — All Sub-Types"); show(fig,"bev_items")
+            fb(fig,"Total","Item",h=500,title="Beverage Items: All Sub-Types"); show(fig,"bev_items")
         last_updated_insight(df,"general")
         cat_color_legend()
         fig_note("All beverage container categories and their sub-type breakdown.",
@@ -2619,9 +2571,9 @@ elif page == "Categories":
         c1c,c2c=st.columns(2)
         with c1c:
             fig=px.bar(cups.sort_values("n",ascending=True),x="n",y="trash_item",orientation="h",
-                color="trash_item",color_discrete_sequence=PAL,text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color="trash_item",color_discrete_sequence=PAL,text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Cup Type",h=340,leg=False,title="Cups — Sub-Type Breakdown"); show(fig,"cups_bar")
+            fb(fig,"Total","Cup Type",h=340,leg=False,title="Cups: Sub-Type Breakdown"); show(fig,"cups_bar")
         with c2c:
             fig=px.pie(cups,values="n",names="trash_item",color_discrete_sequence=PAL,hole=.4)
             fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=11)
@@ -2639,10 +2591,10 @@ elif page == "Categories":
         fp["pct"]=(100*fp["n"]/max(fp["n"].sum(),1)).round(1)
         fig=px.bar(fp,x="n",y="trash_item",orientation="h",color="trash_item",
             color_discrete_sequence=PAL,
-            text=[f"{int(v):,} ({p}%)" for v,p in zip(fp["n"],fp["pct"])],labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            text=[f"{int(v):,} ({p}%)" for v,p in zip(fp["n"],fp["pct"])])
         fig.update_traces(textposition="outside")
         fb(fig,"Total Items","Item Type",h=max(440,36*len(fp)),leg=False,
-            title="Food Packaging — All 11 Sub-Types Ranked"); show(fig,"fp_items")
+            title="Food Packaging: All 11 Sub-Types"); show(fig,"fp_items")
         last_updated_insight(df,"category","Food Packaging")
         cat_color_legend()
         fig_note("Food Packaging is the single largest category at 10,694 items — spanning 11 distinct sub-types.",
@@ -2655,8 +2607,8 @@ elif page == "Categories":
         if "date" in alc.columns and alc["date"].notna().any():
             ts_alc=alc.groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(ts_alc,x="date",y="n",color="trash_group",markers=True,
-                color_discrete_map={"Beer":C["amber"],"Liquor":C["brick"]},labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
-            fb(fig,"Quarter","Items",h=440,title="Alcohol Containers — Beer vs Liquor Quarterly"); show(fig,"alc_ts")
+                color_discrete_map={"Beer":C["amber"],"Liquor":C["brick"]})
+            fb(fig,"Quarter","Items",h=440,title="Alcohol Containers: Beer vs Liquor (Quarterly)"); show(fig,"alc_ts")
             cat_color_legend()
             fig_note("Quarterly counts of Beer and Liquor items across the survey record.",
                 "Alcohol containers are associated with encampments, informal gatherings, and chronic littering. Understanding their trajectory helps community engagement planning.",
@@ -2683,7 +2635,7 @@ elif page == "Categories":
         with c2c:
             r_grp_s=r_grp.sort_values("n",ascending=True)
             fig=px.bar(r_grp_s,x="n",y="trash_group",color="recyclable",orientation="h",
-                color_discrete_map={"Recyclable":C["water"],"Non-Recyclable":C["brick"]},text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color_discrete_map={"Recyclable":C["water"],"Non-Recyclable":C["brick"]},text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
             fb(fig,"Total Items","",h=max(540,30*len(r_grp_s)),title="Recyclable vs Non-Recyclable by Category"); show(fig,"rec_bar")
         st.markdown(
@@ -2717,7 +2669,7 @@ elif page == "Categories":
         with c2c:
             f_grp_s=f_grp.sort_values("n",ascending=True)
             fig=px.bar(f_grp_s,x="n",y="trash_group",color="floatable",orientation="h",
-                color_discrete_map={"Floatable":"#2471a3","Non-Floatable":"#7f8c8d"},text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color_discrete_map={"Floatable":"#2471a3","Non-Floatable":"#7f8c8d"},text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
             fb(fig,"Total Items","",h=max(540,30*len(f_grp_s)),title="Floatable vs Non-Floatable by Category"); show(fig,"flt_bar")
         st.markdown(
@@ -2742,20 +2694,20 @@ elif page == "Categories":
             fig=px.bar(ht,x="n",y="trash_group",orientation="h",
                 color="trash_group",
                 color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]},
-                text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Category",h=280,leg=False,title="Health Hazard Categories — Totals"); show(fig,"hh_grp")
+            fb(fig,"Total","Category",h=280,leg=False,title="Health Hazard Categories: Totals"); show(fig,"hh_grp")
         with c2c:
             hi=hh.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
             fig=px.bar(hi,x="n",y="trash_item",color="trash_group",orientation="h",
                 color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]},
-                text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Item",h=280,title="Health Hazard Items — Sub-Types"); show(fig,"hh_items")
+            fb(fig,"Total","Item",h=280,title="Health Hazard Items: Sub-Types"); show(fig,"hh_items")
         if "date" in hh.columns and hh["date"].notna().any():
             ts_hh=hh.groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(ts_hh,x="date",y="n",color="trash_group",markers=True,
-                color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]},labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]})
             fb(fig,"Quarter","Items",h=320,title="Health Hazard Items Over Time"); show(fig,"hh_ts")
         cat_color_legend()
         fig_note("Three categories with direct public health risk: Rx/Drugs, Nicotine, and Toiletries.",
@@ -2771,16 +2723,16 @@ elif page == "Categories":
             fig=px.bar(bt2,x="n",y="trash_group",orientation="h",
                 color="trash_group",
                 color_discrete_map={"Appliances":C["earth"],"Construction":C["sage"],"Auto":C["muted"]},
-                text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","",h=260,leg=False,title="Bulk Debris — Category Totals"); show(fig,"bk_grp")
+            fb(fig,"Total","",h=260,leg=False,title="Bulk Debris: Category Totals"); show(fig,"bk_grp")
         with c2c:
             bi2=bk.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
             fig=px.bar(bi2,x="n",y="trash_item",color="trash_group",orientation="h",
                 color_discrete_map={"Appliances":C["earth"],"Construction":C["sage"],"Auto":C["muted"]},
-                text="n",labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Item",h=400,title="Bulk Debris — All Sub-Types"); show(fig,"bk_items")
+            fb(fig,"Total","Item",h=400,title="Bulk Debris: All Sub-Types"); show(fig,"bk_items")
         cat_color_legend()
         fig_note("Appliances (550), Construction (1,147), and Auto (167) are large items requiring equipment to remove.",
             "Construction debris — particularly Small Items (1,104) — indicates illegal dumping of building waste along the corridor.",
@@ -2805,9 +2757,9 @@ elif page == "Categories":
         fig=px.scatter(risk_melt,x="Total Items",y="Category",color="Risk Dimension",size="Total Items",
             size_max=30,
             color_discrete_map={"Recyclable":C["water"],"Floatable":"#2471a3","Health Hazard":C["brick"],"Bulk Debris":C["earth"]},
-            category_orders={"Category":list(reversed(GROUP_ORDER))},labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            category_orders={"Category":list(reversed(GROUP_ORDER))})
         fb(fig,"Total Items","",h=max(540,30*len(risk_df)),
-            title="Category Risk Profile — Volume vs Environmental Risk Dimensions"); show(fig,"risk_scatter")
+            title="Category Risk Profile: Volume vs Risk"); show(fig,"risk_scatter")
         cat_color_legend()
         fig_note("Each dot = a category flagged with a risk dimension. Larger and further right = more items.",
             "Shows which categories combine high volume with high environmental or health risk.",
@@ -2818,8 +2770,8 @@ elif page == "Categories":
         top6=df.groupby("trash_group")["n"].sum().nlargest(6).index.tolist()
         if "date" in df.columns and df["date"].notna().any():
             ct6=df[df["trash_group"].isin(top6)].groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
-            fig=px.line(ct6,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
-            fb(fig,"Quarter","Items",h=480,title="Top 6 Categories — Quarterly Item Counts"); show(fig,"cat_trend2")
+            fig=px.line(ct6,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
+            fb(fig,"Quarter","Items",h=480,title="Top 6 Categories: Quarterly Item Counts"); show(fig,"cat_trend2")
             last_updated_insight(df,"general")
             cat_color_legend()
             fig_note("Quarterly trends for the 6 highest-volume categories.",
@@ -2845,21 +2797,21 @@ elif page == "Categories":
                 y=pivot.index.tolist(),
                 colorscale=[[0,"#f8f5ef"],[0.3,C["mint"]],[0.7,C["green"]],[1,C["forest"]]],
                 hoverongaps=False,
-                hovertemplate="<b>%{y}</b><br>Year: %{x}<br>Items: %{z:,.0f}<extra></extra>",
+                hovertemplate="<b>%{y}</b><br>Year: %{x}<br>Total items: %{z:,.0f}<extra></extra>",
                 texttemplate="%{z:.0f}",
                 textfont=dict(size=10),
                 showscale=True,
                 colorbar=dict(title=dict(text="Total Items",font=dict(size=11)))
             ))
             fb(fig,"Year","Category",h=580,leg=False,
-                title="Annual Item Totals by Category — Heatmap (Darker = More Items)"); show(fig,"yoy_heat")
+                title="Annual Item Totals by Category (Heatmap)"); show(fig,"yoy_heat")
 
             # B: Stacked bar for total comparison across years
             fig2=px.bar(yoy,x="year_str",y="n",color="trash_group",barmode="stack",
                 color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats},
-                text=None,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                text=None)
             fb(fig2,"Year","Total Items",h=420,
-                title="Annual Category Totals — Stacked Bar"); show(fig2,"yoy_stack")
+                title="Annual Category Totals: Stacked Bar"); show(fig2,"yoy_stack")
 
             cat_color_legend()
             fig_note(
@@ -2880,8 +2832,8 @@ elif page == "Categories":
             yp["year_str"]=yp["year"].astype(int).astype(str)
             ord_cats=[g for g in GROUP_ORDER if g in yp["trash_group"].unique()]
             fig=px.bar(yp,x="year_str",y="share",color="trash_group",barmode="stack",
-                color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats},labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
-            fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year — 100% Stacked Shares"); show(fig,"comp_yr")
+                color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
+            fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year: Proportional"); show(fig,"comp_yr")
             cat_color_legend()
             fig_note("100% stacked bars — each bar totals 100%, showing category SHARE each year.",
                 "Removes the effect of varying survey effort and shows whether the MIX of items is changing.",
@@ -2896,7 +2848,7 @@ elif page == "Categories":
             ord_cats=[g for g in GROUP_ORDER if g in sg2["trash_group"].unique()]
             fig=px.bar(sg2,x="n",y="seg",color="trash_group",orientation="h",barmode="stack",
                 color_discrete_sequence=PAL,
-                category_orders={"seg":list(reversed(SEG_ORDER[:-1])),"trash_group":ord_cats},labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                category_orders={"seg":list(reversed(SEG_ORDER[:-1])),"trash_group":ord_cats})
             fb(fig,"Total Items","Segment",h=400,title="Category Composition by River Segment"); show(fig,"seg_cat")
             color_legend("Segment Colors", mode="segments")
             cat_color_legend()
@@ -2922,7 +2874,7 @@ elif page == "Categories":
                         continue
                     fig=px.bar(seg_df,x="n",y="trash_group",orientation="h",
                         color_discrete_sequence=[SEG_COLORS.get(seg,C["green"])],
-                        text=[f"{int(v):,} ({p}%)" for v,p in zip(seg_df["n"],seg_df["pct"])],labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                        text=[f"{int(v):,} ({p}%)" for v,p in zip(seg_df["n"],seg_df["pct"])])
                     fig.update_traces(textposition="outside")
                     seg_tot_n=int(df[df["seg"]==seg]["n"].sum())
                     fb(fig,"Total Items","",h=max(380,30*len(seg_df)),leg=False,
@@ -3011,18 +2963,18 @@ elif page == "Locations":
 
     with loc_tab1:
         if len(ss)>0:
-            card_open("Average Items per Survey Event — Sites Ordered North to South",
+            card_open("Average Items per Event: North to South",
                       "Each bar = one survey site. Height = mean items per event at that site. Sites are ordered geographically from northernmost (top) to southernmost (bottom). Color indicates river segment.")
             ns_show = ss[ss["lat_num"].notna()].sort_values("north_rank")
             if len(ns_show)>0:
                 fig=px.bar(ns_show, x="mean", y="site_display", orientation="h",
                     color="seg", color_discrete_map=SEG_COLORS,
                     error_x="se",
-                    category_orders={"site_display": ns_show["site_display"].tolist()},labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                    category_orders={"site_display": ns_show["site_display"].tolist()})
                 fig.update_yaxes(categoryorder="array", categoryarray=ns_show["site_display"].tolist(), autorange="reversed")
                 fb(fig,"Mean Items per Event","Site (North to South)",
                    h=max(560,26*len(ns_show)),
-                   title="Mean Items per Survey Event — North to South"); show(fig,"ns_mean")
+                   title="Mean Items per Event: North to South"); show(fig,"ns_mean")
                 last_updated_insight(df, chart_type="general")
             fig_note(
                 "Mean number of items recorded per survey event at each site, ordered north to south by GPS latitude.",
@@ -3050,7 +3002,7 @@ elif page == "Locations":
             with c1v:
                 card_open("Standard Deviation: North to South",
                           "SD measures how much individual events vary at each site. A site with SD=0 had exactly the same count every visit. High SD = unpredictable or patchy litter.")
-                fig=px.bar(ns_show,x="sd",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                fig=px.bar(ns_show,x="sd",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
                 fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
                 fb(fig,"Standard Deviation","Site",h=max(500,24*len(ns_show)),title="Within-Site Variability: North to South"); show(fig,"ns_sd")
                 fig_note("Standard deviation of total items per event at each site.",
@@ -3063,7 +3015,7 @@ elif page == "Locations":
                 ns_show_cv = ns_show[ns_show["cv"].notna()].copy()
                 ns_show_cv["cv_pct"]=(ns_show_cv["cv"]*100).round(1)
                 if len(ns_show_cv)>0:
-                    fig=px.bar(ns_show_cv,x="cv_pct",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+                    fig=px.bar(ns_show_cv,x="cv_pct",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
                     fig.update_yaxes(categoryorder="array",categoryarray=ns_show_cv["site_display"].tolist(),autorange="reversed")
                     fb(fig,"CV (%)","Site",h=max(500,24*len(ns_show_cv)),title="Coefficient of Variation: North to South"); show(fig,"ns_cv")
                     fig_note("CV = (SD ÷ Mean) × 100, expressed as a percentage.",
@@ -3073,7 +3025,7 @@ elif page == "Locations":
 
             card_open("Range of Items: North to South",
                       "Range = maximum items recorded minus minimum items recorded across all events at that site. Simple and easy to communicate in presentations.")
-            fig=px.bar(ns_show,x="range",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            fig=px.bar(ns_show,x="range",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
             fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
             fb(fig,"Range (Max − Min)","Site",h=max(500,24*len(ns_show)),title="Range of Items: North to South"); show(fig,"ns_range")
             fig_note("The difference between the heaviest and lightest events recorded at each site.",
@@ -3089,7 +3041,7 @@ elif page == "Locations":
             seg_tot=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["n"].sum().reset_index()
             seg_tot["pct"]=(100*seg_tot["n"]/max(seg_tot["n"].sum(),1)).round(1)
             seg_tot["label"]=[f"{int(v):,} ({p}%)" for v,p in zip(seg_tot["n"],seg_tot["pct"])]
-            fig=px.bar(seg_tot,x="seg",y="n",color="seg",text="label",color_discrete_map=SEG_COLORS,category_orders={"seg":SEG_ORDER},labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            fig=px.bar(seg_tot,x="seg",y="n",color="seg",text="label",color_discrete_map=SEG_COLORS,category_orders={"seg":SEG_ORDER})
             fig.update_traces(textposition="outside",textfont_size=10)
             fb(fig,"Segment","Total Items",h=340,leg=False,title="Total Items by River Segment"); show(fig,"loc_seg")
             fig_note("Cumulative sum of all recorded items within each river segment.",
@@ -3100,7 +3052,7 @@ elif page == "Locations":
             card_open("Survey Events by River Segment",
                       "Number of distinct survey events within each segment — shows sampling effort distribution.")
             seg_ev=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["event_id"].nunique().reset_index(name="events")
-            fig=px.bar(seg_ev,x="seg",y="events",color="seg",color_discrete_map=SEG_COLORS,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+            fig=px.bar(seg_ev,x="seg",y="events",color="seg",color_discrete_map=SEG_COLORS)
             fb(fig,"Segment","# Events",h=320,leg=False,title="Survey Events by River Segment"); show(fig,"loc_segev")
             fig_note("Number of individual survey events per segment.",
                 "Unequal sampling effort means direct total comparisons should be interpreted with care.",
@@ -3122,7 +3074,7 @@ elif page == "Locations":
         top20_avg=site_st.nlargest(20,"avg_per_event").sort_values("avg_per_event")
         card_open("Sites Ranked by Average Items per Event",
                   "Per-event average is a fairer metric than total count — it adjusts for how many times a site was visited.")
-        fig=px.bar(top20_avg,x="avg_per_event",y="site_label",orientation="h",color="seg",color_discrete_map=SEG_COLORS,labels={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","recyclable":"Classification","floatable":"Classification","sd":"Standard Deviation","share":"Share (%)"})
+        fig=px.bar(top20_avg,x="avg_per_event",y="site_label",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
         fb(fig,"Avg Items / Event",None,h=max(460,22*len(top20_avg)),title="Top 20 Sites: Avg Items per Event"); show(fig,"loc_avg")
         fig_note("Average total items recorded per survey visit at each site.",
             "Avoids penalizing well-sampled sites that appear heavier only because they were visited more.",
@@ -3826,7 +3778,7 @@ elif page == "Export":
 # ══════════════════════════════════════════════════════════════════
 elif page == "About":
 
-    # Hero banner (full-bleed)
+    # Hero banner
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
     border-radius:0;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
