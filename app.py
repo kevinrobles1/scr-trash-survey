@@ -131,7 +131,7 @@ footer{{display:none!important;}}
 
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
-      border-bottom:2px solid {C["mint"]};box-shadow:0 4px 28px rgba(0,0,0,.25);}}
+      border-bottom:none;margin-bottom:0;box-shadow:none;}}
 .hdr-in{{max-width:1480px;margin:0 auto;padding:14px 44px 14px 124px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
@@ -383,6 +383,22 @@ def tbl_note(text):
 
 def section_title(text):
     st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:28px 0 16px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
+
+def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
+    """Consistent dark-green hero banner for every page — same aesthetic as About."""
+    img_overlay = f"""background:url('{img_url}') center/cover no-repeat;""" if img_url else ""
+    st.markdown(f"""
+    <div style="background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
+    border-radius:0 0 14px 14px;padding:28px 124px;margin:0 0 18px;
+    position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;{img_overlay}opacity:.12;border-radius:0 0 14px 14px;"></div>
+    <div style="position:relative;z-index:2;max-width:900px;">
+      <div style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;
+      text-transform:uppercase;color:{C["mint"]};margin-bottom:8px;">{eyebrow}</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
+      color:white;line-height:1.1;letter-spacing:-.02em;margin-bottom:8px;">{title}</div>
+      <div style="font-size:13.5px;color:rgba(255,255,255,.65);line-height:1.75;max-width:680px;">{subtitle}</div>
+    </div></div>""", unsafe_allow_html=True)
 
 # ──────────────────────────────────────────────────────────────────
 # AUTH
@@ -1103,7 +1119,7 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     position:sticky !important;
     top:0 !important;
     z-index:200 !important;
-    border-bottom:1px solid rgba(255,255,255,.1) !important;
+    border-bottom:2px solid #5da832 !important;
     box-shadow:0 3px 14px rgba(0,0,0,.35) !important;
     margin:0 !important;
     margin-top:0 !important;
@@ -1217,8 +1233,7 @@ except Exception:
 # ══════════════════════════════════════════════════════════════════
 if page == "Overview":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Santa Cruz River Trash Monitoring</div>', unsafe_allow_html=True)
-    st.markdown(f'<div class="pg-lead">Longitudinal trash survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across {long["site_label"].nunique()} recorded locations spanning the river corridor and tributaries. Program directed by <strong>Luke Cole</strong>, Sonoran Institute.</div>', unsafe_allow_html=True)
+    page_banner("Sonoran Institute · Tucson, Arizona", "Santa Cruz River Trash Monitoring", "Longitudinal survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across multiple sites and reaches — program directed by Luke Cole, Sonoran Institute.", "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander("Filter Data", expanded=False):
         lf = render_filters(long, kp="ov")
@@ -1341,8 +1356,7 @@ if page == "Overview":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Map":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Survey Site Map</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">GPS locations of survey sites along the Santa Cruz River corridor. Click any marker to view site details. Only sites with latitude/longitude data in the database will appear on the map.</div>', unsafe_allow_html=True)
+    page_banner("Survey Site Map", "Where We Survey", "GPS locations of all recorded survey sites along the Santa Cruz River corridor and tributaries. Only sites with latitude/longitude data appear on the map.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
 
     map_mode=st.radio("Map view",["By River Segment","By Trash Burden","Individual Events"],horizontal=True)
 
@@ -1403,8 +1417,7 @@ elif page == "Map":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Trends":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Temporal Trends</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">How trash levels have changed over time. Select a figure from the menu below, read the description, then view the chart. Use the filter to narrow by location, segment, or date range.</div>', unsafe_allow_html=True)
+    page_banner("Temporal Analysis", "How Trash Levels Change Over Time", "Monthly, annual, and seasonal patterns across the full survey record. Use the selector below to explore different dimensions of time-based change.", "https://sonoraninstitute.org/files/Hatcher_181106_1751-scaled.jpg")
 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="tr", cats=False)
@@ -1551,8 +1564,7 @@ elif page == "Trends":
 
 elif page == "Categories":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Trash Categories</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Deep analysis of all 19 category groups and 56 individual item types recorded along the Santa Cruz River. Select any figure from the menu — each includes a full description, environmental classification context, and interpretation guide.</div>', unsafe_allow_html=True)
+    page_banner("Item & Category Analysis", "What Kind of Trash We Find", "Deep analysis of all 19 category groups and 56 individual item types. Each figure includes environmental classification context and interpretation guidance.", "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="cat")
@@ -2097,8 +2109,7 @@ elif page == "Categories":
 
 elif page == "Locations":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Locations & Sites</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">How much trash is found at each survey location — and how consistent is it? Sites are ordered <strong>North to South</strong> along the river corridor by GPS latitude when available.</div>', unsafe_allow_html=True)
+    page_banner("Site-Level Analysis", "Where the Trash Is — and How Much", "Trash burden across all 136 recorded survey locations. Sites are ordered North to South along the river corridor. Statistics reflect variability across repeated survey visits.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
     st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
     <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
     <p style="margin:0 0 8px;"><strong>Mean (average items per event):</strong> The typical number of trash items found during a single survey visit at that site. A site with a mean of 80 means the team usually finds about 80 items each time they visit. This is the most useful number for comparing sites.</p>
@@ -2299,8 +2310,7 @@ elif page == "Locations":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Table":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Data Table</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Browse and explore the complete raw dataset. Every record in the database is shown here. Use the filters to narrow down by segment, location, category, or date range.</div>', unsafe_allow_html=True)
+    page_banner("Raw Dataset", "Browse the Complete Survey Record", "Every recorded count from every survey event. Filter by segment, location, category, or date. Switch between wide format (Excel-like) and long format below.", None)
 
     with st.expander("Filter Data", expanded=True):
         lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
@@ -2758,8 +2768,7 @@ elif page == "Data Entry":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Export":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown('<div class="pg-title">Export Data</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Download clean, formatted datasets from the live database. All three formats are ready to open in Excel, Google Sheets, R, Python, or ArcGIS.</div>', unsafe_allow_html=True)
+    page_banner("Data Export", "Download the Database", "Clean, formatted CSVs ready for Excel, R, Python, or ArcGIS. Three formats available: raw long-form, event totals, and site summaries.", None)
 
     long_exp=long[[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in long.columns]].copy()
     long_exp=long_exp.rename(columns={"n":"count","seg":"river_segment","site_label":"location"})
@@ -2848,16 +2857,13 @@ elif page == "About":
         style="width:100%;border-radius:10px;margin-bottom:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);">
         <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-bottom:14px;">
         Santa Cruz River corridor, Tucson, AZ · ©Bill Hatcher / Sonoran Institute</div>
-        <img src="https://sonoraninstitute.org/files/Hatcher_181106_1751-scaled.jpg"
-        style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);">
-        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:6px;">
-        Annual fish survey, Santa Cruz River · ©Bill Hatcher / Sonoran Institute, 2020</div>
-        """, unsafe_allow_html=True)
 
-    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
     # Horizontal scrollable photo carousel
     carousel_photos = [
+        ("https://sonoraninstitute.org/files/Hatcher_181106_1751-scaled.jpg",
+         "Annual fish survey, Santa Cruz River · ©Bill Hatcher / Sonoran Institute, 2020"),
         ("https://sonoraninstitute.org/files/Hatcher_181128_404-1600x900.jpg",
          "Riparian habitat restoration · ©Bill Hatcher / Sonoran Institute"),
         ("https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg",
@@ -2886,7 +2892,6 @@ elif page == "About":
         unsafe_allow_html=True
     )
 
-    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
     section_title("About This Database")
 
     s1,s2,s3,s4 = st.columns(4)
@@ -2907,7 +2912,6 @@ elif page == "About":
             <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
             </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
     c3, c4 = st.columns([2,3])
     with c3:
         st.markdown(f"""<img src="https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg"
@@ -2934,7 +2938,6 @@ elif page == "About":
         and construction waste (illegal dumping indicator).</p>
         </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     section_title("Why Longitudinal Trash Data Matters")
 
     reasons = [
@@ -2973,7 +2976,6 @@ elif page == "About":
     text-transform:uppercase;letter-spacing:1px;">— Sonoran Institute</div>
     </div>""", unsafe_allow_html=True)
 
-    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     section_title("Program Team")
     tc1, tc2, tc3 = st.columns(3)
     for col, name, role, desc, color in zip([tc1,tc2,tc3],
