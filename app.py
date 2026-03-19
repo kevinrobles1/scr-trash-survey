@@ -1705,6 +1705,11 @@ auth_gate()
 prof=st.session_state.get("prof") or {}
 
 # HEADER — sign out sits inside header HTML, triggers hidden Streamlit button
+_en_col  = "rgba(255,255,255,.9)"  if _lang=="en" else "rgba(255,255,255,.35)"
+_es_col  = "rgba(255,255,255,.9)"  if _lang=="es" else "rgba(255,255,255,.35)"
+_en_dec  = "underline" if _lang=="en" else "none"
+_es_dec  = "underline" if _lang=="es" else "none"
+_btn_sty = "font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.4);transition:color .15s;user-select:none;"
 st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
     <img src="{LOGO_W}" class="hdr-logo">
@@ -1718,25 +1723,17 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:4px;">
         <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
         <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='__EN__'||b.textContent.trim()==='__EN__')b.click();}})}})()"
-          style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
-          color:{('rgba(255,255,255,.9)' if _lang=='en' else 'rgba(255,255,255,.35)')};cursor:pointer;
-          text-decoration:{'underline' if _lang=='en' else 'none'};text-underline-offset:3px;
-          text-decoration-color:rgba(255,255,255,.4);transition:color .15s;user-select:none;"
+          style="{_btn_sty}color:{_en_col};text-decoration:{_en_dec};"
           onmouseover="this.style.color='rgba(255,255,255,.9)'"
-          onmouseout="this.style.color='{'rgba(255,255,255,.9)' if _lang=='en' else 'rgba(255,255,255,.35)'}'">EN</span>
+          onmouseout="this.style.color='{_en_col}'">EN</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
         <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='__ES__'||b.textContent.trim()==='__ES__')b.click();}})}})()"
-          style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
-          color:{('rgba(255,255,255,.9)' if _lang=='es' else 'rgba(255,255,255,.35)')};cursor:pointer;
-          text-decoration:{'underline' if _lang=='es' else 'none'};text-underline-offset:3px;
-          text-decoration-color:rgba(255,255,255,.4);transition:color .15s;user-select:none;"
+          style="{_btn_sty}color:{_es_col};text-decoration:{_es_dec};"
           onmouseover="this.style.color='rgba(255,255,255,.9)'"
-          onmouseout="this.style.color='{'rgba(255,255,255,.9)' if _lang=='es' else 'rgba(255,255,255,.35)'}'">ES</span>
+          onmouseout="this.style.color='{_es_col}'">ES</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
         <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='Sign Out'||b.textContent.trim()==='Sign Out')b.click();}})}})()"
-          style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
-          color:rgba(255,255,255,.35);cursor:pointer;text-decoration:none;
-          transition:color .15s;user-select:none;"
+          style="{_btn_sty}color:rgba(255,255,255,.35);text-decoration:none;"
           onmouseover="this.style.color='rgba(255,255,255,.8)'"
           onmouseout="this.style.color='rgba(255,255,255,.35)'">Sign Out</span>
       </div>
@@ -4018,4 +4015,3 @@ with st.expander(T("acct_session")):
             st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
     with _a3:
         st.caption(T("acct_signout_note"))
-      
