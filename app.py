@@ -265,7 +265,10 @@ TR = {
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
         "acct_session":"Account & Session",
-        # Page banners — Overview / Map / Trends / Categories
+        # Page banners — Overview / Map / Trends / Categories / Data Table
+        "dt_ey":"Complete Database",
+        "dt_title":"Explore the Full Survey Record",
+        "dt_sub":"Every recorded count from every survey event. Filter by segment, location, category, or date.",
         "cat_ey":"Item & Category Analysis",
         "cat_title":"What Kind of Trash We Find",
         "cat_sub":"Deep dive into the 19 category groups and 56 individual item types recorded across all surveys.",
@@ -4006,6 +4009,9 @@ with st.expander(T("acct_session")):
         if st.button(T("acct_refresh"), key="_ftr_refresh"): load_data.clear(); st.rerun()
     with _a2:
         if st.button(T("acct_signout"), key="_ftr_signout"):
+            st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
+    with _a3:
+        st.caption(T("acct_signout_note"))
             st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
     with _a3:
         st.caption(T("acct_signout_note"))
