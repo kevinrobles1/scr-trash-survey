@@ -1717,13 +1717,28 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
       <span class="hdr-pos">{prof.get('position_title','')}</span>
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:4px;">
         <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
+        <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='__EN__'||b.textContent.trim()==='__EN__')b.click();}})}})()"
+          style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
+          color:{('rgba(255,255,255,.9)' if _lang=='en' else 'rgba(255,255,255,.35)')};cursor:pointer;
+          text-decoration:{'underline' if _lang=='en' else 'none'};text-underline-offset:3px;
+          text-decoration-color:rgba(255,255,255,.4);transition:color .15s;user-select:none;"
+          onmouseover="this.style.color='rgba(255,255,255,.9)'"
+          onmouseout="this.style.color='{'rgba(255,255,255,.9)' if _lang=='en' else 'rgba(255,255,255,.35)'}'">EN</span>
+        <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
+        <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='__ES__'||b.textContent.trim()==='__ES__')b.click();}})}})()"
+          style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
+          color:{('rgba(255,255,255,.9)' if _lang=='es' else 'rgba(255,255,255,.35)')};cursor:pointer;
+          text-decoration:{'underline' if _lang=='es' else 'none'};text-underline-offset:3px;
+          text-decoration-color:rgba(255,255,255,.4);transition:color .15s;user-select:none;"
+          onmouseover="this.style.color='rgba(255,255,255,.9)'"
+          onmouseout="this.style.color='{'rgba(255,255,255,.9)' if _lang=='es' else 'rgba(255,255,255,.35)'}'">ES</span>
+        <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
         <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='Sign Out'||b.textContent.trim()==='Sign Out')b.click();}})}})()"
           style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
-          color:rgba(255,255,255,.38);cursor:pointer;text-decoration:underline;
-          text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.18);
+          color:rgba(255,255,255,.35);cursor:pointer;text-decoration:none;
           transition:color .15s;user-select:none;"
-          onmouseover="this.style.color='rgba(255,255,255,.75)'"
-          onmouseout="this.style.color='rgba(255,255,255,.38)'">Sign Out</span>
+          onmouseover="this.style.color='rgba(255,255,255,.8)'"
+          onmouseout="this.style.color='rgba(255,255,255,.35)'">Sign Out</span>
       </div>
     </div>
   </div>
@@ -1849,37 +1864,23 @@ _nav_choice = st.radio(
 page = PAGES[_page_labels.index(_nav_choice)] if _nav_choice in _page_labels else PAGES[0]
 st.session_state["page"] = page
 
-# Global language toggle — tiny pill in top-right of header area
-st.markdown(f"""<style>
-div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
-    position:relative!important;
-}}
-.lang-pill {{
-    position:fixed;top:26px;right:160px;z-index:9999;
-    display:flex;gap:4px;align-items:center;
-}}
-.lang-btn {{
-    background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:12px;
-    color:rgba(255,255,255,.55);font-family:'DM Mono',monospace;font-size:8.5px;
-    letter-spacing:1px;text-transform:uppercase;padding:2px 8px;cursor:pointer;
-    transition:all .15s;line-height:1.4;
-}}
-.lang-btn.active {{
-    background:rgba(93,168,50,.2);border-color:{C["mint"]};color:{C["mint"]};
-}}
-.lang-btn:hover {{ color:white;border-color:rgba(255,255,255,.5); }}
+# Language buttons — hidden, triggered by header HTML spans
+st.markdown("""<style>
+div[data-testid="stHorizontalBlock"]:has(button[data-testid="baseButton-secondary"]:not([kind])),
+div.stButton:has(button[key="_lang_en_hdr"]),
+div.stButton:has(button[key="_lang_es_hdr"]) {
+    height:0!important;overflow:hidden!important;margin:0!important;
+    padding:0!important;min-height:0!important;max-height:0!important;
+    visibility:hidden!important;position:absolute!important;opacity:0!important;
+}
 </style>""", unsafe_allow_html=True)
 
 _lc1, _lc2, _lc3 = st.columns([12,1,1])
 with _lc2:
-    if st.button("EN", key="_lang_en_hdr",
-                 help="Switch to English",
-                 type="primary" if _lang=="en" else "secondary"):
+    if st.button("__EN__", key="_lang_en_hdr"):
         st.session_state["lang"]="en"; st.rerun()
 with _lc3:
-    if st.button("ES", key="_lang_es_hdr",
-                 help="Cambiar a español",
-                 type="primary" if _lang=="es" else "secondary"):
+    if st.button("__ES__", key="_lang_es_hdr"):
         st.session_state["lang"]="es"; st.rerun()
 
 # LOAD DATA
@@ -4017,3 +4018,4 @@ with st.expander(T("acct_session")):
             st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
     with _a3:
         st.caption(T("acct_signout_note"))
+      
