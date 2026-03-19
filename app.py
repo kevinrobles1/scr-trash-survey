@@ -97,7 +97,7 @@ TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset"
         "Saige Thompson","Stephanie Winick","Damon Shorty","Julia Olson",
         "Isabella Feldmann","KyeongHee Kim","Joe Cuffori","Brian Jones"]
 
-PAGES = ["Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
+PAGES = ["Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export","About"]
 
 C = dict(
     forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
@@ -1812,7 +1812,15 @@ elif page == "Categories":
 elif page == "Locations":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown('<div class="pg-title">Locations & Sites</div>', unsafe_allow_html=True)
-    st.markdown('<div class="pg-lead">Site-level analysis of trash burden across all recorded survey locations. Sites with GPS coordinates are ordered <strong>North to South</strong> by latitude. Statistics (mean, SD, SE, CV) are computed at the survey-event level — each event at a site counts as one observation.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="pg-lead">How much trash is found at each survey location — and how consistent is it? Sites are ordered <strong>North to South</strong> along the river corridor by GPS latitude when available.</div>', unsafe_allow_html=True)
+    st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
+    <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
+    <p style="margin:0 0 8px;"><strong>Mean (average items per event):</strong> The typical number of trash items found during a single survey visit at that site. A site with a mean of 80 means the team usually finds about 80 items each time they visit. This is the most useful number for comparing sites.</p>
+    <p style="margin:0 0 8px;"><strong>SD (standard deviation):</strong> How much the count varies from visit to visit. A low SD means the site is consistently trashy or consistently clean. A high SD means some visits found a lot and others found very little — suggesting the trash comes in waves, or that conditions change between surveys.</p>
+    <p style="margin:0 0 8px;"><strong>SE (standard error):</strong> How reliable the mean estimate is. Smaller SE = more confident the mean is accurate. A site visited 20 times has a more reliable mean than one visited twice. Use SE to know whether to trust the average.</p>
+    <p style="margin:0 0 8px;"><strong>CV (coefficient of variation %):</strong> A normalized measure of variability — SD divided by the mean, expressed as a percentage. It lets you fairly compare variability across sites with different trash levels. Under 30% = fairly consistent site. Over 100% = highly unpredictable, meaning conditions vary dramatically between surveys.</p>
+    <p style="margin:0;"><strong>Why this matters for trash:</strong> A site with a high mean AND a low CV is a chronic hotspot — it always has a lot of trash. A site with a high CV may need a different response — sporadic dumping events rather than continuous litter, which calls for source investigation rather than routine cleanup.</p>
+    </div>''', unsafe_allow_html=True)
 
     with st.expander("Filter Data", expanded=False):
         lf=render_filters(long, kp="loc", cats=False)
@@ -2389,6 +2397,210 @@ elif page == "Export":
             with st.expander("Preview first 30 rows"):
                 st.dataframe(df_exp.head(30), use_container_width=True, height=220)
         st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# ══════════════════════════════════════════════════════════════════
+# ABOUT
+# ══════════════════════════════════════════════════════════════════
+elif page == "About":
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+
+    # Hero banner
+    st.markdown(f"""
+    <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
+    border-radius:14px;padding:52px 64px;margin-bottom:36px;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;
+    background:url('https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg')
+    center/cover no-repeat;opacity:.18;border-radius:14px;"></div>
+    <div style="position:relative;z-index:2;">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;
+    color:{C['mint']};margin-bottom:16px;">Sonoran Institute · Tucson, Arizona</div>
+    <h1 style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:white;
+    line-height:1.1;letter-spacing:-.02em;margin:0 0 16px;">
+    Santa Cruz River<br><em style="color:{C['mint']};">Trash Survey Program</em></h1>
+    <p style="font-size:15px;color:rgba(255,255,255,.75);max-width:680px;line-height:1.85;margin:0;">
+    A longitudinal monitoring program tracking litter and debris along the Santa Cruz River corridor
+    in Tucson, Arizona — building the scientific record needed to protect a living desert river.
+    </p></div></div>""", unsafe_allow_html=True)
+
+    section_title("Why This River — and Why This Data")
+    c1, c2 = st.columns([3,2])
+    with c1:
+        st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:1.9;">
+        <p style="margin:0 0 14px;">The Santa Cruz River is one of the most ecologically significant waterways
+        in the American Southwest. For more than <strong>12,000 years</strong> it has sustained human communities —
+        from the Tohono O'odham Nation, who have stewarded these lands since time immemorial, to Tucson's
+        one million residents today.</p>
+        <p style="margin:0 0 14px;">After decades of overextraction and pollution, the river is experiencing a
+        remarkable recovery. Today approximately <strong>38 miles of perennial flow</strong> support the return of
+        native fish including the endangered Gila topminnow, cottonwood-willow forest, migratory birds, and
+        reptiles. The 2019 Heritage Project created a flowing stretch through downtown Tucson for the first
+        time in a generation.</p>
+        <p style="margin:0 0 14px;"><strong>Trash is a direct threat to this recovery.</strong> Litter degrades
+        water quality, entangles wildlife, fragments into microplastics, and undermines the investment in
+        restoration. During monsoon events, floatable items travel downstream into the river itself —
+        reaching waterways far from where they were dropped.</p>
+        <p style="margin:0;">The Sonoran Institute trash survey program exists to <strong>quantify this
+        threat with scientific precision</strong> — creating the longitudinal data record needed to report
+        to regulatory agencies, secure restoration funding, design targeted cleanup programs, and
+        demonstrate measurable progress over time.</p>
+        </div>""", unsafe_allow_html=True)
+    with c2:
+        st.markdown(f"""
+        <img src="https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg"
+        style="width:100%;border-radius:10px;margin-bottom:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);">
+        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-bottom:14px;">
+        Santa Cruz River corridor, Tucson, AZ · ©Bill Hatcher / Sonoran Institute</div>
+        <img src="https://sonoraninstitute.org/files/Hatcher_181106_1751-scaled.jpg"
+        style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);">
+        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:6px;">
+        Annual fish survey, Santa Cruz River · ©Bill Hatcher / Sonoran Institute, 2020</div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+    p1,p2,p3 = st.columns(3)
+    for col, url, cap in zip([p1,p2,p3],[
+        "https://sonoraninstitute.org/files/Hatcher_181128_404-1600x900.jpg",
+        "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg",
+        "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
+    ],[
+        "Riparian habitat restoration · ©Bill Hatcher / Sonoran Institute",
+        "Santa Cruz River, April 2018 · ©Bill Hatcher / Sonoran Institute",
+        "River corridor near Carmen, Arizona · ©Bill Hatcher / Sonoran Institute"
+    ]):
+        with col:
+            st.markdown(f"""<img src="{url}"
+            style="width:100%;height:200px;object-fit:cover;border-radius:10px;
+            box-shadow:0 3px 14px rgba(0,0,0,.13);">
+            <div style="font-size:11px;color:{C['muted']};font-style:italic;
+            text-align:center;margin-top:7px;line-height:1.5;">{cap}</div>""",
+            unsafe_allow_html=True)
+
+    st.markdown("<div style='height:28px'></div>", unsafe_allow_html=True)
+    section_title("About This Database")
+
+    s1,s2,s3,s4 = st.columns(4)
+    for col, val, lbl, note in zip([s1,s2,s3,s4],
+        ["32,144+","395+","136","2020–2024"],
+        ["Items Recorded","Survey Events","Unique Locations","Survey Period"],
+        ["across all survey events","individual field visits","along the corridor","longitudinal record"]):
+        with col:
+            st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
+            padding:18px 20px 14px;text-align:center;position:relative;overflow:hidden;
+            box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;
+            background:linear-gradient(90deg,{C['green']},{C['mint']});"></div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
+            color:{C['green']};line-height:1;">{val}</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
+            color:{C['muted']};font-family:'DM Mono',monospace;margin-top:6px;">{lbl}</div>
+            <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
+            </div>""", unsafe_allow_html=True)
+
+    st.markdown("<div style='height:24px'></div>", unsafe_allow_html=True)
+    c3, c4 = st.columns([2,3])
+    with c3:
+        st.markdown(f"""<img src="https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg"
+        style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);">
+        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:6px;">
+        Field survey crew, Santa Cruz River corridor</div>""", unsafe_allow_html=True)
+    with c4:
+        st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:1.9;">
+        <p style="margin:0 0 14px;">The trash survey protocol uses <strong>plot-based sampling</strong> —
+        fixed, measured survey areas at consistent locations. Each survey event counts and categorizes
+        every piece of litter using a standardized <strong>56-item, 19-category protocol</strong>
+        capturing the full spectrum of urban litter types.</p>
+        <p style="margin:0 0 14px;">Data collection began in September 2020, creating a
+        <strong>longitudinal record</strong> that captures seasonal patterns, post-storm events,
+        encampment-related debris, and the response of specific reaches to cleanup interventions.
+        Protocol consistency across years makes trend analysis possible.</p>
+        <p style="margin:0 0 14px;">This dashboard is the first cloud-hosted, real-time interface for
+        this dataset. Prior to its development, data existed only in a local Excel workbook. The migration
+        to Supabase allows the entire team to access, enter, and analyze data from any device — and
+        generates publication-quality figures for reporting and grant applications.</p>
+        <p style="margin:0;">The <strong>19 survey categories</strong> span the full range of urban litter:
+        food packaging (~33%), clothing (encampment indicator), beverage containers (recyclable fraction),
+        pharmaceutical and drug materials (public health concern), and large debris including appliances
+        and construction waste (illegal dumping indicator).</p>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+    section_title("Why Longitudinal Trash Data Matters")
+
+    reasons = [
+        (C["water"], "Regulatory Reporting",
+         "ADEQ stormwater permit compliance and EPA Section 319 reporting require documented evidence of litter management. This database provides that with verifiable methodology and multi-year records."),
+        (C["green"], "Grant Funding",
+         "Federal and foundation grants for river restoration require baseline data and demonstrated monitoring capacity. This dataset establishes both — showing where the problem is worst and whether interventions produce measurable change."),
+        (C["amber"], "Targeted Cleanup Design",
+         "Not all sites are equal. The data identifies chronic hotspots versus episodic dumping sites — which require different responses that cannot be designed without systematic longitudinal data."),
+        (C["brick"], "Public Health Documentation",
+         "Syringe and drug paraphernalia counts create a documented health hazard record, supporting requests for targeted interventions and field crew safety resources."),
+        (C["sage"], "Policy Advocacy",
+         "The recyclable fraction (~16%) and floatable fraction (~63%) are directly relevant to policy conversations about extended producer responsibility, bottle bills, and stormwater ordinances."),
+        (C["earth"], "Urban Wildlife Refuge Designation",
+         "Demonstrating active protection — not just restoration — is essential to securing the Urban National Wildlife Refuge designation Sonoran Institute is pursuing with The Wilderness Society and USFWS."),
+    ]
+    rc1, rc2 = st.columns(2)
+    for i, (color, title, text) in enumerate(reasons):
+        with (rc1 if i%2==0 else rc2):
+            st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
+            border-left:4px solid {color};border-radius:0 10px 10px 0;
+            padding:16px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;
+            color:{C['text']};margin-bottom:5px;">{title}</div>
+            <div style="font-size:13px;color:{C['muted']};line-height:1.7;">{text}</div>
+            </div>""", unsafe_allow_html=True)
+
+    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+    pa, pb = st.columns(2)
+    with pa:
+        st.markdown(f"""<img src="https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg"
+        style="width:100%;height:260px;object-fit:cover;border-radius:10px;
+        box-shadow:0 4px 18px rgba(0,0,0,.13);">
+        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:7px;">
+        Santa Cruz River · ©Jeff Smith / Sonoran Institute, 2014</div>""", unsafe_allow_html=True)
+    with pb:
+        st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
+        padding:32px 36px;height:260px;display:flex;flex-direction:column;
+        justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;
+        color:{C['green']};line-height:1.3;margin-bottom:14px;font-style:italic;">
+        "The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years —
+        and can flow again with your support."</div>
+        <div style="font-size:11px;color:{C['muted']};font-family:'DM Mono',monospace;
+        text-transform:uppercase;letter-spacing:1px;">— Sonoran Institute</div>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown("<div style='height:16px'></div>", unsafe_allow_html=True)
+    section_title("Program Team")
+    tc1, tc2, tc3 = st.columns(3)
+    for col, name, role, desc, color in zip([tc1,tc2,tc3],
+        ["Luke Cole","Kevin Robles","Field Survey Team"],
+        ["Program Director","Database Specialist · RISE Intern","Data Collectors"],
+        ["Santa Cruz River Restoration Program, Sonoran Institute",
+         "Dashboard development, data migration, and analysis infrastructure",
+         "Sofia Angkasa, Kimberly Stanley, Marie Olson, and all survey crew members who built this record over four years"],
+        [C["green"],C["water"],C["sage"]]):
+        with col:
+            st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
+            border-top:4px solid {color};border-radius:10px;
+            padding:18px 18px 14px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
+            color:{C['text']};margin-bottom:3px;">{name}</div>
+            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+            color:{color};font-family:'DM Mono',monospace;margin-bottom:7px;">{role}</div>
+            <div style="font-size:12.5px;color:{C['muted']};line-height:1.7;">{desc}</div>
+            </div>""", unsafe_allow_html=True)
+
+    st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};border-radius:10px;
+    padding:16px 22px;margin-top:18px;font-size:13px;color:{C['muted']};line-height:1.8;">
+    <strong style="color:{C['text']};">Sonoran Institute</strong> · 5049 E Broadway Blvd., Suite 127,
+    Tucson, AZ 85711 · (520) 290-0828 ·
+    <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank"
+    style="color:{C['green']};text-decoration:none;font-weight:600;">
+    sonoraninstitute.org/card/santacruz</a></div>""", unsafe_allow_html=True)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ── FOOTER ────────────────────────────────────────────────────────
