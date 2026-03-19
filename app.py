@@ -1072,37 +1072,30 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign-out: rendered as a pill inside the nav bar row via CSS
-# Uses the nav's stHorizontalBlock — no extra rows, no gaps
-st.markdown(f"""<style>
-/* Make sign-out button sit inside the nav bar, flush right */
-div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
-    position:relative!important;
-}}
-/* Sign-out: fixed pill in the header */
-/* Sign-out: fixed pill — overlaid on the dark header area */
-button[data-testid="baseButton-secondary"],
-button[kind="secondary"] {{
-    position:fixed!important;top:20px!important;right:44px!important;z-index:9999!important;
-    background:transparent!important;
-    border:1px solid rgba(255,255,255,.32)!important;border-radius:20px!important;
-    color:rgba(255,255,255,.78)!important;
-    font-family:'DM Mono',monospace!important;font-size:9.5px!important;
-    letter-spacing:1.2px!important;text-transform:uppercase!important;
-    padding:4px 14px!important;line-height:1.5!important;box-shadow:none!important;
+# Sign-out: tiny text link overlaid at top-right of the header
+st.markdown("""<style>
+/* Tiny sign-out — just a text link, lives fixed in the header */
+button[data-testid="baseButton-secondary"] {
+    position:fixed!important;top:22px!important;right:44px!important;z-index:9999!important;
+    background:transparent!important;border:none!important;box-shadow:none!important;
+    color:rgba(255,255,255,.45)!important;
+    font-family:'DM Mono',monospace!important;font-size:9px!important;
+    letter-spacing:1px!important;text-transform:uppercase!important;
+    padding:0!important;line-height:1!important;
     min-height:0!important;height:auto!important;cursor:pointer!important;
-    transition:all .15s!important;
-}}
-button[data-testid="baseButton-secondary"]:hover,
-button[kind="secondary"]:hover {{
-    background:rgba(255,255,255,.1)!important;color:white!important;
-    border-color:rgba(255,255,255,.6)!important;
-}}
-/* The row containing the sign-out button — collapse completely */
-div.element-container:has(button[data-testid="baseButton-secondary"]) {{
+    text-decoration:underline!important;text-underline-offset:3px!important;
+    text-decoration-color:rgba(255,255,255,.2)!important;
+    transition:color .15s!important;
+}
+button[data-testid="baseButton-secondary"]:hover {
+    color:rgba(255,255,255,.85)!important;
+    text-decoration-color:rgba(255,255,255,.5)!important;
+}
+/* Collapse the row this button lives in so it takes zero space */
+div.element-container:has(button[data-testid="baseButton-secondary"]) {
     height:0!important;overflow:hidden!important;margin:0!important;
     padding:0!important;min-height:0!important;max-height:0!important;
-}}
+}
 </style>""", unsafe_allow_html=True)
 
 if st.button("Sign Out", key="_hdr_so"):
@@ -1133,7 +1126,7 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 44px 0 124px !important;
+    padding:0 24px 0 80px !important;
     max-width:1480px !important;
     margin:0 auto !important;
     border:none !important;
@@ -1144,7 +1137,7 @@ div[role="radiogroup"] {{
 div[role="radiogroup"] > label {{
     display:flex !important;
     align-items:center !important;
-    padding:14px 20px !important;
+    padding:13px 16px !important;
     font-family:'DM Sans',sans-serif !important;
     font-size:11px !important;
     font-weight:700 !important;
@@ -2425,11 +2418,19 @@ elif page == "Data Entry":
         &nbsp;·&nbsp; You can submit survey counts only.
         To access all features, <a href="/" style="color:{C["green"]};font-weight:600;">sign in with a staff account</a>.
         </div></div>''', unsafe_allow_html=True)
-        st.markdown('<div class="pg-title">Volunteer Survey Entry</div>', unsafe_allow_html=True)
-        st.markdown('<div class="pg-lead">Thank you for volunteering! Fill in the counts for each item found during your survey plot. Your submission goes directly into the database and will be reviewed by Sonoran Institute staff.</div>', unsafe_allow_html=True)
+        page_banner(
+            "Volunteer Survey Entry",
+            "Submit Your Trash Counts",
+            "Thank you for volunteering with the Sonoran Institute! Fill in the counts for each item found during your survey plot. Your submission goes directly into the live database.",
+            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
+        )
     else:
-        st.markdown('<div class="pg-title">Survey Data Entry & Management</div>', unsafe_allow_html=True)
-        st.markdown('<div class="pg-lead">Submit new survey entries and manage existing ones. Entries can be deleted by Event ID. All changes are reflected immediately in charts and tables.</div>', unsafe_allow_html=True)
+        page_banner(
+            "Field Data Entry",
+            "Survey Data Entry & Management",
+            "Submit new survey entries and manage existing records. All changes are saved directly to the live database and reflected in every chart immediately.",
+            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
+        )
 
     if is_vol:
         # Volunteers only see the entry form — no tabs, no manage section
