@@ -2128,7 +2128,24 @@ elif page == "Map":
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
         f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
-        'Map colors: <span style="color:#3182ce;font-weight:700;">Blue</span> = lower burden, <span style="color:#f59534;font-weight:700;">Orange</span>/<span style="color:#d64541;font-weight:700;">Red</span> = heavier. Click circles for details.<br><strong>Burden = total recorded item count per site (log color scale).</strong></div>',
+        "Map colors: <span style=\"color:#3182ce;font-weight:700;\">Blue</span> = lower burden, "
+        "<span style=\"color:#f59534;font-weight:700;\">Orange</span>/"
+        "<span style=\"color:#d64541;font-weight:700;\">Red</span> = heavier burden. "
+        "Click any circle to see site details and exact counts."
+        "<br><br><strong>How trash burden is calculated:</strong> "
+        "Each site&#39;s color is determined by the <strong>total number of individual trash items</strong> "
+        "recorded at that site across all survey events in the database. This is the sum of all 19 trash "
+        "categories (food packaging, cups, clothing, nicotine products, construction debris, etc.) counted "
+        "during every field visit to that location. Sites with more total items appear warmer (orange to red), "
+        "while sites with fewer items appear cooler (blue to teal)."
+        "<br><br><strong>Why logarithmic color scaling:</strong> "
+        "A few high-count sites would compress all other sites into the same blue if a linear scale were used. "
+        "Logarithmic spacing spreads the colors across the full range so differences among lower-count sites "
+        "remain visible."
+        "<br><br><strong>What this metric represents:</strong> "
+        "Cumulative litter load over time, not density per square meter or items per single visit. A site "
+        "surveyed more often will naturally accumulate a higher total, so read this alongside the number of "
+        "survey events shown in each popup.</div>",
         unsafe_allow_html=True
     )
 
