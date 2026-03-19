@@ -162,7 +162,7 @@ footer{{display:none!important;}}
 }}
 
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:36px 60px 100px 60px;}}
+.body{{max-width:1480px;margin:0 auto;padding:36px 88px 100px 88px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -285,12 +285,12 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     fig.update_layout(
         height=h, paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family="DM Sans, sans-serif", color=C["text"], size=12),
-        margin=dict(l=10,r=10,t=56 if title else 32,b=10),
+        margin=dict(l=10,r=10,t=56 if title else 32,b=80),
         title=dict(text=title, font=dict(family="Cormorant Garamond, serif", size=16, color=C["green"]),
                    x=0, xanchor="left", pad=dict(l=0)) if title else None,
         legend=dict(bgcolor="rgba(255,255,255,.95)",bordercolor=C["divider"],borderwidth=1,
-                    font=dict(size=11),orientation="h",yanchor="bottom",y=1.02,
-                    xanchor="right",x=1) if leg else dict(visible=False),
+                    font=dict(size=10),orientation="h",yanchor="top",y=-0.12,
+                    xanchor="left",x=0) if leg else dict(visible=False),
         xaxis_title=xt, yaxis_title=yt,
     )
     fig.update_xaxes(showgrid=False,zeroline=False,linecolor=C["divider"],tickfont=dict(size=11,color=C["muted"]))
@@ -1023,6 +1023,7 @@ if page == "Overview":
             fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=9.5,pull=[.04]+[0]*(len(grp)-1))
             fig.update_layout(height=300,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"ov_pie")
+        cat_color_legend()
         card_close()
 
     c3,c4 = st.columns([2,3])
@@ -1032,6 +1033,7 @@ if page == "Overview":
         top=lf.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
         fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["water"]])
         fb(fig,"Total Count",None,h=420,title="Top 15 Items by Total Count"); show(fig,"ov_top")
+        cat_color_legend()
         card_close()
     with c4:
         card_open("Items by River Segment and Category",
@@ -1040,7 +1042,12 @@ if page == "Overview":
             sg=lf[lf["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
             sg["seg"]=pd.Categorical(sg["seg"],SEG_ORDER,ordered=True); sg=sg.sort_values("seg")
             fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",color_discrete_sequence=PAL,category_orders={"seg":SEG_ORDER})
-            fb(fig,"River Segment","Total Items",h=420,title="Items by Segment and Category"); show(fig,"ov_seg")
+            fig.update_layout(
+                legend=dict(orientation="v",yanchor="top",y=1,xanchor="left",x=1.02,
+                    font=dict(size=10),bgcolor="rgba(255,255,255,.95)",
+                    bordercolor=C["divider"],borderwidth=1))
+            fb(fig,"River Segment","Total Items",h=480,leg=False,title="Items by River Segment and Category"); show(fig,"ov_seg")
+            cat_color_legend()
         card_close()
 
     section_title("Category Summary Table")
@@ -1266,6 +1273,20 @@ elif page == "Categories":
     stat_strip(long,lf)
 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
+
+    # Interactive category toggle — lets user remove categories like Data Table
+    all_cats_available = sorted(df["trash_group"].dropna().unique().tolist())
+    with st.expander("Toggle Categories (include/exclude from all figures)", expanded=False):
+        sel_cats = st.multiselect(
+            "Categories to include in figures",
+            options=all_cats_available,
+            default=all_cats_available,
+            key="cat_toggle"
+        )
+        if sel_cats != all_cats_available:
+            st.caption(f"Showing {len(sel_cats)} of {len(all_cats_available)} categories.")
+    if sel_cats:
+        df = df[df["trash_group"].isin(sel_cats)].copy()
     total_all=max(df["n"].sum(),1)
 
     CAT_FIGS = {
@@ -1284,7 +1305,7 @@ elif page == "Categories":
         "Bulk & Large Debris — Appliances, Construction, Auto": ("Environmental Risk", "Large items requiring equipment: appliances, furniture, tires, car parts, construction debris.", "By item count modest, but by weight and removal cost they far exceed smaller categories."),
         "Category Risk Profile — Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk — the priority removal targets."),
         "Category Trends Over Time — Top 6 Quarterly":         ("Trends by Category", "Quarterly time series for the 6 highest-volume categories.", "Shows whether category composition is stable or shifting over the program period."),
-        "Year-over-Year Change by Category":                    ("Trends by Category", "Grouped bars showing each category's annual total across all survey years.", "Reveals which categories are increasing, decreasing, or stable year over year."),
+        "Year-over-Year Change by Category":                    ("Trends by Category", "Heatmap + stacked bar showing each category's annual item total. Heatmap is the correct chart type — 19 categories × 5 years would be 95 bars if grouped.", "Reveals which categories are increasing, decreasing, or stable year over year. Darker cells = more items."),
         "Category Composition — How Mix Changed by Year":       ("Trends by Category", "100% stacked bars showing each category's share per year — removes total survey size effect.", "More ecologically meaningful than raw totals for detecting true composition shifts."),
         "Category Mix by River Segment":                        ("Geographic",         "Stacked bars showing category composition across North, Central, South, and Rillito reaches.", "Different segments may have different dominant categories due to adjacent land use patterns."),
         "Segment Specialization — Top Categories per Reach":    ("Geographic",         "One tab per segment showing the top 10 categories and their share of that segment's total.", "Identifies segment-specific waste profiles for targeted cleanup planning."),
@@ -1354,6 +1375,7 @@ elif page == "Categories":
             hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Count: %{x:,}<br>Share: %{customdata[1]}%<extra></extra>"))
         fb(fig,"Total Count","Item",h=max(900,20*len(top)),leg=False,
             title="All 56 Individual Item Types — Ranked by Total Count"); show(fig,"cat_all56")
+        cat_color_legend()
         fig_note(
             "Every item type in the 56-item survey protocol, ranked from rarest to most common.",
             "Food Wrappers lead at 5,471 items. Syringes and drug paraphernalia appear low in count but are high in health significance.",
@@ -1372,6 +1394,7 @@ elif page == "Categories":
                 font=dict(family="Cormorant Garamond, serif",size=16,color=C["green"]),x=0))
         show(fig,"cat_pie2")
         last_updated_insight(df,"general")
+        cat_color_legend()
         fig_note("Proportional breakdown — each slice shows one category as a percentage of the total.",
             "Food Packaging at ~33% means 1 in 3 items found is food-related packaging.",
             "Hover for exact percentages. Small slices are not unimportant — Rx/Drugs at under 1% still carries major health risk.",
@@ -1391,6 +1414,7 @@ elif page == "Categories":
                 color_discrete_sequence=[C["sage"]],text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
             fb(fig,"Total Items","",h=380,leg=False,title="Bottom 9 Categories"); show(fig,"cat_bot9")
+        cat_color_legend()
         fig_note("The top 10 categories account for over 95% of all recorded items.",
             "Shows the skewed distribution — a few categories drive the problem while many others are present but minor.",
             "Left = heaviest. Right = lightest. Even the lightest categories — Rx/Drugs (189) and Auto (167) — have outsized ecological or safety impact.",
@@ -1405,6 +1429,7 @@ elif page == "Categories":
             marker_color=avg_cat["color"],text=avg_cat["avg"].round(1),textposition="outside"))
         fb(fig,"Avg Items per Event","",h=max(560,32*len(avg_cat)),leg=False,
             title="Average Items per Survey Event — All 19 Categories"); show(fig,"cat_avg2")
+        cat_color_legend()
         fig_note("Mean total items per survey event for each category.",
             "Adjusts for recording frequency — a category recorded across 100 events is compared fairly to one recorded across 20.",
             "Higher = more items found per visit. Red = health hazard categories.",
@@ -1426,6 +1451,7 @@ elif page == "Categories":
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
             fb(fig,"Total","Item",h=500,title="Beverage Items — All Sub-Types"); show(fig,"bev_items")
         last_updated_insight(df,"general")
+        cat_color_legend()
         fig_note("All beverage container categories and their sub-type breakdown.",
             "Beverage containers represent single-use plastics and recyclables that ended up in the river corridor.",
             "Water bottles (1,635) are the most common single beverage item — many from encampments. Beer bottles lead alcohol.",
@@ -1446,6 +1472,7 @@ elif page == "Categories":
             fig.update_layout(height=340,paper_bgcolor="rgba(0,0,0,0)",showlegend=False,
                 margin=dict(l=8,r=8,t=8,b=8),font=dict(family="DM Sans"))
             show(fig,"cups_pie")
+        cat_color_legend()
         fig_note("The Cups category broken into 5 sub-types.",
             "Styrofoam cups are particularly problematic — they fragment into microplastics, clog drainage, and are excluded from recycling.",
             "Polar Pop cups are the large convenience store cups associated with Circle K — useful for source attribution and retailer partnership conversations.",
@@ -1461,6 +1488,7 @@ elif page == "Categories":
         fb(fig,"Total Items","Item Type",h=max(440,36*len(fp)),leg=False,
             title="Food Packaging — All 11 Sub-Types Ranked"); show(fig,"fp_items")
         last_updated_insight(df,"category","Food Packaging")
+        cat_color_legend()
         fig_note("Food Packaging is the single largest category at 10,694 items — spanning 11 distinct sub-types.",
             "Food Wrappers alone account for 51% of all Food Packaging (5,471 items). Straws are #3 at 860.",
             "6-pack rings and straws pose direct entanglement risk to birds and reptiles in the riparian corridor.",
@@ -1473,6 +1501,7 @@ elif page == "Categories":
             fig=px.line(ts_alc,x="date",y="n",color="trash_group",markers=True,
                 color_discrete_map={"Beer":C["amber"],"Liquor":C["brick"]})
             fb(fig,"Quarter","Items",h=440,title="Alcohol Containers — Beer vs Liquor Quarterly"); show(fig,"alc_ts")
+            cat_color_legend()
             fig_note("Quarterly counts of Beer and Liquor items across the survey record.",
                 "Alcohol containers are associated with encampments, informal gatherings, and chronic littering. Understanding their trajectory helps community engagement planning.",
                 "Amber = Beer, Red = Liquor. Rising lines indicate increasing alcohol-related litter.",
@@ -1572,6 +1601,7 @@ elif page == "Categories":
             fig=px.line(ts_hh,x="date",y="n",color="trash_group",markers=True,
                 color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]})
             fb(fig,"Quarter","Items",h=320,title="Health Hazard Items Over Time"); show(fig,"hh_ts")
+        cat_color_legend()
         fig_note("Three categories with direct public health risk: Rx/Drugs, Nicotine, and Toiletries.",
             "Syringes (101 recorded) and drug paraphernalia (88) create needle-stick hazard for field staff and community volunteers. Nicotine (1,255) is the most numerically prevalent hazard.",
             "All three require special handling protocols and personal protective equipment during removal events.",
@@ -1595,6 +1625,7 @@ elif page == "Categories":
                 text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
             fb(fig,"Total","Item",h=400,title="Bulk Debris — All Sub-Types"); show(fig,"bk_items")
+        cat_color_legend()
         fig_note("Appliances (550), Construction (1,147), and Auto (167) are large items requiring equipment to remove.",
             "Construction debris — particularly Small Items (1,104) — indicates illegal dumping of building waste along the corridor.",
             "By item count these seem modest, but by weight and volunteer-hours required for removal they represent a disproportionate burden.",
@@ -1621,6 +1652,7 @@ elif page == "Categories":
             category_orders={"Category":list(reversed(GROUP_ORDER))})
         fb(fig,"Total Items","",h=max(540,30*len(risk_df)),
             title="Category Risk Profile — Volume vs Environmental Risk Dimensions"); show(fig,"risk_scatter")
+        cat_color_legend()
         fig_note("Each dot = a category flagged with a risk dimension. Larger and further right = more items.",
             "Shows which categories combine high volume with high environmental or health risk.",
             "Food Packaging is Floatable. Rx/Drugs is a Health Hazard. Construction is Bulk Debris. Beer is Recyclable.",
@@ -1633,6 +1665,7 @@ elif page == "Categories":
             fig=px.line(ct6,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
             fb(fig,"Quarter","Items",h=480,title="Top 6 Categories — Quarterly Item Counts"); show(fig,"cat_trend2")
             last_updated_insight(df,"general")
+            cat_color_legend()
             fig_note("Quarterly trends for the 6 highest-volume categories.",
                 "Reveals whether the category composition is stable or if specific categories are increasing.",
                 "Lines diverging upward = that category is growing. Parallel lines = uniform change across categories.",
@@ -1645,13 +1678,40 @@ elif page == "Categories":
             yoy=df.groupby(["year","trash_group"])["n"].sum().reset_index()
             yoy["year_str"]=yoy["year"].astype(int).astype(str)
             ord_cats=[g for g in GROUP_ORDER if g in yoy["trash_group"].unique()]
-            fig=px.bar(yoy,x="year_str",y="n",color="trash_group",barmode="group",
-                color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
-            fb(fig,"Year","Total Items",h=500,title="Annual Category Totals — Year-over-Year Comparison"); show(fig,"yoy_cat")
-            fig_note("Each cluster of bars = one year, broken into all categories.",
-                "Reveals long-term trends by category — whether specific waste types are growing or declining.",
-                "Colors are consistent across years. A growing bar = more items in that category that year.",
-                "Be cautious comparing years with very different survey effort — more events in a year will produce higher counts regardless of actual litter density.")
+
+            # A: Heatmap — correct chart type for category × year matrix
+            # Grouped bar with 19 cats × 5 years = 95 bars, completely unreadable
+            pivot=yoy.pivot(index="trash_group",columns="year_str",values="n").fillna(0)
+            pivot=pivot.reindex([g for g in reversed(GROUP_ORDER) if g in pivot.index])
+            fig=go.Figure(go.Heatmap(
+                z=pivot.values,
+                x=pivot.columns.tolist(),
+                y=pivot.index.tolist(),
+                colorscale=[[0,"#f8f5ef"],[0.3,C["mint"]],[0.7,C["green"]],[1,C["forest"]]],
+                hoverongaps=False,
+                hovertemplate="<b>%{y}</b><br>Year: %{x}<br>Items: %{z:,.0f}<extra></extra>",
+                texttemplate="%{z:.0f}",
+                textfont=dict(size=10),
+                showscale=True,
+                colorbar=dict(title="Total Items",titlefont=dict(size=11))
+            ))
+            fb(fig,"Year","Category",h=580,leg=False,
+                title="Annual Item Totals by Category — Heatmap (Darker = More Items)"); show(fig,"yoy_heat")
+
+            # B: Stacked bar for total comparison across years
+            fig2=px.bar(yoy,x="year_str",y="n",color="trash_group",barmode="stack",
+                color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats},
+                text=None)
+            fb(fig2,"Year","Total Items",h=420,
+                title="Annual Category Totals — Stacked Bar"); show(fig2,"yoy_stack")
+
+            cat_color_legend()
+            fig_note(
+                "Top: Heatmap shows each category's item count per year. Darker green = more items. Bottom: Stacked bar shows total burden per year with category breakdown.",
+                "Heatmap is the correct chart type here — 19 categories × 5 years would produce 95 bars in a grouped bar chart, making it unreadable.",
+                "Heatmap: scan horizontally across a category to see if it is growing. Scan vertically down a year to compare categories within that year.",
+                "Stacked bar: the height of the full bar = total items that year. The color slices show which categories contributed most."
+            )
         else:
             st.info("No year data available.")
 
@@ -1666,6 +1726,7 @@ elif page == "Categories":
             fig=px.bar(yp,x="year_str",y="share",color="trash_group",barmode="stack",
                 color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
             fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year — 100% Stacked Shares"); show(fig,"comp_yr")
+            cat_color_legend()
             fig_note("100% stacked bars — each bar totals 100%, showing category SHARE each year.",
                 "Removes the effect of varying survey effort and shows whether the MIX of items is changing.",
                 "A growing color slice = that category is increasing as a proportion of all litter.",
@@ -1682,6 +1743,7 @@ elif page == "Categories":
                 category_orders={"seg":list(reversed(SEG_ORDER[:-1])),"trash_group":ord_cats})
             fb(fig,"Total Items","Segment",h=400,title="Category Composition by River Segment"); show(fig,"seg_cat")
             color_legend("Segment Colors", mode="segments")
+            cat_color_legend()
             fig_note("Stacked bars showing category composition across the four named river reaches.",
                 "Reveals whether certain reaches have distinctly different waste profiles due to adjacent land use.",
                 "A segment with unusually high Clothing indicates encampments. High Construction suggests illegal dumping nearby.",
@@ -1709,6 +1771,7 @@ elif page == "Categories":
                     seg_tot_n=int(df[df["seg"]==seg]["n"].sum())
                     fb(fig,"Total Items","",h=max(380,30*len(seg_df)),leg=False,
                         title=f"{seg} — All Categories ({seg_tot_n:,} total items)"); show(fig,f"seg_spec_{i}")
+            cat_color_legend()
             fig_note("Top categories for each river segment shown in individual tabs.",
                 "Identifies segment-specific waste profiles — useful for targeted cleanup events and reporting to local jurisdictions.",
                 "Compare the relative share of each category across segments — a category dominant in one segment but minor in another points to local source patterns.",
