@@ -449,7 +449,7 @@ def auth_gate():
     .auth-ftr{{margin-top:24px;padding-top:16px;border-top:1px solid {C["sand3"]};font-size:11px;color:{C["muted"]};font-family:'DM Mono',monospace;display:flex;align-items:center;gap:8px;}}
     </style>""", unsafe_allow_html=True)
 
-    lc, rc = st.columns([1.1, 0.9])
+    lc, rc = st.columns([0.9, 1.1])
     with lc:
         components.html(f"""<!DOCTYPE html><html><head>
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,700&family=DM+Sans:wght@400;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
