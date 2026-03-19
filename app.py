@@ -3810,15 +3810,15 @@ elif page == "About":
         [T("stat_items_note"),T("stat_events_note"),T("stat_locs_note"),T("stat_period_note")]):
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
-            padding:18px 20px 14px;text-align:center;position:relative;overflow:hidden;
+            padding:24px 20px 20px;text-align:center;position:relative;overflow:hidden;
             box-shadow:0 2px 10px rgba(0,0,0,.04);">
             <div style="position:absolute;top:0;left:0;right:0;height:3px;
             background:linear-gradient(90deg,{C['green']},{C['mint']});"></div>
             <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
-            color:{C['green']};line-height:1;">{val}</div>
+            color:{C['green']};line-height:1.1;">{val}</div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
-            color:{C['muted']};font-family:'DM Mono',monospace;margin-top:6px;">{lbl}</div>
-            <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
+            color:{C['muted']};font-family:'DM Mono',monospace;margin-top:12px;">{lbl}</div>
+            <div style="font-size:11px;color:{C['muted']};margin-top:6px;line-height:1.4;">{note}</div>
             </div>""", unsafe_allow_html=True)
 
     _ab1, _ab2 = st.columns([1, 2])
