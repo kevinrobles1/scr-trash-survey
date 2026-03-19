@@ -635,7 +635,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:none;margin-bottom:0;box-shadow:none;}}
-.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 44px 14px 160px;
+.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 48px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -705,7 +705,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:24px 96px 120px 160px;}}
+.body{{max-width:1480px;margin:0 auto;padding:0 48px 80px 48px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -824,8 +824,8 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
-      padding:44px 0 32px;margin-top:80px;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1480px;margin:0 auto;padding:0 160px;}}
+      padding:36px 0 28px;margin-top:48px;border-top:2px solid {C["sage"]};}}
+.ftr-in{{max-width:1480px;margin:0 auto;padding:0 48px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
 .ftr-a:hover{{color:{C["mint"]};}}
@@ -976,8 +976,8 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     <div style="
         background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
         border-radius:0;
-        padding:28px 160px 30px;
-        margin:-32px 0 18px;
+        padding:28px 48px 30px;
+        margin:0;
         position:relative;
         overflow:hidden;
         box-shadow:none;">
@@ -1139,7 +1139,7 @@ def auth_gate():
     [data-testid="column"]:last-of-type,[data-testid="column"]:last-of-type>div,
     [data-testid="column"]:last-of-type>div>div,[data-testid="column"]:last-of-type>div>div>div,
     [data-testid="column"]:last-of-type [data-testid="stVerticalBlock"]{{background:{C["cream"]}!important;}}
-    [data-testid="column"]:last-of-type{{padding:72px 52px!important;}}
+    [data-testid="column"]:last-of-type{{padding:48px 42px!important;}}
     [data-testid="column"]:last-of-type label{{color:{C["med"]}!important;font-size:12.5px!important;font-weight:600!important;}}
     [data-testid="column"]:last-of-type input{{background:white!important;color:{C["text"]}!important;border:1.5px solid {C["sand3"]}!important;border-radius:5px!important;}}
     [data-testid="column"]:last-of-type .stButton>button{{background:white!important;color:{C["text"]}!important;border:1.5px solid {C["sand3"]}!important;border-radius:5px!important;font-weight:600!important;}}
@@ -1771,9 +1771,30 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
 st.markdown("""<style>
 div.stButton:has(button[key="_hdr_so"]),
 div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
-    position:fixed!important;left:-9999px!important;top:-9999px!important;
-    opacity:0!important;pointer-events:auto!important;
-    height:1px!important;width:1px!important;overflow:hidden!important;
+    position:fixed!important;top:12px!important;right:16px!important;
+    z-index:9999!important;opacity:1!important;pointer-events:auto!important;
+    width:auto!important;height:auto!important;overflow:visible!important;
+    left:auto!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
+    background:rgba(122,143,53,.15)!important;
+    color:rgba(255,255,255,.85)!important;
+    border:1px solid rgba(255,255,255,.2)!important;
+    font-size:10px!important;
+    letter-spacing:1px!important;
+    text-transform:uppercase!important;
+    font-family:'DM Mono',monospace!important;
+    padding:5px 14px!important;
+    border-radius:16px!important;
+    backdrop-filter:blur(8px)!important;
+    cursor:pointer!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button:hover,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
+    background:rgba(180,60,30,.6)!important;
+    color:white!important;
+    border-color:rgba(255,255,255,.4)!important;
 }
 </style>""", unsafe_allow_html=True)
 
@@ -1806,7 +1827,7 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 44px !important;justify-content:flex-start !important;
+    padding:0 48px !important;justify-content:flex-start !important;
     max-width:1480px !important;
     margin:0 auto !important;
     border:none !important;
@@ -3735,7 +3756,7 @@ elif page == "About":
     # Hero banner
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
-    border-radius:14px;padding:52px 64px;margin-bottom:36px;position:relative;overflow:hidden;">
+    border-radius:14px;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;
     background:url('https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg')
     center/cover no-repeat;opacity:.18;border-radius:14px;"></div>
@@ -3886,7 +3907,7 @@ elif page == "About":
             </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};border-radius:10px;
-    padding:16px 22px;margin-top:18px;font-size:13px;color:{C['muted']};line-height:1.8;">
+    padding:16px 22px;margin-top:12px;font-size:13px;color:{C['muted']};line-height:1.8;">
     <strong style="color:{C['text']};">Sonoran Institute</strong> · 5049 E Broadway Blvd., Suite 127,
     Tucson, AZ 85711 · (520) 290-0828 ·
     <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank"
