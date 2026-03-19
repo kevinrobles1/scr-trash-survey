@@ -316,12 +316,21 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 .fade-up{{animation:fadeUp .35s ease both;}}
 
 /* ── FOOTER ── */
-.ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 100%);
-      padding:24px 44px;margin-top:80px;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1480px;margin:0 auto;display:flex;align-items:center;
-         justify-content:space-between;flex-wrap:wrap;gap:16px;}}
-.ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.8;font-family:'DM Mono',monospace;}}
-.ftr-a{{color:rgba(255,255,255,.55);text-decoration:none;}}
+.ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#0b1a0e 100%);
+      padding:44px 0 32px;margin-top:80px;border-top:2px solid {C["sage"]};}}
+.ftr-in{{max-width:1480px;margin:0 auto;padding:0 124px;}}
+.ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
+.ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
+.ftr-a:hover{{color:{C["mint"]};}}
+.ftr-social-icon{{display:inline-flex;align-items:center;justify-content:center;
+    width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.15);margin-right:6px;text-decoration:none;
+    font-size:12px;color:rgba(255,255,255,.6);transition:all .15s;}}
+.ftr-social-icon:hover{{background:rgba(93,168,50,.25);border-color:{C["mint"]};color:{C["mint"]};}}
+.ftr-divider{{border:none;border-top:1px solid rgba(255,255,255,.08);margin:20px 0;}}
+.ftr-links-row{{display:flex;flex-wrap:wrap;gap:6px 28px;}}
+.ftr-section-lbl{{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+    text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px;display:block;}}
 
 /* Auth tabs */
 div[data-testid="stTabs"]>div:first-child{{background:transparent!important;
@@ -1056,7 +1065,7 @@ inject_css()
 auth_gate()
 prof=st.session_state.get("prof") or {}
 
-# HEADER + SIGN OUT — all in one HTML block, zero Streamlit elements
+# HEADER — sign out embedded as tiny text in the top-right user block
 st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
     <img src="{LOGO_W}" class="hdr-logo">
@@ -1067,7 +1076,9 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
     <div class="hdr-user">
       <strong>{prof.get('full_name','')}</strong>
       <span class="hdr-pos">{prof.get('position_title','')}</span>
-      <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:3px;">
+        <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
+      </div>
     </div>
   </div>
 </div></div>""", unsafe_allow_html=True)
@@ -1076,7 +1087,7 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
 st.markdown("""<style>
 /* Tiny sign-out — just a text link, lives fixed in the header */
 button[data-testid="baseButton-secondary"] {
-    position:fixed!important;top:22px!important;right:44px!important;z-index:9999!important;
+    position:fixed!important;top:46px!important;right:28px!important;z-index:9999!important;
     background:transparent!important;border:none!important;box-shadow:none!important;
     color:rgba(255,255,255,.45)!important;
     font-family:'DM Mono',monospace!important;font-size:9px!important;
@@ -3009,15 +3020,112 @@ elif page == "About":
 
 # ── FOOTER ────────────────────────────────────────────────────────
 st.markdown(f"""<div class="ftr"><div class="ftr-in">
-  <div style="display:flex;align-items:center;gap:16px;">
-    <img src="{LOGO_W}" style="height:30px;opacity:.8;">
-    <div class="ftr-copy"><strong style="color:rgba(255,255,255,.7);display:block;">Sonoran Institute</strong>
-    5049 E Broadway Blvd., Suite 127 · Tucson, AZ 85711 · (520) 290-0828</div>
+
+  <!-- Row 1: Logo + tagline + social icons -->
+  <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:24px;margin-bottom:20px;">
+    <div>
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+        <img src="{LOGO_W}" style="height:36px;opacity:.85;">
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
+          color:rgba(255,255,255,.85);line-height:1.2;">Sonoran Institute</div>
+          <div style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:2px;
+          text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;">River Restoration Program</div>
+        </div>
+      </div>
+      <div class="ftr-copy">
+        5049 E Broadway Blvd., Suite 127 · Tucson, AZ 85711<br>
+        Phone: (520) 290-0828
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <span class="ftr-section-lbl">Connect with us</span>
+      <div>
+        <a href="https://www.facebook.com/SonoranInstitute" target="_blank" class="ftr-social-icon" title="Facebook">f</a>
+        <a href="https://twitter.com/SonoranInst" target="_blank" class="ftr-social-icon" title="Twitter / X">𝕏</a>
+        <a href="https://www.youtube.com/@SonoranInstitute" target="_blank" class="ftr-social-icon" title="YouTube">▶</a>
+        <a href="https://www.instagram.com/sonoraninstitute" target="_blank" class="ftr-social-icon" title="Instagram">◈</a>
+      </div>
+    </div>
   </div>
-  <div class="ftr-copy" style="text-align:right;">
-    <a href="https://sonoraninstitute.org/card/santacruz/" class="ftr-a">Santa Cruz River Program</a><br>
-    Dashboard v5.0 · Cloud Edition
+
+  <hr class="ftr-divider">
+
+  <!-- Row 2: Navigation links -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px 32px;margin-bottom:20px;">
+    <div>
+      <span class="ftr-section-lbl">Our Work</span>
+      <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
+        <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank" class="ftr-a ftr-copy">Santa Cruz River</a>
+        <a href="https://sonoraninstitute.org/card/colorado-river-delta-program/" target="_blank" class="ftr-a ftr-copy">Colorado River Delta</a>
+        <a href="https://sonoraninstitute.org/card/growingwatersmart/" target="_blank" class="ftr-a ftr-copy">Growing Water Smart</a>
+        <a href="https://sonoraninstitute.org/2022/one-basin/" target="_blank" class="ftr-a ftr-copy">One Basin</a>
+        <a href="https://sonoraninstitute.org/resources/" target="_blank" class="ftr-a ftr-copy">Resources</a>
+      </div>
+    </div>
+    <div>
+      <span class="ftr-section-lbl">About Us</span>
+      <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
+        <a href="https://sonoraninstitute.org/our-story/mission-vision/" target="_blank" class="ftr-a ftr-copy">Our Mission &amp; Vision</a>
+        <a href="https://sonoraninstitute.org/our-story/people/" target="_blank" class="ftr-a ftr-copy">Our People</a>
+        <a href="https://sonoraninstitute.org/our-story/board/" target="_blank" class="ftr-a ftr-copy">Board</a>
+        <a href="https://sonoraninstitute.org/our-story/partners/" target="_blank" class="ftr-a ftr-copy">Partners</a>
+        <a href="https://sonoraninstitute.org/our-story/financials/" target="_blank" class="ftr-a ftr-copy">Financials</a>
+        <a href="https://sonoraninstitute.org/careers/" target="_blank" class="ftr-a ftr-copy">Careers</a>
+      </div>
+    </div>
+    <div>
+      <span class="ftr-section-lbl">Sonoran Updates</span>
+      <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
+        <a href="https://sonoraninstitute.org/sign-up/" target="_blank" class="ftr-a ftr-copy">Sign Up for Newsletter</a>
+        <a href="https://sonoraninstitute.org/donations/membership/" target="_blank" class="ftr-a ftr-copy">Become a Sonoran Sustainer</a>
+        <a href="https://sonoraninstitute.org/blogs/" target="_blank" class="ftr-a ftr-copy">Blog Posts</a>
+        <a href="https://sonoraninstitute.org/events/" target="_blank" class="ftr-a ftr-copy">Events</a>
+      </div>
+      <span class="ftr-section-lbl" style="margin-top:16px;">Resources</span>
+      <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
+        <a href="https://sonoraninstitute.org/category/sonoran-post/" target="_blank" class="ftr-a ftr-copy">Sonoran Updates</a>
+        <a href="https://sonoraninstitute.org/resilient-west/" target="_blank" class="ftr-a ftr-copy">Resilient West</a>
+        <a href="https://sonoraninstitute.org/careers/" target="_blank" class="ftr-a ftr-copy">Careers</a>
+        <a href="https://sonoraninstitute.org/contact/" target="_blank" class="ftr-a ftr-copy">Contact Us</a>
+      </div>
+    </div>
+    <div>
+      <span class="ftr-section-lbl">Support Us</span>
+      <div style="margin-bottom:12px;">
+        <a href="https://sonoraninstitute.org/support/donate/" target="_blank"
+        style="display:inline-block;background:{C["mint"]};color:white;font-family:'DM Mono',monospace;
+        font-size:9.5px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;
+        border-radius:20px;text-decoration:none;transition:background .15s;">
+        Donate →</a>
+      </div>
+      <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
+        <a href="https://sonoraninstitute.org/donations/riversocks/" target="_blank" class="ftr-a ftr-copy">#RiverSocks</a>
+        <a href="https://sonoraninstitute.org/2024/ar-mer/" target="_blank" class="ftr-a ftr-copy">Endangered Rivers Report</a>
+        <a href="http://santacruzriver.org/letter-of-support/" target="_blank" class="ftr-a ftr-copy">Urban Wildlife Refuge</a>
+      </div>
+      <span class="ftr-section-lbl" style="margin-top:16px;">Living River Reports 2025</span>
+      <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
+        <a href="https://sonoraninstitute.org/files/a-living-river-2025.pdf" target="_blank" class="ftr-a ftr-copy">Downtown Tucson to Marana 2025</a>
+        <a href="https://sonoraninstitute.org/files/a-living-river-supplementary-2025.pdf" target="_blank" class="ftr-a ftr-copy">Supplementary Data 2025</a>
+        <a href="https://sonoraninstitute.org/files/un-rio-vivo-2025.pdf" target="_blank" class="ftr-a ftr-copy">Un Río Vivo — Español 2025</a>
+      </div>
+    </div>
   </div>
+
+  <hr class="ftr-divider">
+
+  <!-- Row 3: Bottom bar -->
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div class="ftr-copy" style="color:rgba(255,255,255,.22);">
+      © Sonoran Institute · Santa Cruz River Trash Survey Dashboard v5.0 · Cloud Edition
+    </div>
+    <div class="ftr-copy" style="color:rgba(255,255,255,.22);text-align:right;">
+      <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank" class="ftr-a">
+      sonoraninstitute.org/card/santacruz</a>
+    </div>
+  </div>
+
 </div></div>""", unsafe_allow_html=True)
 
 with st.expander("Account & Session"):
