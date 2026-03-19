@@ -221,6 +221,51 @@ TR = {
         "dashboard_refreshed":"Dashboard refreshed",
         "data_current":"Data current as of",
         "items":"items",
+        # About — hero
+        "about_hero_eyebrow":"Sonoran Institute · Tucson, Arizona",
+        "about_hero_title":"Santa Cruz River Trash Survey Program",
+        "about_hero_sub":"A longitudinal monitoring program tracking litter and debris along the Santa Cruz River corridor in Tucson, Arizona — building the scientific record needed to protect a living desert river.",
+        "about_scroll":"Scroll right to see more \u2192",
+        "about_photo_caption":"Santa Cruz River corridor, Tucson, AZ \u00b7 \u00a9Bill Hatcher / Sonoran Institute",
+        "about_field_caption":"Field survey crew, Santa Cruz River corridor, 2019",
+        "stat_items_lbl":"Items Recorded","stat_items_note":"across all survey events",
+        "stat_events_lbl":"Survey Events","stat_events_note":"individual field visits",
+        "stat_locs_lbl":"Unique Locations","stat_locs_note":"along the corridor",
+        "stat_period_lbl":"Survey Period","stat_period_note":"longitudinal record",
+        "reason_reg_title":"Regulatory Reporting",
+        "reason_reg":"ADEQ stormwater permit compliance and EPA Section 319 reporting require documented evidence of litter management. This database provides that with verifiable methodology and multi-year records.",
+        "reason_grant_title":"Grant Funding",
+        "reason_grant":"Federal and foundation grants require baseline data and demonstrated monitoring capacity. This dataset shows where the problem is worst and whether interventions produce measurable change.",
+        "reason_cleanup_title":"Targeted Cleanup Design",
+        "reason_cleanup":"Not all sites are equal. The data identifies chronic hotspots versus episodic dumping sites that require completely different responses.",
+        "reason_health_title":"Public Health Documentation",
+        "reason_health":"Syringe and drug paraphernalia counts create a documented health hazard record, supporting requests for targeted interventions and field crew safety resources.",
+        "reason_policy_title":"Policy Advocacy",
+        "reason_policy":"The recyclable fraction (~16%) and floatable fraction (~63%) are direct arguments for bottle bills, extended producer responsibility legislation, and stormwater ordinances.",
+        "reason_refuge_title":"Urban Wildlife Refuge Designation",
+        "reason_refuge":"Demonstrating active protection — not just restoration — is essential to securing the Urban National Wildlife Refuge designation Sonoran Institute is pursuing with USFWS.",
+        "about_quote":"The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years — and can flow again with your support.",
+        "about_quote_attr":"\u2014 Sonoran Institute",
+        "team_role_luke":"Program Director",
+        "team_desc_luke":"Santa Cruz River Restoration Program, Sonoran Institute",
+        "team_role_kevin":"Database Specialist \u00b7 RISE Intern",
+        "team_desc_kevin":"Dashboard development, data migration, and analysis infrastructure",
+        "team_name_field":"Field Survey Team",
+        "team_role_field":"Data Collectors",
+        "team_desc_field":"Sofia Angkasa, Kimberly Stanley, Marie Olson, and all survey crew members who built this record over four years",
+        "ftr_connect":"Connect with us",
+        "ftr_our_work":"Our Work","ftr_about_us":"About Us","ftr_updates":"Sonoran Updates",
+        "ftr_resources":"Resources","ftr_support":"Support Us","ftr_reports":"Living River Reports 2025",
+        "ftr_newsletter":"Sign Up for Newsletter","ftr_sustainer":"Become a Sonoran Sustainer",
+        "ftr_blog":"Blog Posts","ftr_events":"Events","ftr_mission":"Our Mission & Vision",
+        "ftr_people":"Our People","ftr_careers":"Careers","ftr_contact":"Contact Us",
+        "ftr_phone":"Phone",
+        "ftr_copyright":"\u00a9 Sonoran Institute \u00b7 Santa Cruz River Trash Survey Dashboard v5.0",
+        "acct_signed_in":"Signed in as","acct_username":"Username","acct_role":"Role",
+        "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
+        "acct_signout_note":"Sign out button also available top-right",
+        "acct_session":"Account & Session",
+
 
     },
     "es": {
@@ -345,6 +390,68 @@ TR = {
         "dashboard_refreshed":"Panel actualizado el",
         "data_current":"Datos vigentes a",
         "items":"artículos",
+        # About — hero
+        "about_hero_eyebrow":"Sonoran Institute · Tucson, Arizona",
+        "about_hero_title":"Programa de Monitoreo de Basura del Río Santa Cruz",
+        "about_hero_sub":"Un programa de monitoreo longitudinal que rastrea basura y desechos a lo largo del corredor del Río Santa Cruz en Tucson, Arizona — construyendo el registro científico necesario para proteger un río vivo del desierto.",
+        "about_scroll":"Desliza para ver más fotos →",
+        "about_photo_caption":"Corredor del Río Santa Cruz, Tucson, AZ · ©Bill Hatcher / Sonoran Institute",
+        "about_field_caption":"Equipo de encuesta de campo, corredor del Río Santa Cruz, 2019",
+        # About — db stats
+        "stat_items_lbl":"Artículos Registrados","stat_items_note":"en todos los eventos de encuesta",
+        "stat_events_lbl":"Eventos de Encuesta","stat_events_note":"visitas de campo individuales",
+        "stat_locs_lbl":"Ubicaciones Únicas","stat_locs_note":"a lo largo del corredor",
+        "stat_period_lbl":"Período de Encuesta","stat_period_note":"registro longitudinal",
+        # About — why data matters
+        "reason_reg_title":"Informes Regulatorios",
+        "reason_reg":"El cumplimiento del permiso de aguas pluviales de ADEQ y los informes de la Sección 319 de la EPA requieren evidencia documentada de la gestión de basura. Esta base de datos la proporciona con metodología verificable y registros de múltiples años.",
+        "reason_grant_title":"Financiamiento de Subvenciones",
+        "reason_grant":"Las subvenciones federales y de fundaciones para la restauración de ríos requieren datos de referencia y capacidad de monitoreo demostrada. Este conjunto de datos establece ambos — mostrando dónde el problema es mayor y si las intervenciones producen cambios medibles.",
+        "reason_cleanup_title":"Diseño de Limpieza Dirigida",
+        "reason_cleanup":"No todos los sitios son iguales. Los datos identifican puntos críticos crónicos frente a sitios de vertido episódico — que requieren respuestas diferentes que no se pueden diseñar sin datos longitudinales sistemáticos.",
+        "reason_health_title":"Documentación de Salud Pública",
+        "reason_health":"Los conteos de jeringas y parafernalia de drogas crean un registro documentado de riesgos para la salud pública, apoyando solicitudes de intervenciones dirigidas y recursos de seguridad para el equipo de campo.",
+        "reason_policy_title":"Defensa de Políticas",
+        "reason_policy":"La fracción reciclable (~16%) y la fracción flotante (~63%) son directamente relevantes para las conversaciones sobre responsabilidad extendida del productor, leyes de depósito de botellas y ordenanzas de aguas pluviales.",
+        "reason_refuge_title":"Designación de Refugio de Vida Silvestre Urbana",
+        "reason_refuge":"Demostrar protección activa — no solo restauración — es esencial para asegurar la designación de Refugio Nacional de Vida Silvestre Urbana que el Sonoran Institute persigue con The Wilderness Society y el USFWS.",
+        # About — quote
+        "about_quote":"El Río Santa Cruz ha proporcionado agua vital para los humanos durante más de 12,000 años — y puede fluir de nuevo con tu apoyo.",
+        "about_quote_attr":"— Sonoran Institute",
+        # About — team
+        "team_role_luke":"Director del Programa",
+        "team_desc_luke":"Programa de Restauración del Río Santa Cruz, Sonoran Institute",
+        "team_role_kevin":"Especialista en Bases de Datos · Becario RISE",
+        "team_desc_kevin":"Desarrollo del panel, migración de datos e infraestructura de análisis",
+        "team_name_field":"Equipo de Encuesta de Campo",
+        "team_role_field":"Recopiladores de Datos",
+        "team_desc_field":"Sofia Angkasa, Kimberly Stanley, Marie Olson, y todos los miembros del equipo de encuesta que construyeron este registro durante cuatro años",
+        # Footer
+        "ftr_connect":"Conéctate con nosotros",
+        "ftr_our_work":"Nuestro Trabajo",
+        "ftr_about_us":"Sobre Nosotros",
+        "ftr_updates":"Actualizaciones de Sonoran",
+        "ftr_resources":"Recursos",
+        "ftr_support":"Apóyanos",
+        "ftr_reports":"Informes Río Vivo 2025",
+        "ftr_newsletter":"Suscríbete al Boletín",
+        "ftr_sustainer":"Conviértete en Sustentador de Sonoran",
+        "ftr_blog":"Publicaciones del Blog",
+        "ftr_events":"Eventos",
+        "ftr_mission":"Nuestra Misión y Visión",
+        "ftr_people":"Nuestra Gente",
+        "ftr_careers":"Carreras",
+        "ftr_contact":"Contáctanos",
+        "ftr_phone":"Teléfono",
+        "ftr_copyright":"© Sonoran Institute · Panel de Monitoreo de Basura del Río Santa Cruz v5.0",
+        # Account
+        "acct_signed_in":"Sesión iniciada como",
+        "acct_username":"Usuario",
+        "acct_role":"Rol",
+        "acct_refresh":"Actualizar Datos",
+        "acct_signout":"Cerrar Sesión",
+        "acct_signout_note":"Botón de cerrar sesión también disponible arriba a la derecha",
+        "acct_session":"Cuenta y Sesión",
 
         # ── ALL PAGES ──
         "pages": ["Acerca De","Resumen","Mapa","Tendencias","Categorías","Ubicaciones","Tabla de Datos","Entrada de Datos","Exportar"],
@@ -1005,7 +1112,7 @@ def auth_gate():
         .sl{{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;margin-top:5px;}}
         .foot{{position:relative;z-index:2;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);line-height:1.9;}}
         </style></head><body>
-        <div class="brand"><img src="{LOGO_W}"><div><div class="bn">Sonoran Institute</div><div class="bs">River Restoration Program</div></div></div>
+        <div class="brand"><img src="{LOGO_W}"><div><div class="bn">Sonoran Institute</div><div class="bs">{T("ftr_updates").split()[0]} Restoration Program</div></div></div>
         <div class="hero">
           <div class="ey"><div class="eyl"></div><div class="eyt">Tucson, Arizona</div></div>
           <h1>Santa Cruz River<br><em>Trash Survey</em></h1>
@@ -1018,20 +1125,6 @@ def auth_gate():
         </body></html>""", height=900, scrolling=False)
 
     with rc:
-        # Language selector — top of login panel
-        # Language toggle — prominent at top of login form
-        st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:{C["muted"]};margin-bottom:6px;">Language / Idioma</div>', unsafe_allow_html=True)
-        _ll1, _ll2 = st.columns(2)
-        with _ll1:
-            if st.button("🇺🇸  English", key="_login_en", use_container_width=True,
-                         type="primary" if st.session_state.get("lang","en")=="en" else "secondary"):
-                st.session_state["lang"]="en"; st.rerun()
-        with _ll2:
-            if st.button("🇲🇽  Español", key="_login_es", use_container_width=True,
-                         type="primary" if st.session_state.get("lang","en")=="es" else "secondary"):
-                st.session_state["lang"]="es"; st.rerun()
-        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-
         st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
         <div class="auth-ttl">Sign in to<br>your account</div>
         <div class="auth-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>""", unsafe_allow_html=True)
@@ -1174,6 +1267,18 @@ def auth_gate():
                         st.session_state['page'] = 'Data Entry'
                         st.rerun()
 
+
+        # Language toggle — bottom of login panel
+        st.markdown(f'<div style="margin-top:20px;padding-top:16px;border-top:1px solid {C["sand3"]};font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:8px;">Language / Idioma</div>', unsafe_allow_html=True)
+        _ll1, _ll2 = st.columns(2)
+        with _ll1:
+            if st.button("🇺🇸  English", key="_login_en", use_container_width=True,
+                         type="primary" if st.session_state.get("lang","en")=="en" else "secondary"):
+                st.session_state["lang"]="en"; st.rerun()
+        with _ll2:
+            if st.button("🇲🇽  Español", key="_login_es", use_container_width=True,
+                         type="primary" if st.session_state.get("lang","en")=="es" else "secondary"):
+                st.session_state["lang"]="es"; st.rerun()
 
         st.markdown(f"""<div class="auth-ftr"><span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>Cloud database secured by Supabase · Passwords encrypted</div>""",unsafe_allow_html=True)
     st.stop()
@@ -1545,7 +1650,7 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
     <img src="{LOGO_W}" class="hdr-logo">
     <div><div class="hdr-name">Santa Cruz River Trash Survey</div>
-         <div class="hdr-sub">Sonoran Institute · River Restoration Program</div></div>
+         <div class="hdr-sub">Sonoran Institute · {T("ftr_updates").split()[0]} Restoration Program</div></div>
   </div>
   <div class="hdr-right">
     <div class="hdr-user">
@@ -3573,13 +3678,12 @@ elif page == "About":
     center/cover no-repeat;opacity:.18;border-radius:14px;"></div>
     <div style="position:relative;z-index:2;">
     <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;
-    color:{C['mint']};margin-bottom:16px;">Sonoran Institute · Tucson, Arizona</div>
+    color:{C['mint']};margin-bottom:16px;">{T("about_hero_eyebrow")}</div>
     <h1 style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:white;
     line-height:1.1;letter-spacing:-.02em;margin:0 0 16px;">
-    Santa Cruz River<br><em style="color:{C['mint']};">Trash Survey Program</em></h1>
+    {T("about_hero_title")}</h1>
     <p style="font-size:15px;color:rgba(255,255,255,.75);max-width:680px;line-height:1.85;margin:0;">
-    A longitudinal monitoring program tracking litter and debris along the Santa Cruz River corridor
-    in Tucson, Arizona — building the scientific record needed to protect a living desert river.
+    {T("about_hero_sub")}
     </p></div></div>""", unsafe_allow_html=True)
 
     section_title(T("why_river_title"))
@@ -3596,7 +3700,7 @@ elif page == "About":
         <img src="https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg"
         style="width:100%;border-radius:10px;margin-bottom:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);">
         <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-bottom:14px;">
-        Santa Cruz River corridor, Tucson, AZ · ©Bill Hatcher / Sonoran Institute</div>
+        {T("about_photo_caption")}</div>
 
         """, unsafe_allow_html=True)
 
@@ -3628,7 +3732,7 @@ elif page == "About":
         '</style>'
         f'<div class="scr2" style="display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;">'
         + imgs_html +
-        f'</div><div style="text-align:center;font-size:11px;color:{C["muted"]};margin-top:6px;">Scroll right to see more →</div>',
+        f'</div><div style="text-align:center;font-size:11px;color:{C["muted"]};margin-top:6px;">{T("about_scroll")}</div>',
         unsafe_allow_html=True
     )
 
@@ -3638,8 +3742,8 @@ elif page == "About":
     s1,s2,s3,s4 = st.columns(4)
     for col, val, lbl, note in zip([s1,s2,s3,s4],
         ["32,144+","395+","136","2020–2024"],
-        ["Items Recorded","Survey Events","Unique Locations","Survey Period"],
-        ["across all survey events","individual field visits","along the corridor","longitudinal record"]):
+        [T("stat_items_lbl"),T("stat_events_lbl"),T("stat_locs_lbl"),T("stat_period_lbl")],
+        [T("stat_items_note"),T("stat_events_note"),T("stat_locs_note"),T("stat_period_note")]):
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
             padding:18px 20px 14px;text-align:center;position:relative;overflow:hidden;
@@ -3659,40 +3763,25 @@ elif page == "About":
         <img src="https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg"
           style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);display:block;margin-top:8px;">
         <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:8px;line-height:1.5;">
-          Field survey crew, Santa Cruz River corridor, 2019</div>""", unsafe_allow_html=True)
+          {T("about_field_caption")}</div>""", unsafe_allow_html=True)
     with _ab2:
         st.markdown(f"""
         <div style="font-size:14px;color:{C['text']};line-height:1.9;padding-top:8px;">
-          <p style="margin:0 0 16px;">The trash survey protocol uses <strong>plot-based sampling</strong>:
-          fixed, measured areas surveyed at consistent locations. Each field visit counts and categorizes
-          every piece of litter found using a standardized <strong>56-item, 19-category protocol</strong>
-          built to capture the full spectrum of urban litter types along the river corridor.</p>
-          <p style="margin:0 0 16px;">Data collection began in September 2020, creating a
-          <strong>longitudinal record</strong> that captures seasonal patterns, post-monsoon debris,
-          encampment-related waste, and how specific reaches respond to cleanup interventions.
-          Consistent methodology across years is what makes year-over-year trend analysis valid.</p>
-          <p style="margin:0 0 16px;">This dashboard is the first cloud-hosted, real-time interface for
-          this dataset. Previously, all data lived in a single local Excel workbook. The move to Supabase
-          means the entire Sonoran Institute team can now access, enter, and analyze records from any
-          device, and export publication-quality figures directly for reports and grant applications.</p>
+          <p style="margin:0 0 16px;">{T("about_db_p1")}</p>
+          <p style="margin:0 0 16px;">{T("about_db_p2")}</p>
+          <p style="margin:0 0 16px;">{T("about_db_p3")}</p>
           <p style="margin:0;">{T("about_db_p4")}</p>
         </div>""", unsafe_allow_html=True)
 
     section_title(T("about_why_title"))
 
     reasons = [
-        (C["water"], "Regulatory Reporting",
-         "ADEQ stormwater permit compliance and EPA Section 319 reporting require documented evidence of litter management. This database provides that with verifiable methodology and multi-year records."),
-        (C["green"], "Grant Funding",
-         "Federal and foundation grants for river restoration require baseline data and demonstrated monitoring capacity. This dataset establishes both — showing where the problem is worst and whether interventions produce measurable change."),
-        (C["amber"], "Targeted Cleanup Design",
-         "Not all sites are equal. The data identifies chronic hotspots versus episodic dumping sites — which require different responses that cannot be designed without systematic longitudinal data."),
-        (C["brick"], "Public Health Documentation",
-         "Syringe and drug paraphernalia counts create a documented health hazard record, supporting requests for targeted interventions and field crew safety resources."),
-        (C["sage"], "Policy Advocacy",
-         "The recyclable fraction (~16%) and floatable fraction (~63%) are directly relevant to policy conversations about extended producer responsibility, bottle bills, and stormwater ordinances."),
-        (C["earth"], "Urban Wildlife Refuge Designation",
-         "Demonstrating active protection — not just restoration — is essential to securing the Urban National Wildlife Refuge designation Sonoran Institute is pursuing with The Wilderness Society and USFWS."),
+        (C["water"],  T("reason_reg_title"),     T("reason_reg")),
+        (C["green"],  T("reason_grant_title"),   T("reason_grant")),
+        (C["amber"],  T("reason_cleanup_title"), T("reason_cleanup")),
+        (C["brick"],  T("reason_health_title"),  T("reason_health")),
+        (C["sage"],   T("reason_policy_title"),  T("reason_policy")),
+        (C["earth"],  T("reason_refuge_title"),  T("reason_refuge")),
     ]
     rc1, rc2 = st.columns(2)
     for i, (color, title, text) in enumerate(reasons):
@@ -3710,20 +3799,17 @@ elif page == "About":
     padding:20px 36px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.04);">
     <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;
     color:{C['green']};line-height:1.3;margin-bottom:14px;font-style:italic;max-width:700px;margin:0 auto 14px;">
-    "The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years —
-    and can flow again with your support."</div>
+    {T("about_quote")}</div>
     <div style="font-size:11px;color:{C['muted']};font-family:'DM Mono',monospace;
-    text-transform:uppercase;letter-spacing:1px;">— Sonoran Institute</div>
+    text-transform:uppercase;letter-spacing:1px;">{T("about_quote_attr")}</div>
     </div>""", unsafe_allow_html=True)
 
     section_title(T("about_team_title"))
     tc1, tc2, tc3 = st.columns(3)
     for col, name, role, desc, color in zip([tc1,tc2,tc3],
-        ["Luke Cole","Kevin Robles","Field Survey Team"],
-        ["Program Director","Database Specialist · RISE Intern","Data Collectors"],
-        ["Santa Cruz River Restoration Program, Sonoran Institute",
-         "Dashboard development, data migration, and analysis infrastructure",
-         "Sofia Angkasa, Kimberly Stanley, Marie Olson, and all survey crew members who built this record over four years"],
+        ["Luke Cole","Kevin Robles",T("team_name_field")],
+        [T("team_role_luke"),T("team_role_kevin"),T("team_role_field")],
+        [T("team_desc_luke"),T("team_desc_kevin"),T("team_desc_field")],
         [C["green"],C["water"],C["sage"]]):
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
@@ -3758,16 +3844,16 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
           color:rgba(255,255,255,.85);line-height:1.2;">Sonoran Institute</div>
           <div style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:2px;
-          text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;">River Restoration Program</div>
+          text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;">{T("ftr_updates").split()[0]} Restoration Program</div>
         </div>
       </div>
       <div class="ftr-copy">
         5049 E Broadway Blvd., Suite 127 · Tucson, AZ 85711<br>
-        Phone: (520) 290-0828
+        {T("ftr_phone")}: (520) 290-0828
       </div>
     </div>
     <div style="text-align:right;">
-      <span class="ftr-section-lbl">Connect with us</span>
+      <span class="ftr-section-lbl">{T("ftr_connect")}</span>
       <div>
         <a href="https://www.facebook.com/SonoranInstitute/" target="_blank" class="ftr-social-icon" title="Facebook">f</a>
         <a href="https://twitter.com/SonoranInst/" target="_blank" class="ftr-social-icon" title="Twitter / X">𝕏</a>
@@ -3782,7 +3868,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
   <!-- Row 2: Navigation links -->
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px 32px;margin-bottom:20px;">
     <div>
-      <span class="ftr-section-lbl">Our Work</span>
+      <span class="ftr-section-lbl">{T("ftr_our_work")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
         <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank" class="ftr-a ftr-copy">Santa Cruz River</a>
         <a href="https://sonoraninstitute.org/card/colorado-river-delta-program/" target="_blank" class="ftr-a ftr-copy">Colorado River Delta</a>
@@ -3792,10 +3878,10 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       </div>
     </div>
     <div>
-      <span class="ftr-section-lbl">About Us</span>
+      <span class="ftr-section-lbl">{T("ftr_about_us")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
-        <a href="https://sonoraninstitute.org/our-story/mission-vision/" target="_blank" class="ftr-a ftr-copy">Our Mission &amp; Vision</a>
-        <a href="https://sonoraninstitute.org/our-story/people/" target="_blank" class="ftr-a ftr-copy">Our People</a>
+        <a href="https://sonoraninstitute.org/our-story/mission-vision/" target="_blank" class="ftr-a ftr-copy">{T("ftr_mission")}</a>
+        <a href="https://sonoraninstitute.org/our-story/people/" target="_blank" class="ftr-a ftr-copy">{T("ftr_people")}</a>
         <a href="https://sonoraninstitute.org/our-story/board/" target="_blank" class="ftr-a ftr-copy">Board</a>
         <a href="https://sonoraninstitute.org/our-story/partners/" target="_blank" class="ftr-a ftr-copy">Partners</a>
         <a href="https://sonoraninstitute.org/our-story/financials/" target="_blank" class="ftr-a ftr-copy">Financials</a>
@@ -3803,23 +3889,23 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       </div>
     </div>
     <div>
-      <span class="ftr-section-lbl">Sonoran Updates</span>
+      <span class="ftr-section-lbl">{T("ftr_updates")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
-        <a href="https://sonoraninstitute.org/sign-up/" target="_blank" class="ftr-a ftr-copy">Sign Up for Newsletter</a>
-        <a href="https://sonoraninstitute.org/donations/membership/" target="_blank" class="ftr-a ftr-copy">Become a Sonoran Sustainer</a>
-        <a href="https://sonoraninstitute.org/blogs/" target="_blank" class="ftr-a ftr-copy">Blog Posts</a>
-        <a href="https://sonoraninstitute.org/events/" target="_blank" class="ftr-a ftr-copy">Events</a>
+        <a href="https://sonoraninstitute.org/sign-up/" target="_blank" class="ftr-a ftr-copy">{T("ftr_newsletter")}</a>
+        <a href="https://sonoraninstitute.org/donations/membership/" target="_blank" class="ftr-a ftr-copy">{T("ftr_sustainer")}</a>
+        <a href="https://sonoraninstitute.org/blogs/" target="_blank" class="ftr-a ftr-copy">{T("ftr_blog")}</a>
+        <a href="https://sonoraninstitute.org/events/" target="_blank" class="ftr-a ftr-copy">{T("ftr_events")}</a>
       </div>
-      <span class="ftr-section-lbl" style="margin-top:16px;">Resources</span>
+      <span class="ftr-section-lbl" style="margin-top:16px;">{T("ftr_resources")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
         <a href="https://sonoraninstitute.org/category/sonoran-post/" target="_blank" class="ftr-a ftr-copy">Sonoran Updates</a>
         <a href="https://sonoraninstitute.org/resilient-west/" target="_blank" class="ftr-a ftr-copy">Resilient West</a>
         <a href="https://sonoraninstitute.org/careers/" target="_blank" class="ftr-a ftr-copy">Careers</a>
-        <a href="https://sonoraninstitute.org/contact/" target="_blank" class="ftr-a ftr-copy">Contact Us</a>
+        <a href="https://sonoraninstitute.org/contact/" target="_blank" class="ftr-a ftr-copy">{T("ftr_contact")}</a>
       </div>
     </div>
     <div>
-      <span class="ftr-section-lbl">Support Us</span>
+      <span class="ftr-section-lbl">{T("ftr_support")}</span>
       <div style="margin-bottom:12px;">
         <a href="https://sonoraninstitute.org/support/donate/" target="_blank"
         style="display:inline-block;background:{C["mint"]};color:white;font-family:'DM Mono',monospace;
@@ -3832,7 +3918,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
         <a href="https://sonoraninstitute.org/2024/ar-mer/" target="_blank" class="ftr-a ftr-copy">Endangered Rivers Report</a>
         <a href="http://santacruzriver.org/letter-of-support/" target="_blank" class="ftr-a ftr-copy">Urban Wildlife Refuge</a>
       </div>
-      <span class="ftr-section-lbl" style="margin-top:16px;">Living River Reports 2025</span>
+      <span class="ftr-section-lbl" style="margin-top:16px;">{T("ftr_reports")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
         <a href="https://sonoraninstitute.org/files/a-living-river-2025.pdf" target="_blank" class="ftr-a ftr-copy">Downtown Tucson to Marana 2025</a>
         <a href="https://sonoraninstitute.org/files/a-living-river-supplementary-2025.pdf" target="_blank" class="ftr-a ftr-copy">Supplementary Data 2025</a>
@@ -3846,7 +3932,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
   <!-- Row 3: Bottom bar -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
     <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.5px;">
-      © Sonoran Institute &nbsp;·&nbsp; Santa Cruz River Trash Survey Dashboard v5.0
+      {T("ftr_copyright")}
     </div>
     <div style="font-family:DM Mono,monospace;font-size:10px;text-align:right;">
       <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank"
@@ -3860,19 +3946,19 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
 
 </div></div>""", unsafe_allow_html=True)
 
-with st.expander("Account & Session"):
+with st.expander(T("acct_session")):
     st.markdown(
         f'<div style="font-size:13px;color:{C["text"]};margin-bottom:8px;">' +
-        f'Signed in as <strong>{prof.get("full_name","")}</strong> &nbsp;·&nbsp; ' +
-        f'Username: <code>{prof.get("username","")}</code> &nbsp;·&nbsp; ' +
-        f'Role: {prof.get("position_title","")}</div>',
+        f'{T("acct_signed_in")} <strong>{prof.get("full_name","")}</strong> &nbsp;·&nbsp; ' +
+        f'{T("acct_username")}: <code>{prof.get("username","")}</code> &nbsp;·&nbsp; ' +
+        f'{T("acct_role")}: {prof.get("position_title","")}</div>',
         unsafe_allow_html=True
     )
     _a1, _a2, _a3 = st.columns(3)
     with _a1:
-        if st.button("Refresh Data", key="_ftr_refresh"): load_data.clear(); st.rerun()
+        if st.button(T("acct_refresh"), key="_ftr_refresh"): load_data.clear(); st.rerun()
     with _a2:
-        if st.button("Sign Out", key="_ftr_signout"):
+        if st.button(T("acct_signout"), key="_ftr_signout"):
             st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
     with _a3:
-        st.caption("Sign out button also available top-right")
+        st.caption(T("acct_signout_note"))
