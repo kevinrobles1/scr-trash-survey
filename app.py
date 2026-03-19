@@ -165,7 +165,19 @@ footer{{display:none!important;}}
 
 /* ── KILL STREAMLIT DEFAULT GAPS ── */
 .stApp {{overflow-x:hidden;}}
-/* Remove gap between every block-level Streamlit element */
+/* The main app wrapper — remove ALL padding from Streamlit's default block */
+section.main > div,
+section.main > div.block-container,
+div.block-container,
+[data-testid="stMainBlockContainer"],
+[data-testid="stAppViewBlockContainer"] {{
+    padding-top:0!important;
+    margin-top:0!important;
+    gap:0!important;
+    padding-bottom:0!important;
+}}
+/* Every vertical block and element container — no margin or padding */
+[data-testid="stVerticalBlock"],
 [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"],
 [data-testid="stVerticalBlock"] > .element-container,
 [data-testid="block-container"] {{
@@ -174,12 +186,6 @@ footer{{display:none!important;}}
     margin-bottom:0!important;
     padding-top:0!important;
     padding-bottom:0!important;
-}}
-/* Kill gap under header */
-[data-testid="stMainBlockContainer"] {{
-    padding-top:0!important;
-    margin-top:0!important;
-    gap:0!important;
 }}
 /* ── BODY ── */
 .body{{max-width:1480px;margin:0 auto;padding:36px 96px 100px 124px;}}
@@ -1001,84 +1007,39 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign-out: hidden button, triggered by clicking the pill in the header
-# Simpler approach — real button but fully zero-height hidden, controlled by CSS overlay
-st.markdown("""<style>
-/* Kill ALL default gaps between our layout elements */
-.stApp > div > div > div > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"],
-.stApp > div > div > div > div[data-testid="stVerticalBlock"] > div.element-container {{
-    margin-top:0!important;
-    margin-bottom:0!important;
-    padding-top:0!important;
-    padding-bottom:0!important;
-}}
-/* Specifically collapse the sign-out button wrapper */
-div[data-testid="stVerticalBlock"]:has(> div.element-container:has(button#_hdr_so)) {{
-    height:0!important;overflow:hidden!important;
-}}
-</style>""", unsafe_allow_html=True)
-
-# Real sign-out: put it as a pill in the header via CSS absolute positioning
-# The actual button is hidden but we trigger it from the nav strip
+# Sign-out: rendered as a pill inside the nav bar row via CSS
+# Uses the nav's stHorizontalBlock — no extra rows, no gaps
 st.markdown(f"""<style>
-/* Sign-out pill lives at the top-right, overlaid on the header */
-.so-pill {{
-    position:fixed;top:14px;right:44px;z-index:500;
-    background:transparent;
-    border:1px solid rgba(255,255,255,.3);
-    border-radius:20px;
-    padding:4px 14px;
-    font-family:'DM Mono',monospace;
-    font-size:9.5px;letter-spacing:1.2px;
-    text-transform:uppercase;
-    color:rgba(255,255,255,.7);
-    cursor:pointer;
-    transition:all .15s;
-    text-decoration:none;
-    display:inline-block;
-    line-height:1.6;
+/* Make sign-out button sit inside the nav bar, flush right */
+div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
+    position:relative!important;
 }}
-.so-pill:hover{{
-    background:rgba(255,255,255,.1);
-    color:white;
-    border-color:rgba(255,255,255,.6);
+/* Sign-out: fixed pill in the header */
+button[data-testid="baseButton-secondary"] {{
+    position:fixed!important;top:18px!important;right:44px!important;z-index:600!important;
+    background:transparent!important;
+    border:1px solid rgba(255,255,255,.32)!important;border-radius:20px!important;
+    color:rgba(255,255,255,.75)!important;
+    font-family:'DM Mono',monospace!important;font-size:9.5px!important;
+    letter-spacing:1.2px!important;text-transform:uppercase!important;
+    padding:4px 14px!important;line-height:1.5!important;
+    min-height:0!important;height:auto!important;cursor:pointer!important;
+    transition:all .15s!important;
+}}
+button[data-testid="baseButton-secondary"]:hover {{
+    background:rgba(255,255,255,.1)!important;color:white!important;
+    border-color:rgba(255,255,255,.6)!important;
+}}
+/* Collapse the sign-out button's own row so it takes zero vertical space */
+div[data-testid="stVerticalBlock"] > div.element-container:has(button[data-testid="baseButton-secondary"]) {{
+    height:0!important;overflow:hidden!important;margin:0!important;
+    padding:0!important;min-height:0!important;opacity:0!important;
+    pointer-events:none!important;
 }}
 </style>""", unsafe_allow_html=True)
 
 if st.button("Sign Out", key="_hdr_so"):
     st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
-
-st.markdown("""<style>
-/* Collapse the sign-out button row entirely — zero height, no gap */
-div[data-testid="stMainBlockContainer"] > div > div > div > div:nth-of-type(1):has(button[data-testid="baseButton-secondary"]) {{
-    height:0!important;min-height:0!important;max-height:0!important;
-    overflow:hidden!important;margin:0!important;padding:0!important;
-    visibility:hidden!important;
-}}
-/* Sign-out button styled as an overlaid pill on the header */
-button[data-testid="baseButton-secondary"] {{
-    position:fixed!important;
-    top:16px!important;right:44px!important;
-    z-index:500!important;
-    background:transparent!important;
-    border:1px solid rgba(255,255,255,.3)!important;
-    border-radius:20px!important;
-    color:rgba(255,255,255,.72)!important;
-    font-family:'DM Mono',monospace!important;
-    font-size:9.5px!important;letter-spacing:1.2px!important;
-    text-transform:uppercase!important;
-    padding:4px 14px!important;
-    line-height:1.6!important;
-    transition:all .15s!important;
-    cursor:pointer!important;
-    min-height:0!important;height:auto!important;
-}}
-button[data-testid="baseButton-secondary"]:hover {{
-    background:rgba(255,255,255,.1)!important;
-    color:white!important;
-    border-color:rgba(255,255,255,.6)!important;
-}}
-</style>""", unsafe_allow_html=True)
 
 # ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
@@ -1247,12 +1208,37 @@ if page == "Overview":
         card_open("Top 15 Most Frequently Recorded Items",
                   "Ranked by cumulative count across all survey events and locations.")
         top=lf.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
-        top_tot=max(top["n"].sum(),1)
-        top["pct"]=(100*top["n"]/top_tot).round(1)
-        top["label"]=[f"{int(v):,} ({p}%)" for v,p in zip(top["n"],top["pct"])]
-        fig=px.bar(top,x="n",y="trash_item",orientation="h",color_discrete_sequence=[C["water"]],text="label")
-        fig.update_traces(textposition="outside",textfont_size=10)
-        fb(fig,"Total Count",None,h=440,title="Top 15 Items by Total Count"); show(fig,"ov_top")
+        # Find which group each item belongs to (for classification color)
+        item_to_group = {item: grp for grp, items in TRASH_GROUPS.items() for item in items}
+        top["group"] = top["trash_item"].map(item_to_group).fillna("Misc")
+        top["color"] = top["group"].map(lambda g:
+            C["water"] if g in RECYCLABLE_GROUPS else
+            C["brick"] if g in HEALTH_HAZARD_GROUPS else
+            C["amber"] if g in FLOATABLE_GROUPS else C["green"])
+        # Compute % of ALL items (not just top 15)
+        grand_total = max(lf["n"].sum(), 1)
+        top["pct"] = (100 * top["n"] / grand_total).round(1)
+        top["label"] = [f"{int(v):,} ({p}%)" for v, p in zip(top["n"], top["pct"])]
+        fig = go.Figure()
+        for _, row in top.iterrows():
+            fig.add_trace(go.Bar(
+                x=[row["n"]], y=[row["trash_item"]], orientation="h",
+                marker_color=row["color"], text=[row["label"]],
+                textposition="outside", textfont=dict(size=10),
+                showlegend=False, name=row["trash_item"]
+            ))
+        # Add right margin so labels don't clip
+        fig.update_layout(
+            height=460, paper_bgcolor="white", plot_bgcolor="rgba(0,0,0,0)",
+            margin=dict(l=10, r=160, t=56, b=80),
+            font=dict(family="DM Sans"),
+            title=dict(text="Top 15 Items by Total Count", font=dict(
+                family="Cormorant Garamond", size=15, color=C["text"]), x=0, xanchor="left"),
+            xaxis=dict(title="Total Count", gridcolor=C["sand3"], gridwidth=1),
+            yaxis=dict(title="", autorange=True),
+            barmode="overlay"
+        )
+        show(fig,"ov_top")
         cat_color_legend()
         card_close()
     with c4:
