@@ -172,6 +172,56 @@ TR = {
         "section_health": "Health Hazards",
         "section_large": "Large & Bulk",
         "section_other": "Other",
+        # Filters
+        "river_segment":"River Segment",
+        "location":"Location",
+        "category":"Category",
+        "date_range":"Date Range",
+        "map_mode_lbl":"Map view",
+        "map_mode_seg":"By River Segment",
+        "map_mode_burden":"By Trash Burden",
+        # About
+        "why_river_title":"Why This River — and Why This Data",
+        "about_db_title":"About This Database",
+        "about_why_title":"Why Longitudinal Trash Data Matters",
+        "about_team_title":"Program Team",
+        "about_p1":"The Santa Cruz River is one of the most ecologically significant waterways in the American Southwest. For more than <strong>12,000 years</strong> it has sustained human communities.",
+        "about_p2":"After decades of overextraction and pollution, the river is experiencing a remarkable recovery. Today approximately <strong>38 miles of perennial flow</strong> support the return of native fish including the endangered Gila topminnow.",
+        "about_p3":"<strong>Trash is a direct threat to this recovery.</strong> Litter degrades water quality, entangles wildlife, fragments into microplastics, and undermines the investment in restoration.",
+        "about_p4":"The Sonoran Institute trash survey program exists to <strong>quantify this threat with scientific precision</strong> — creating the longitudinal data record needed to report to regulatory agencies and secure restoration funding.",
+        "about_db_p1":"The trash survey protocol uses <strong>plot-based sampling</strong>: fixed, measured areas surveyed at consistent locations. Each field visit counts and categorizes every piece of litter found using a standardized <strong>56-item, 19-category protocol</strong>.",
+        "about_db_p2":"Data collection began in September 2020, creating a <strong>longitudinal record</strong> that captures seasonal patterns, post-monsoon debris, encampment-related waste, and how specific reaches respond to cleanup interventions.",
+        "about_db_p3":"This dashboard is the first cloud-hosted, real-time interface for this dataset. Previously, all data lived in a single local Excel workbook. The move to Supabase means the entire team can access, enter, and analyze records from any device.",
+        "about_db_p4":"The <strong>19 survey categories</strong> cover the full range of urban litter: food packaging (~33%), clothing (encampment indicator), beverage containers (recyclable fraction), pharmaceutical materials (public health concern), and large debris including appliances and construction waste.",
+        "why_title":"Why This Data Matters — and What It Can Achieve",
+        "why_sub":"The Santa Cruz River is one of the most significant and most threatened waterways in the American Southwest.",
+        "impact_reg_title":"Regulatory Compliance",
+        "impact_reg":"ADEQ stormwater permits and EPA Section 319 require proof that litter is being actively managed. This dataset provides that with standardized methods, consistent locations, and four years of records.",
+        "impact_grant_title":"Grant Funding",
+        "impact_grant":"This database shows which river reaches carry the most trash, which categories dominate, and whether prior cleanups made a difference — the exact framing funders need.",
+        "impact_health_title":"Public Health",
+        "impact_health":"Syringes found during surveys are a safety risk for everyone who walks the river corridor. Documented counts support requests for social service intervention and field crew safety protocols.",
+        "impact_cleanup_title":"Targeted Cleanup",
+        "impact_cleanup":"Some sites are consistently heavily littered. Others spike after storms or encampments. Longitudinal data is the only way to tell them apart and allocate cleanup resources effectively.",
+        "impact_policy_title":"Policy & Advocacy",
+        "impact_policy":"About 63% of items float, meaning monsoon storms carry them into the river. About 16% are recyclable under Tucson standards but end up as litter — concrete numbers for bottle deposit and stormwater policy arguments.",
+        "impact_refuge_title":"Urban Wildlife Refuge",
+        "impact_refuge":"Sonoran Institute and The Wilderness Society are working to establish a Santa Cruz River Urban National Wildlife Refuge. A four-year litter monitoring record supports that case with the U.S. Fish and Wildlife Service.",
+        "col_category":"Category","col_total":"Total Items","col_records":"# Records",
+        "col_avg":"Avg per Record","col_pct":"% of Total","col_location":"Location",
+        "col_segment":"Segment","col_events":"# Events","col_avg_event":"Avg Items/Event",
+        "col_event_id":"Event ID","col_date":"Date","col_item":"Item","col_count":"Count",
+        "col_area":"Area (m\u00b2)","col_recorder":"Recorder",
+        "sec_cat_summary":"Category Summary Table",
+        "sec_cat_summary_sub":"Total items, records, and average count per record for each trash category.",
+        "sec_raw":"Survey Records",
+        "sec_filt_cat":"Filtered Summary \u2014 Category Breakdown",
+        "sec_filt_loc":"Filtered Summary \u2014 Location Breakdown",
+        "last_updated":"Data current as of",
+        "dashboard_refreshed":"Dashboard refreshed",
+        "data_current":"Data current as of",
+        "items":"items",
+
     },
     "es": {
         "lang_label": "Idioma / Language",
@@ -243,6 +293,58 @@ TR = {
         "section_health": "Riesgos para la Salud",
         "section_large": "Desechos Grandes y Voluminosos",
         "section_other": "Otros",
+        # Filters
+        "river_segment":"Segmento del Río",
+        "location":"Ubicación",
+        "category":"Categoría",
+        "date_range":"Rango de Fechas",
+        "map_mode_lbl":"Vista del Mapa",
+        "map_mode_seg":"Por Segmento del Río",
+        "map_mode_burden":"Por Carga de Basura",
+        # About page text
+        "why_river_title":"Por Qué Este Río — y Por Qué Estos Datos",
+        "about_db_title":"Acerca de Esta Base de Datos",
+        "about_why_title":"Por Qué Importan los Datos Longitudinales de Basura",
+        "about_team_title":"Equipo del Programa",
+        "about_p1":"El Río Santa Cruz es una de las vías fluviales más ecológicamente significativas del suroeste americano. Por más de <strong>12,000 años</strong> ha sostenido comunidades humanas — desde la Nación Tohono O'odham, que ha administrado estas tierras desde tiempos inmemoriales, hasta el millón de residentes de Tucson hoy.",
+        "about_p2":"Después de décadas de sobreexplotación y contaminación, el río está experimentando una recuperación notable. Hoy, aproximadamente <strong>38 millas de flujo perenne</strong> sostienen el regreso de peces nativos incluyendo el amenazado Gila topminnow, bosques de álamo-sauce, aves migratorias y reptiles. El Proyecto Heritage de 2019 creó un tramo fluvial a través del centro de Tucson por primera vez en una generación.",
+        "about_p3":"<strong>La basura es una amenaza directa para esta recuperación.</strong> Los desechos degradan la calidad del agua, enredan la fauna silvestre, se fragmentan en microplásticos y socavan la inversión en restauración. Durante los eventos de monzón, los artículos flotantes viajan aguas abajo hacia el propio río.",
+        "about_p4":"El programa de encuestas de basura del Sonoran Institute existe para <strong>cuantificar esta amenaza con precisión científica</strong> — creando el registro de datos longitudinales necesario para reportar a agencias reguladoras, asegurar fondos de restauración, diseñar programas de limpieza dirigidos y demostrar progreso medible con el tiempo.",
+        "about_db_p1":"El protocolo de encuesta de basura utiliza <strong>muestreo basado en parcelas</strong>: áreas medidas y fijas encuestadas en ubicaciones consistentes. Cada visita de campo cuenta y categoriza cada pieza de basura encontrada usando un protocolo estandarizado de <strong>56 artículos y 19 categorías</strong>.",
+        "about_db_p2":"La recolección de datos comenzó en septiembre de 2020, creando un <strong>registro longitudinal</strong> que captura patrones estacionales, desechos post-monzón, basura relacionada con campamentos y cómo los tramos específicos responden a las intervenciones de limpieza.",
+        "about_db_p3":"Este panel es la primera interfaz en tiempo real alojada en la nube para este conjunto de datos. Anteriormente, todos los datos vivían en un único libro de Excel local. El traslado a Supabase significa que todo el equipo del Sonoran Institute puede ahora acceder, ingresar y analizar registros desde cualquier dispositivo.",
+        "about_db_p4":"Las <strong>19 categorías de encuesta</strong> cubren la gama completa de basura urbana: empaques de alimentos (aproximadamente un tercio de todos los artículos), ropa y tela (un indicador de campamentos), envases de bebidas (la fracción reciclable que termina como basura), materiales farmacéuticos y de drogas (una preocupación directa de salud pública), y desechos grandes como electrodomésticos y materiales de construcción.",
+        # Overview impact panel
+        "why_title":"Por Qué Importan Estos Datos — y Qué Pueden Lograr",
+        "why_sub":"El Río Santa Cruz es una de las vías fluviales más significativas y amenazadas del suroeste americano. Lo que sucede con la basura en sus orillas determina lo que sucede con su agua, su fauna y las comunidades que dependen de él.",
+        "impact_reg_title":"Cumplimiento Regulatorio",
+        "impact_reg":"Los permisos de aguas pluviales de ADEQ y la Sección 319 de la EPA requieren pruebas documentadas de gestión activa de basura. Esta base de datos es esa evidencia, con metodología estandarizada y registros de múltiples años que satisfacen los requisitos de las agencias.",
+        "impact_grant_title":"Financiamiento de Subvenciones",
+        "impact_grant":"Los fondos federales y de fundaciones para la restauración de ríos requieren datos de referencia y capacidad de monitoreo demostrada. Esta base de datos establece ambos, mostrando qué tramos están más afectados y si las intervenciones están reduciendo los conteos con el tiempo.",
+        "impact_health_title":"Salud Pública",
+        "impact_health":"Las jeringas encontradas durante las encuestas son un riesgo de pinchazo para toda persona que camine por el corredor fluvial. Tener un conteo documentado apoya las solicitudes de intervención de servicios sociales, informa los protocolos del equipo de campo y da a las agencias de salud pública los números que necesitan.",
+        "impact_cleanup_title":"Limpieza Dirigida",
+        "impact_cleanup":"Algunos sitios están consistentemente llenos de basura. Otros aumentan después de tormentas o eventos de campamentos. Estas dos situaciones requieren respuestas completamente diferentes. Los datos longitudinales son la única manera de distinguirlas.",
+        "impact_policy_title":"Política y Defensa",
+        "impact_policy":"Aproximadamente el 63% de los artículos registrados flotan, lo que significa que una tormenta de monzón los lleva directamente al río. Aproximadamente el 16% son reciclables bajo los estándares de la ciudad de Tucson pero terminan como basura. Ambas cifras son argumentos cuantificables para leyes de depósito de botellas y ordenanzas de aguas pluviales.",
+        "impact_refuge_title":"Refugio de Vida Silvestre Urbana",
+        "impact_refuge":"El Sonoran Institute y The Wilderness Society están trabajando para establecer un Refugio Nacional de Vida Silvestre Urbana en el Río Santa Cruz. El Servicio de Pesca y Vida Silvestre de EE.UU. necesita ver que el río está siendo protegido activamente. Un registro de monitoreo de basura de cuatro años apoya ese caso.",
+        # Table column labels
+        "col_category":"Categoría","col_total":"Total de Artículos","col_records":"# Registros",
+        "col_avg":"Promedio por Registro","col_pct":"% del Total","col_location":"Ubicación",
+        "col_segment":"Segmento","col_events":"# Eventos","col_avg_event":"Artículos Prom/Evento",
+        "col_event_id":"ID Evento","col_date":"Fecha","col_item":"Artículo","col_count":"Conteo",
+        "col_area":"Área (m²)","col_recorder":"Registrador",
+        # Section titles
+        "sec_cat_summary":"Tabla Resumen por Categoría",
+        "sec_cat_summary_sub":"Total de artículos, número de registros individuales y promedio por registro para cada categoría de basura.",
+        "sec_raw":"Registros de Encuesta",
+        "sec_filt_cat":"Resumen Filtrado — Desglose por Categoría",
+        "sec_filt_loc":"Resumen Filtrado — Desglose por Ubicación",
+        "last_updated":"Datos actualizados hasta",
+        "dashboard_refreshed":"Panel actualizado el",
+        "data_current":"Datos vigentes a",
+        "items":"artículos",
 
         # ── ALL PAGES ──
         "pages": ["Acerca De","Resumen","Mapa","Tendencias","Categorías","Ubicaciones","Tabla de Datos","Entrada de Datos","Exportar"],
@@ -293,7 +395,7 @@ TR = {
         "map_ey":"Mapa de Sitios de Encuesta",
         "map_title":"Dónde Realizamos Encuestas",
         "map_sub":"Ubicaciones GPS de todos los sitios de encuesta registrados a lo largo del corredor del Río Santa Cruz y sus afluentes.",
-        "map_mode_seg":"Por Segmento del Río",
+        "map_mode_lbl":"Vista del Mapa","map_mode_seg":"Por Segmento del Río",
         "map_mode_burden":"Por Carga de Basura",
         "map_mode_events":"Eventos Individuales",
         # Trends
@@ -700,9 +802,9 @@ def show(fig, key=None):
         _ldate = st.session_state.get("_db_latest_date","")
         _today = date.today().strftime("%B %d, %Y")
         if _ldate:
-            _badge = f"Data current as of <strong>{_ldate}</strong> &nbsp;·&nbsp; Dashboard refreshed {_today}"
+            _badge = f"{T('data_current')} <strong>{_ldate}</strong> &nbsp;·&nbsp; {T('dashboard_refreshed')} {_today}"
         else:
-            _badge = f"Dashboard refreshed {_today}"
+            _badge = f"{T('dashboard_refreshed')} {_today}"
         st.markdown(
             f'<div style="font-size:10.5px;color:{C["muted"]};font-family:DM Mono,monospace;' +
             f'letter-spacing:.3px;padding:2px 0 6px;text-align:right;opacity:.75;">{_badge}</div>',
@@ -917,20 +1019,18 @@ def auth_gate():
 
     with rc:
         # Language selector — top of login panel
-        if "lang" not in st.session_state: st.session_state["lang"] = "en"
-        _lang_col1, _lang_col2 = st.columns([3,1])
-        with _lang_col2:
-            _lang_choice = st.selectbox(
-                T("lang_label"), ["English","Español"],
-                index=0 if st.session_state["lang"]=="en" else 1,
-                label_visibility="collapsed", key="_lang_sel"
-            )
-            if _lang_choice == "Español" and st.session_state["lang"] != "es":
-                st.session_state["lang"] = "es"; st.rerun()
-            elif _lang_choice == "English" and st.session_state["lang"] != "en":
-                st.session_state["lang"] = "en"; st.rerun()
-        with _lang_col1:
-            st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:{C["muted"]};padding-top:10px;">Language / Idioma</div>', unsafe_allow_html=True)
+        # Language toggle — prominent at top of login form
+        st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:{C["muted"]};margin-bottom:6px;">Language / Idioma</div>', unsafe_allow_html=True)
+        _ll1, _ll2 = st.columns(2)
+        with _ll1:
+            if st.button("🇺🇸  English", key="_login_en", use_container_width=True,
+                         type="primary" if st.session_state.get("lang","en")=="en" else "secondary"):
+                st.session_state["lang"]="en"; st.rerun()
+        with _ll2:
+            if st.button("🇲🇽  Español", key="_login_es", use_container_width=True,
+                         type="primary" if st.session_state.get("lang","en")=="es" else "secondary"):
+                st.session_state["lang"]="es"; st.rerun()
+        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
         st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
         <div class="auth-ttl">Sign in to<br>your account</div>
@@ -1346,13 +1446,13 @@ def render_filters(df, kp="", cats=True):
     mn,mx=df["date"].min(),df["date"].max()
     ncols=4 if cats else 3
     cols=st.columns(ncols)
-    with cols[0]: sel_segs=st.multiselect("River Segment",all_segs,default=all_segs,key=f"{kp}_segs")
-    with cols[1]: sel_sites=st.multiselect("Location",all_sites,default=all_sites,key=f"{kp}_sites")
+    with cols[0]: sel_segs=st.multiselect(T("river_segment"),all_segs,default=all_segs,key=f"{kp}_segs")
+    with cols[1]: sel_sites=st.multiselect(T("location"),all_sites,default=all_sites,key=f"{kp}_sites")
     if cats:
-        with cols[2]: sel_grps=st.multiselect("Category",all_grps,default=all_grps,key=f"{kp}_grps")
+        with cols[2]: sel_grps=st.multiselect(T("category"),all_grps,default=all_grps,key=f"{kp}_grps")
     else: sel_grps=all_grps
     with cols[-1]:
-        dr=st.date_input("Date Range",value=(mn.date(),mx.date()),key=f"{kp}_dr") if pd.notna(mn) and pd.notna(mx) else None
+        dr=st.date_input(T("date_range"),value=(mn.date(),mx.date()),key=f"{kp}_dr") if pd.notna(mn) and pd.notna(mx) else None
     f=df.copy()
     if sel_segs and "seg" in f.columns: f=f[f["seg"].isin(sel_segs+["Other"])]
     if sel_sites and "site_label" in f.columns: f=f[f["site_label"].isin(sel_sites)]
@@ -1433,6 +1533,9 @@ if(bounds.length>1) map.fitBounds(bounds,{{padding:[30,30]}});
 # ──────────────────────────────────────────────────────────────────
 # APP START
 # ──────────────────────────────────────────────────────────────────
+# ── Language init — must happen before anything renders ──
+if "lang" not in st.session_state: st.session_state["lang"] = "en"
+
 inject_css()
 auth_gate()
 prof=st.session_state.get("prof") or {}
@@ -1767,7 +1870,7 @@ if page == "Overview":
     st.markdown(
         f'<p style="font-size:14px;color:{C["muted"]};line-height:1.85;margin:0 0 20px;' +
         f'font-style:italic;border-left:3px solid {C["mint"]};padding-left:16px;">' +
-        "The Santa Cruz River is one of the most ecologically significant and most threatened waterways in "
+        T("why_sub")+
         "the American Southwest. What happens to the trash on its banks determines what happens to its water, "
         "its wildlife, and the communities that depend on it.</p>",
         unsafe_allow_html=True
@@ -1775,37 +1878,12 @@ if page == "Overview":
 
     # 6 impact cards rendered with st.columns — works in Streamlit reliably
     _cards = [
-        ("#2471a3", "Regulatory Compliance",
-         "ADEQ stormwater permits and EPA Section 319 both require agencies to see <strong>proof that "
-         "litter is being actively managed</strong>, not just cleaned up after the fact. "
-         "This dataset provides that proof. Standardized methods, consistent locations, and four years "
-         "of records give regulators exactly what they need to confirm the program is real and working."),
-        ("#e8a620", "Grant Funding",
-         "Funders want to see that a problem is understood before they pay to fix it. "
-         "This database shows <strong>which river reaches carry the most trash, which categories dominate, "
-         "and whether prior cleanups made a difference</strong>. That is the evidence base that EPA, "
-         "NRCS, and conservation foundations require before committing restoration dollars."),
-        ("#b5451b", "Public Health",
-         "Syringes found during surveys are not a data point. They are a <strong>safety risk for every "
-         "person who walks the river corridor</strong>. Having a documented count over time supports "
-         "requests for social service intervention, informs field crew protocols, and gives public "
-         "health agencies the numbers they need to prioritize resources along the corridor."),
-        ("#1e4d1e", "Targeted Cleanup",
-         "Some sites are consistently heavily littered. Others spike after storms or encampment events. "
-         "These two situations require completely different responses. <strong>Longitudinal data is the "
-         "only way to tell them apart.</strong> Without it, cleanup crews go where they always go "
-         "rather than where the need is greatest right now."),
-        ("#2d6a2d", "Policy &amp; Advocacy",
-         "About <strong>63% of items recorded float</strong>, meaning a monsoon storm carries them "
-         "directly into the river. About 16% are recyclable under Tucson city standards but are being "
-         "discarded as litter instead. Both figures are concrete, citable numbers that can be taken "
-         "into conversations about packaging policy, bottle deposit programs, and stormwater rules."),
-        ("#6c4f8a", "Urban Wildlife Refuge",
-         "Sonoran Institute and The Wilderness Society are working to establish a <strong>Santa Cruz "
-         "River Urban National Wildlife Refuge</strong>. The U.S. Fish and Wildlife Service needs to "
-         "see that the river is being actively protected, not just restored. A four-year litter "
-         "monitoring record with consistent methodology is exactly the kind of evidence that "
-         "supports that case."),
+        ("#2471a3", T("impact_reg_title"),    T("impact_reg")),
+        ("#e8a620", T("impact_grant_title"),  T("impact_grant")),
+        ("#b5451b", T("impact_health_title"), T("impact_health")),
+        ("#1e4d1e", T("impact_cleanup_title"),T("impact_cleanup")),
+        ("#2d6a2d", T("impact_policy_title"), T("impact_policy")),
+        ("#6c4f8a", T("impact_refuge_title"), T("impact_refuge")),
     ]
 
     _ic1, _ic2, _ic3 = st.columns(3)
@@ -1858,7 +1936,7 @@ if page == "Overview":
     summary["% of Total"]=(100*summary["Total"]/max(summary["Total"].sum(),1)).round(1)
     summary=summary.sort_values("Total",ascending=False).round(1).reset_index(drop=True)
     summary.index=range(1,len(summary)+1)
-    summary.columns=["Category","Total Items","# Records","Avg per Record","% of Total"]
+    summary.columns=[T("col_category"),T("col_total"),T("col_records"),T("col_avg"),T("col_pct")]
     st.dataframe(summary, use_container_width=True, height=380)
     tbl_note("Each row represents one trash category group. 'Records' = number of individual count entries in the database for that category. 'Avg per Record' = mean count per single data entry, not per survey event.")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -1870,7 +1948,7 @@ elif page == "Map":
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner(T("map_ey"), T("map_title"), T("map_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
-    map_mode=st.radio("Map view",["By River Segment","By Trash Burden","Individual Events"],horizontal=True)
+    map_mode=st.radio(T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else "Map view",[T("map_mode_seg"),T("map_mode_burden"),"Individual Events"],horizontal=True)
 
     site_agg=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),lat=("lat","mean"),lon=("lon","mean")).reset_index()
     site_agg["avg_per_event"]=(site_agg["total"]/site_agg["events"]).round(1)
@@ -2836,7 +2914,7 @@ elif page == "Data Table":
         horizontal=True, key="dt_view_mode"
     )
 
-    section_title("Survey Records")
+    section_title(T("sec_raw"))
     if "Wide" in dt_view:
         st.markdown('<div class="sec-sub">One row per survey event. Columns show each of the 56 recorded item types plus event metadata — exactly like the original Excel format. Zero = item was not found that visit.</div>', unsafe_allow_html=True)
 
@@ -2897,7 +2975,7 @@ elif page == "Data Table":
         st.dataframe(disp, use_container_width=True, height=560)
         tbl_note(f"Showing {min(len(lf),5000):,} of {len(lf):,} rows matching current filters. Each row = one item type at one survey event. Switch to Wide format above to see all items as columns like the original Excel sheet.")
 
-    section_title("Filtered Summary — Category Breakdown")
+    section_title(T("sec_filt_cat"))
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records above, grouped by trash category.</div>', unsafe_allow_html=True)
     cat_color_legend()
     sum_cat=lf.groupby("trash_group")["n"].agg(Total="sum",Records="count").reset_index()
@@ -2908,7 +2986,7 @@ elif page == "Data Table":
     st.dataframe(sum_cat, use_container_width=True, height=360)
     tbl_note("This table summarizes the filtered records shown above. Change the filters to update both this table and the raw records.")
 
-    section_title("Filtered Summary — Location Breakdown")
+    section_title(T("sec_filt_loc"))
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records grouped by survey location.</div>', unsafe_allow_html=True)
     sum_loc=lf.groupby(["site_label","seg"]).agg(Total=("n","sum"),Events=("event_id","nunique")).reset_index()
     sum_loc["Avg/Event"]=(sum_loc["Total"]/sum_loc["Events"]).round(1)
@@ -3504,27 +3582,14 @@ elif page == "About":
     in Tucson, Arizona — building the scientific record needed to protect a living desert river.
     </p></div></div>""", unsafe_allow_html=True)
 
-    section_title("Why This River — and Why This Data")
+    section_title(T("why_river_title"))
     c1, c2 = st.columns([3,2])
     with c1:
         st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:1.9;">
-        <p style="margin:0 0 14px;">The Santa Cruz River is one of the most ecologically significant waterways
-        in the American Southwest. For more than <strong>12,000 years</strong> it has sustained human communities —
-        from the Tohono O'odham Nation, who have stewarded these lands since time immemorial, to Tucson's
-        one million residents today.</p>
-        <p style="margin:0 0 14px;">After decades of overextraction and pollution, the river is experiencing a
-        remarkable recovery. Today approximately <strong>38 miles of perennial flow</strong> support the return of
-        native fish including the endangered Gila topminnow, cottonwood-willow forest, migratory birds, and
-        reptiles. The 2019 Heritage Project created a flowing stretch through downtown Tucson for the first
-        time in a generation.</p>
-        <p style="margin:0 0 14px;"><strong>Trash is a direct threat to this recovery.</strong> Litter degrades
-        water quality, entangles wildlife, fragments into microplastics, and undermines the investment in
-        restoration. During monsoon events, floatable items travel downstream into the river itself —
-        reaching waterways far from where they were dropped.</p>
-        <p style="margin:0;">The Sonoran Institute trash survey program exists to <strong>quantify this
-        threat with scientific precision</strong> — creating the longitudinal data record needed to report
-        to regulatory agencies, secure restoration funding, design targeted cleanup programs, and
-        demonstrate measurable progress over time.</p>
+        <p style="margin:0 0 14px;">{T("about_p1")}</p>
+        <p style="margin:0 0 14px;">{T("about_p2")}</p>
+        <p style="margin:0 0 14px;">{T("about_p3")}</p>
+        <p style="margin:0;">{T("about_p4")}</p>
         </div>""", unsafe_allow_html=True)
     with c2:
         st.markdown(f"""
@@ -3568,7 +3633,7 @@ elif page == "About":
     )
 
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
-    section_title("About This Database")
+    section_title(T("about_db_title"))
 
     s1,s2,s3,s4 = st.columns(4)
     for col, val, lbl, note in zip([s1,s2,s3,s4],
@@ -3610,14 +3675,10 @@ elif page == "About":
           this dataset. Previously, all data lived in a single local Excel workbook. The move to Supabase
           means the entire Sonoran Institute team can now access, enter, and analyze records from any
           device, and export publication-quality figures directly for reports and grant applications.</p>
-          <p style="margin:0;">The <strong>19 survey categories</strong> cover the full range of urban litter:
-          food packaging (roughly a third of all items), clothing and fabric (an encampment indicator),
-          beverage containers (the recyclable fraction that ends up as litter), pharmaceutical and drug
-          materials (a direct public health concern), and large debris such as appliances and construction
-          waste, which typically signals illegal dumping.</p>
+          <p style="margin:0;">{T("about_db_p4")}</p>
         </div>""", unsafe_allow_html=True)
 
-    section_title("Why Longitudinal Trash Data Matters")
+    section_title(T("about_why_title"))
 
     reasons = [
         (C["water"], "Regulatory Reporting",
@@ -3655,7 +3716,7 @@ elif page == "About":
     text-transform:uppercase;letter-spacing:1px;">— Sonoran Institute</div>
     </div>""", unsafe_allow_html=True)
 
-    section_title("Program Team")
+    section_title(T("about_team_title"))
     tc1, tc2, tc3 = st.columns(3)
     for col, name, role, desc, color in zip([tc1,tc2,tc3],
         ["Luke Cole","Kevin Robles","Field Survey Team"],
