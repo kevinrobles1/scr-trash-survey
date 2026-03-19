@@ -194,7 +194,7 @@ TR = {
         "about_db_p3":"This dashboard is the first cloud-hosted, real-time interface for this dataset. Previously, all data lived in a single local Excel workbook. The move to Supabase means the entire team can access, enter, and analyze records from any device.",
         "about_db_p4":"The <strong>19 survey categories</strong> cover the full range of urban litter: food packaging (~33%), clothing (encampment indicator), beverage containers (recyclable fraction), pharmaceutical materials (public health concern), and large debris including appliances and construction waste.",
         "why_title":"Why This Data Matters — and What It Can Achieve",
-        "why_sub":"The Santa Cruz River is one of the most significant and most threatened waterways in the American Southwest.",
+        "why_sub":"The Santa Cruz River runs through the heart of Tucson — one of the few desert rivers in the Southwest with restored perennial flow. Litter that accumulates on its banks washes directly into that flow during monsoon season, carrying plastic, chemicals, and debris into a recovering ecosystem.",
         "impact_reg_title":"Regulatory Compliance",
         "impact_reg":"ADEQ stormwater permits and EPA Section 319 require proof that litter is being actively managed. This dataset provides that with standardized methods, consistent locations, and four years of records.",
         "impact_grant_title":"Grant Funding",
@@ -2035,19 +2035,18 @@ if page == "Overview":
         f'<p style="font-size:14px;color:{C["muted"]};line-height:1.85;margin:0 0 20px;' +
         f'font-style:italic;border-left:3px solid {C["mint"]};padding-left:16px;">' +
         T("why_sub")+
-        "the American Southwest. What happens to the trash on its banks determines what happens to its water, "
-        "its wildlife, and the communities that depend on it.</p>",
+        "</p>",
         unsafe_allow_html=True
     )
 
     # 6 impact cards rendered with st.columns — works in Streamlit reliably
     _cards = [
-        ("#2471a3", T("impact_reg_title"),    T("impact_reg")),
-        ("#e8a620", T("impact_grant_title"),  T("impact_grant")),
-        ("#b5451b", T("impact_health_title"), T("impact_health")),
-        ("#1e4d1e", T("impact_cleanup_title"),T("impact_cleanup")),
-        ("#2d6a2d", T("impact_policy_title"), T("impact_policy")),
-        ("#6c4f8a", T("impact_refuge_title"), T("impact_refuge")),
+        (C["forest"],  T("impact_reg_title"),    T("impact_reg")),
+        (C["green"],   T("impact_grant_title"),  T("impact_grant")),
+        (C["brick"],   T("impact_health_title"), T("impact_health")),
+        (C["sage"],    T("impact_cleanup_title"),T("impact_cleanup")),
+        (C["water"],   T("impact_policy_title"), T("impact_policy")),
+        (C["earth"],   T("impact_refuge_title"), T("impact_refuge")),
     ]
 
     _ic1, _ic2, _ic3 = st.columns(3)
@@ -2083,13 +2082,10 @@ if page == "Overview":
             f'border-radius:10px;padding:24px 28px;height:100%;' +
             f'display:flex;flex-direction:column;justify-content:center;">' +
             f'<div style="font-size:14px;color:rgba(255,255,255,.78);line-height:1.85;">' +
-            "Individual litter items systematically recorded, categorized, and geolocated across "
-            "Individual litter items systematically recorded, categorized, and geolocated across "
-            "the Santa Cruz River corridor since September 2020. Each number in this database "
-            "represents a decision about where to clean, what to target, and how to argue for "
-            "the river&#39;s protection before agencies, funders, and policymakers.<br>"
-            "<strong style='color:white;font-size:15px;'>This is not a cleanup database. "
-            "It is an evidence base.</strong></div></div>",
+            "Every item in this database was counted by hand, in the field, along the Santa Cruz River corridor "
+            "— recorded by location, category, and date since September 2020. Four years of surveys "
+            "across 136 sites. The numbers support permit compliance, grant applications, cleanup targeting, "
+            "and the case for a Santa Cruz River Urban National Wildlife Refuge.</div></div>",
             unsafe_allow_html=True
         )
 
