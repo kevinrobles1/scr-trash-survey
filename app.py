@@ -97,7 +97,7 @@ TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset"
         "Saige Thompson","Stephanie Winick","Damon Shorty","Julia Olson",
         "Isabella Feldmann","KyeongHee Kim","Joe Cuffori","Brian Jones"]
 
-PAGES = ["About","Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
+PAGES = ["Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export","About"]
 
 # ── TRANSLATIONS ─────────────────────────────────────────────────
 # Used for volunteer-facing UI and optionally full-app language toggle
