@@ -260,7 +260,7 @@ TR = {
         "ftr_blog":"Blog Posts","ftr_events":"Events","ftr_mission":"Our Mission & Vision",
         "ftr_people":"Our People","ftr_careers":"Careers","ftr_contact":"Contact Us",
         "ftr_phone":"Phone",
-        "ftr_copyright":"\u00a9 Sonoran Institute \u00b7 Santa Cruz River Trash Survey Dashboard v5.0",
+        "ftr_copyright":"\u00a9 Sonoran Institute \u00b7 Santa Cruz River Trash Survey Dashboard v5.1",
         "acct_signed_in":"Signed in as","acct_username":"Username","acct_role":"Role",
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
@@ -617,7 +617,7 @@ header[data-testid="stHeader"]{{height:0!important;min-height:0!important;displa
 [data-testid="stToolbar"]{{display:none!important;}}
 [data-testid="stDecoration"]{{display:none!important;}}
 footer{{display:none!important;}}
-.stApp{{background:{C["forest"]};}}
+.stApp{{background:{C["cream"]};}}
 /* Kill browser/Streamlit default blue link color globally */
 .stApp a, .stApp a:visited, .stMarkdownContainer a, .stMarkdownContainer a:visited,
 [data-testid="stMarkdownContainer"] a, [data-testid="stMarkdownContainer"] a:visited {{
@@ -663,11 +663,11 @@ footer{{display:none!important;}}
 /* Hide the actual Streamlit radio group — nav is rendered via iframe */
 .nav-radio-hide div[role="radiogroup"]{{
     position:absolute!important;opacity:0!important;
-    pointer-events:none!important;height:0!important;overflow:hidden!important;
+    pointer-events:auto!important;height:0!important;overflow:hidden!important;
 }}
 
 /* ── KILL ALL GAPS — NUCLEAR ── */
-.stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["forest"]};}}
+.stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["cream"]};}}
 section[data-testid="stMain"] {{padding-top:0!important;margin-top:0!important;}}
 section[data-testid="stMain"]>div:first-child {{padding-top:0!important;margin-top:0!important;}}
 [data-testid="stAppViewBlockContainer"]>div:first-child {{padding-top:0!important;margin-top:0!important;}}
@@ -762,7 +762,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
 /* ── STAT STRIP ── */
 .stat-strip{{display:flex;gap:0;background:#fff;border:1px solid {C["sand3"]};
              border-radius:10px;overflow:hidden;margin-bottom:24px;
-             box-shadow:0 2px 10px rgba(0,0,0,.04);}}
+             box-shadow:0 2px 10px rgba(0,0,0,.04);position:relative;z-index:1;}}
 .stat-item{{flex:1;padding:18px 16px;border-right:1px solid {C["sand3"]};text-align:center;}}
 .stat-item:last-child{{border-right:none;}}
 .stat-v{{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;
@@ -813,6 +813,12 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 .streamlit-expanderHeader{{font-family:'DM Sans',sans-serif!important;
   font-size:12.5px!important;font-weight:700!important;color:{C["green"]}!important;
   letter-spacing:.3px!important;}}
+/* Expander container styling */
+div[data-testid="stExpander"]{{background:{C["cream"]}!important;border:1px solid {C["sand3"]}!important;
+  border-radius:10px!important;overflow:hidden!important;}}
+div[data-testid="stExpander"] details{{background:{C["cream"]}!important;border:none!important;}}
+div[data-testid="stExpander"] summary{{background:{C["cream"]}!important;}}
+div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{background:{C["cream"]}!important;}}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{{width:5px;height:5px;}}
@@ -1767,34 +1773,13 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign out button — visible top-right corner
+# Sign out button — off-screen but clickable via JS
 st.markdown("""<style>
 div.stButton:has(button[key="_hdr_so"]),
 div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
-    position:fixed!important;top:12px!important;right:16px!important;
-    z-index:99999!important;opacity:1!important;pointer-events:auto!important;
-    width:auto!important;height:auto!important;overflow:visible!important;
-    left:auto!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
-    background:rgba(122,143,53,.15)!important;
-    color:rgba(255,255,255,.85)!important;
-    border:1px solid rgba(255,255,255,.2)!important;
-    font-size:10px!important;
-    letter-spacing:1px!important;
-    text-transform:uppercase!important;
-    font-family:'DM Mono',monospace!important;
-    padding:5px 14px!important;
-    border-radius:16px!important;
-    backdrop-filter:blur(8px)!important;
-    cursor:pointer!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button:hover,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
-    background:rgba(180,60,30,.6)!important;
-    color:white!important;
-    border-color:rgba(255,255,255,.4)!important;
+    position:fixed!important;left:-9999px!important;top:-9999px!important;
+    opacity:0!important;pointer-events:none!important;
+    height:0!important;width:0!important;overflow:hidden!important;
 }
 </style>""", unsafe_allow_html=True)
 
@@ -1814,7 +1799,7 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     z-index:200 !important;
     border-bottom:none !important;
     margin-top:0 !important;
-    box-shadow:0 3px 14px rgba(0,0,0,.35) !important;
+    box-shadow:0 30px 0 0 {C["forest"]},0 3px 14px rgba(0,0,0,.35) !important;
     margin:0 !important;
     margin-top:0 !important;
     margin-bottom:0 !important;
@@ -3196,21 +3181,21 @@ elif page == "Data Entry":
         page_banner(
             "Volunteer Survey Entry",
             "Submit Your Trash Counts",
-            "Thank you for volunteering with the Sonoran Institute! Fill in the counts for each item found during your survey plot. Your submission goes directly into the live database.",
+            "Thank you for volunteering with the Sonoran Institute!",
             "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
         )
     else:
         page_banner(
             "Field Data Entry",
             "Survey Data Entry & Management",
-            "Submit new survey entries and manage existing records. All changes are saved directly to the live database and reflected in every chart immediately.",
+            "Submit new survey entries and manage existing records. All changes save directly to the live database.",
             "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
         )
 
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     if is_vol:
-        # Volunteer session info bar
+        # Volunteer info bar
         st.markdown(f'''<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;
         border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
         <div style="width:10px;height:10px;border-radius:50%;background:{C["mint"]};flex-shrink:0;"></div>
@@ -3220,7 +3205,6 @@ elif page == "Data Entry":
         &nbsp;·&nbsp; You can submit survey counts only.
         To access all features, <a href="/" style="color:{C["green"]};font-weight:600;">sign in with a staff account</a>.
         </div></div>''', unsafe_allow_html=True)
-
     if is_vol:
         # Volunteers only see the entry form — no tabs, no manage section
         entry_tab = st.container()
@@ -3755,7 +3739,7 @@ elif page == "Export":
 # ══════════════════════════════════════════════════════════════════
 elif page == "About":
 
-    # Hero banner
+    # Hero banner (full-bleed, outside body div)
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
     border-radius:0;padding:44px 48px;margin-bottom:0;position:relative;overflow:hidden;">
