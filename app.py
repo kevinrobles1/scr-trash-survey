@@ -824,77 +824,109 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 ::-webkit-scrollbar-track{{background:{C["sand"]};}}
 ::-webkit-scrollbar-thumb{{background:{C["sand3"]};border-radius:3px;}}
 ::-webkit-scrollbar-thumb:hover{{background:{C["sage"]};}}
-/* ── TRANSITIONS & ANIMATIONS ── */
-@keyframes fadeUp{{from{{opacity:0;transform:translateY(18px);}}to{{opacity:1;transform:none;}}}}
+/* ══ PREMIUM TRANSITIONS & ANIMATIONS ══ */
+@keyframes fadeUp{{from{{opacity:0;transform:translateY(20px);}}to{{opacity:1;transform:none;}}}}
 @keyframes fadeIn{{from{{opacity:0;}}to{{opacity:1;}}}}
-@keyframes slideInRight{{from{{opacity:0;transform:translateX(24px);}}to{{opacity:1;transform:none;}}}}
-@keyframes scaleIn{{from{{opacity:0;transform:scale(.96);}}to{{opacity:1;transform:none;}}}}
-@keyframes countUp{{from{{opacity:0;transform:translateY(8px);}}to{{opacity:1;transform:none;}}}}
-.fade-up{{animation:fadeUp .5s cubic-bezier(.22,.61,.36,1) both;}}
+@keyframes slideUp{{from{{opacity:0;transform:translateY(30px) scale(.98);}}to{{opacity:1;transform:none;}}}}
+@keyframes scaleIn{{from{{opacity:0;transform:scale(.95);}}to{{opacity:1;transform:none;}}}}
+@keyframes slideRight{{from{{opacity:0;transform:translateX(-16px);}}to{{opacity:1;transform:none;}}}}
+@keyframes shimmer{{0%{{background-position:200% 0;}}100%{{background-position:-200% 0;}}}}
+@keyframes bannerReveal{{from{{opacity:0;transform:scale(1.04);}}to{{opacity:.18;transform:scale(1);}}}}
+@keyframes gradientShift{{0%{{background-position:0% 50%;}}50%{{background-position:100% 50%;}}100%{{background-position:0% 50%;}}}}
 
-/* Staggered card reveals — each card animates slightly after the previous */
-.card{{animation:fadeUp .5s cubic-bezier(.22,.61,.36,1) both;}}
-.kpi-grid>.kpi:nth-child(1){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .05s both;}}
-.kpi-grid>.kpi:nth-child(2){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .1s both;}}
-.kpi-grid>.kpi:nth-child(3){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .15s both;}}
-.kpi-grid>.kpi:nth-child(4){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .2s both;}}
-.kpi-grid>.kpi:nth-child(5){{animation:fadeUp .45s cubic-bezier(.22,.61,.36,1) .25s both;}}
+/* Page content entrance */
+.fade-up{{animation:slideUp .6s cubic-bezier(.16,1,.3,1) both;}}
+.body{{animation:fadeUp .55s cubic-bezier(.16,1,.3,1) .1s both;}}
 
-/* Stat strip stagger */
-.stat-strip>.stat-item:nth-child(1){{animation:countUp .4s ease .05s both;}}
-.stat-strip>.stat-item:nth-child(2){{animation:countUp .4s ease .12s both;}}
-.stat-strip>.stat-item:nth-child(3){{animation:countUp .4s ease .19s both;}}
-.stat-strip>.stat-item:nth-child(4){{animation:countUp .4s ease .26s both;}}
+/* KPI cards stagger in with scale */
+.kpi-grid>.kpi{{animation:scaleIn .5s cubic-bezier(.16,1,.3,1) both;opacity:0;}}
+.kpi-grid>.kpi:nth-child(1){{animation-delay:.08s;}}
+.kpi-grid>.kpi:nth-child(2){{animation-delay:.14s;}}
+.kpi-grid>.kpi:nth-child(3){{animation-delay:.20s;}}
+.kpi-grid>.kpi:nth-child(4){{animation-delay:.26s;}}
+.kpi-grid>.kpi:nth-child(5){{animation-delay:.32s;}}
 
-/* Chart containers fade in smoothly */
-div[data-testid="stPlotlyChart"]{{animation:scaleIn .45s cubic-bezier(.22,.61,.36,1) both;}}
+/* Stat strip items cascade */
+.stat-strip>.stat-item{{animation:fadeUp .4s cubic-bezier(.16,1,.3,1) both;opacity:0;}}
+.stat-strip>.stat-item:nth-child(1){{animation-delay:.06s;}}
+.stat-strip>.stat-item:nth-child(2){{animation-delay:.12s;}}
+.stat-strip>.stat-item:nth-child(3){{animation-delay:.18s;}}
+.stat-strip>.stat-item:nth-child(4){{animation-delay:.24s;}}
 
-/* Dataframe tables slide in */
-div[data-testid="stDataFrame"]{{animation:fadeUp .4s cubic-bezier(.22,.61,.36,1) both;}}
+/* Cards entrance */
+.card{{animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;
+       transition:box-shadow .35s cubic-bezier(.16,1,.3,1),transform .35s cubic-bezier(.16,1,.3,1);}}
+.card:hover{{box-shadow:0 12px 40px rgba(0,0,0,.1);transform:translateY(-4px);}}
 
-/* Expander open/close */
+/* Charts scale in elegantly */
+div[data-testid="stPlotlyChart"]{{animation:scaleIn .5s cubic-bezier(.16,1,.3,1) .15s both;}}
+
+/* Tables slide up */
+div[data-testid="stDataFrame"]{{animation:fadeUp .45s cubic-bezier(.16,1,.3,1) .1s both;}}
+
+/* Expander content reveal */
 div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{
-    animation:fadeUp .3s cubic-bezier(.22,.61,.36,1) both;}}
+    animation:fadeUp .35s cubic-bezier(.16,1,.3,1) both;}}
 
-/* Section titles fade in */
-.sec-hd,.sec-sub{{animation:fadeIn .4s ease both;}}
+/* KPI hover — premium lift with glow */
+.kpi{{transition:box-shadow .35s cubic-bezier(.16,1,.3,1),transform .35s cubic-bezier(.16,1,.3,1);}}
+.kpi:hover{{box-shadow:0 12px 36px rgba(122,143,53,.15),0 4px 12px rgba(0,0,0,.08);transform:translateY(-4px);}}
+.kpi::after{{transition:opacity .3s ease;}}
+.kpi:hover::after{{opacity:.8;background:linear-gradient(90deg,{C["green"]},{C["sage"]},{C["green"]});
+    background-size:200% 100%;animation:gradientShift 2s ease infinite;}}
 
-/* Card hover — smooth lift */
-.card{{transition:box-shadow .25s ease,transform .25s ease;}}
-.card:hover{{box-shadow:0 8px 32px rgba(0,0,0,.1);transform:translateY(-3px);}}
+/* Stat strip hover */
+.stat-item{{transition:background .25s ease,transform .25s ease;}}
+.stat-item:hover{{background:rgba(147,164,69,.06);}}
 
-/* Smooth hover on stat strip items */
-.stat-item{{transition:background .2s ease;}}
-.stat-item:hover{{background:rgba(147,164,69,.04);}}
+/* Buttons — smooth all transitions */
+.stButton>button,.stDownloadButton>button{{
+    transition:all .3s cubic-bezier(.16,1,.3,1)!important;}}
+.stButton>button:hover{{transform:translateY(-1px)!important;}}
 
-/* KPI card lift already exists but enhance the timing */
-.kpi{{transition:box-shadow .3s cubic-bezier(.22,.61,.36,1),transform .3s cubic-bezier(.22,.61,.36,1);}}
-
-/* Smooth button transitions */
-.stButton>button,.stDownloadButton>button{{transition:all .25s cubic-bezier(.22,.61,.36,1)!important;}}
-
-/* Nav tab transitions — smooth underline slide */
+/* Nav tabs — premium underline animation */
 div[role="radiogroup"] > label {{
-    transition:color .2s ease,border-color .25s ease,background .2s ease !important;}}
+    transition:color .25s ease,border-color .3s cubic-bezier(.16,1,.3,1),background .25s ease !important;}}
+div[role="radiogroup"] > label:hover {{
+    transform:translateY(-1px);}}
 
-/* Footer links smooth hover */
-.ftr-a{{transition:color .2s ease,transform .15s ease;}}
-.ftr-a:hover{{transform:translateX(2px);}}
-.ftr-social-icon{{transition:all .25s cubic-bezier(.22,.61,.36,1);}}
-.ftr-social-icon:hover{{transform:translateY(-2px);}}
+/* Section headings slide in from left */
+.sec-hd{{animation:slideRight .45s cubic-bezier(.16,1,.3,1) both;}}
+.sec-sub{{animation:fadeIn .5s ease .1s both;}}
 
-/* Page banner entrance — slight zoom from background */
-@keyframes bannerReveal{{from{{opacity:0;}}to{{opacity:.18;}}}}
+/* Footer links */
+.ftr-a{{transition:color .25s ease,transform .2s ease,letter-spacing .2s ease;}}
+.ftr-a:hover{{transform:translateX(3px);letter-spacing:.3px;}}
+.ftr-social-icon{{transition:all .3s cubic-bezier(.16,1,.3,1);}}
+.ftr-social-icon:hover{{transform:translateY(-3px) scale(1.08);}}
 
-/* Input focus glow animation */
-div[data-baseweb="select"]>div:focus-within,div[data-baseweb="input"]>div:focus-within{{
-  transition:border-color .2s ease,box-shadow .2s ease!important;}}
+/* Input focus animation */
+div[data-baseweb="select"]>div,div[data-baseweb="input"]>div,
+.stDateInput>div>div,.stTextInput>div>div,.stNumberInput>div>div,.stTextArea>div>div{{
+    transition:border-color .25s ease,box-shadow .25s ease!important;}}
 
-/* Reduce motion for accessibility */
+/* Multiselect tags animate in */
+div[data-baseweb="tag"]{{animation:scaleIn .2s ease both;}}
+
+/* Download buttons pulse subtly */
+.stDownloadButton>button{{position:relative;overflow:hidden;}}
+.stDownloadButton>button::after{{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
+    transition:left .5s ease;}}
+.stDownloadButton>button:hover::after{{left:100%;}}
+
+/* Scrollbar fade */
+::-webkit-scrollbar-thumb{{transition:background .2s ease;}}
+
+/* Print: no animations */
+@media print{{*{{animation:none!important;transition:none!important;}}}}
+
+/* Accessibility: respect reduced motion */
 @media (prefers-reduced-motion: reduce) {{
-    *,.card,.kpi,.stat-item,.fade-up,div[data-testid="stPlotlyChart"],
-    div[data-testid="stDataFrame"],.sec-hd,.sec-sub {{
-        animation-duration:0.01s!important;
+    *,.card,.kpi,.stat-item,.fade-up,.body,.sec-hd,.sec-sub,
+    div[data-testid="stPlotlyChart"],div[data-testid="stDataFrame"],
+    div[data-baseweb="tag"],.ftr-a,.ftr-social-icon {{
+        animation-duration:0.01s!important;animation-delay:0s!important;
         transition-duration:0.01s!important;
     }}
 }}
@@ -986,28 +1018,18 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
 
 def show(fig, key=None):
     _clean_hover(fig)
-    _nm = {"n":"Total Items","seg":"River Segment","trash_group":"Category",
-        "trash_item":"Item","site_label":"Location","year_str":"Year",
-        "month_name":"Month","total":"Total Items","avg":"Average Items",
-        "weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation",
-        "cv_pct":"CV (%)","mean":"Mean Items per Event","site_display":"Survey Site",
-        "share":"Share of Total (%)","recyclable":"Classification","floatable":"Classification",
-        "year":"Year","date":"Date"}
+    _nm = {"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","site_label":"Location","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation","cv_pct":"CV (%)","mean":"Mean Items per Event","site_display":"Survey Site","share":"Share of Total (%)","recyclable":"Classification","floatable":"Classification","year":"Year","date":"Date"}
     for ax_name in ["xaxis","yaxis"]:
         try:
             ax = fig.layout[ax_name]
-            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm:
-                ax.title.text = _nm[ax.title.text]
+            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm: ax.title.text = _nm[ax.title.text]
         except: pass
     try:
         if fig.layout.legend and fig.layout.legend.title:
             lt = fig.layout.legend.title.text
             if lt and lt in _nm: fig.layout.legend.title.text = _nm[lt]
     except: pass
-    fig.update_layout(hoverlabel=dict(
-        bgcolor="white", bordercolor="#d8ceba",
-        font=dict(family="DM Sans, sans-serif", size=12.5, color="#18180f"),
-    ))
+    fig.update_layout(hoverlabel=dict(bgcolor="white",bordercolor="#d8ceba",font=dict(family="DM Sans, sans-serif",size=12.5,color="#18180f")))
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
     # Automatic "Data current as of..." badge — uses real database latest date
     try:
@@ -1052,7 +1074,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
       <!-- River photo overlay at 18% opacity, identical to About hero -->
       <div style="position:absolute;inset:0;
         background:url('{bg_img}') center/cover no-repeat;
-        opacity:0;border-radius:0 0 16px 16px;animation:bannerReveal .8s ease .15s both;"></div>
+        opacity:0;border-radius:0 0 16px 16px;animation:bannerReveal .9s cubic-bezier(.16,1,.3,1) .2s both;"></div>
       <!-- Subtle dot-grid texture -->
       <div style="position:absolute;inset:0;
         background-image:radial-gradient(circle at 1px 1px,rgba(93,168,50,.05) 1px,transparent 0);
@@ -1833,46 +1855,16 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
           onmouseout="this.style.color='{_es_col}'">ES</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
         <span onclick="(()=>{{var u=new URL(window.location.href);u.searchParams.set('signout','1');window.location.href=u.toString();}})()"
-          style="{_btn_sty}color:rgba(255,255,255,.7);text-decoration:none;background:rgba(255,255,255,.08);padding:3px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.15);"
-          onmouseover="this.style.color='#fff';this.style.background='rgba(180,60,30,.5)';this.style.borderColor='rgba(255,255,255,.3)'"
-          onmouseout="this.style.color='rgba(255,255,255,.7)';this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(255,255,255,.15)'">Sign Out</span>
+          style="{_btn_sty}color:rgba(255,255,255,.75);text-decoration:none;background:rgba(255,255,255,.1);padding:4px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);transition:all .25s ease;"
+          onmouseover="this.style.color='#fff';this.style.background='rgba(185,69,27,.55)';this.style.borderColor='rgba(255,255,255,.35)'"
+          onmouseout="this.style.color='rgba(255,255,255,.75)';this.style.background='rgba(255,255,255,.1)';this.style.borderColor='rgba(255,255,255,.18)'">Sign Out</span>
       </div>
     </div>
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign out button — off-screen but clickable via JS
-st.markdown("""<style>
-div.stButton:has(button[key="_hdr_so"]),
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
-    position:absolute!important;left:-9999px!important;top:-9999px!important;
-    width:1px!important;height:1px!important;opacity:0!important;
-    overflow:hidden!important;pointer-events:none!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
-    background:rgba(122,143,53,.15)!important;
-    color:rgba(255,255,255,.85)!important;
-    border:1px solid rgba(255,255,255,.2)!important;
-    font-size:10px!important;
-    letter-spacing:1px!important;
-    text-transform:uppercase!important;
-    font-family:'DM Mono',monospace!important;
-    padding:5px 14px!important;
-    border-radius:16px!important;
-    backdrop-filter:blur(8px)!important;
-    cursor:pointer!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button:hover,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
-    background:rgba(180,60,30,.6)!important;
-    color:white!important;
-    border-color:rgba(255,255,255,.4)!important;
-}
-</style>""", unsafe_allow_html=True)
-
-if st.button("Sign Out", key="_hdr_so"):
-    st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
+# Sign out handled via header "SIGN OUT" text -> ?signout=1 query param
+# No st.button needed — query param handler at top of file catches it
 
 # ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
@@ -2233,7 +2225,7 @@ elif page == "Map":
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
         f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
-        'Map colors: <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden, <span style="color:#f59534;font-weight:700;">Orange</span> and <span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. Click any circle for details.<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count across all survey events determines its color. Logarithmic scaling ensures differences among lower-count sites are visible. This reflects cumulative litter load, not density per square meter.</div>',
+        'Map colors: <span style="color:#3182ce;font-weight:700;">Blue</span> = lower burden, <span style="color:#f59534;font-weight:700;">Orange</span> and <span style="color:#d64541;font-weight:700;">Red</span> = heavier. Click any circle for details.<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count determines its color. Logarithmic scaling ensures differences among lower-count sites are visible.</div>',
         unsafe_allow_html=True
     )
 
