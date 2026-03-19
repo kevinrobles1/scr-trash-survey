@@ -861,7 +861,7 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
 def _clean_hover(fig):
-    """Apply readable hover labels to every trace. Called by show() on all charts."""
+    """Force clean professional hover labels on every trace."""
     for trace in fig.data:
         t = getattr(trace, "type", "")
         nm = trace.name if hasattr(trace,"name") and trace.name and str(trace.name) not in ("0","","None") else ""
@@ -872,30 +872,24 @@ def _clean_hover(fig):
                 trace.hovertemplate = nm_prefix + "<b>%{y}</b><br>Total items: %{x:,.0f}<extra></extra>"
             else:
                 trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
-
         elif t == "scatter":
             trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
-
         elif t == "pie":
             trace.hovertemplate = "<b>%{label}</b><br>Share: %{percent}<br>Total items: %{value:,.0f}<extra></extra>"
-
         elif t == "heatmap":
             trace.hovertemplate = "<b>%{y}</b><br>Year: %{x}<br>Total items: %{z:,.0f}<extra></extra>"
-
         elif t in ("scattergeo", "scattermapbox"):
             trace.hovertemplate = "%{text}<extra></extra>"
-
         elif t == "box":
             trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Lowest: %{lowerfence:,.0f}<br>Highest: %{upperfence:,.0f}<extra></extra>"
-
         elif t == "violin":
             trace.hovertemplate = nm_prefix + "Value: %{y:,.0f}<extra></extra>"
-
         elif t == "histogram":
             trace.hovertemplate = "Bin: %{x}<br>Frequency: %{y:,.0f}<extra></extra>"
-
         else:
-            trace.hovertemplate = nm_prefix + "%{x}: %{y}<extra></extra>"
+            ht = getattr(trace, "hovertemplate", None)
+            if ht and "<extra></extra>" not in str(ht):
+                trace.hovertemplate = str(ht) + "<extra></extra>"
 
     return fig
 
@@ -1471,7 +1465,7 @@ def load_data():
 
 def make_et(df):
     if df.empty: return pd.DataFrame()
-    g=[c for c in ["event_id","date","site_label","seg","surveyed_m2"] if c in df.columns]
+    g=[c for c in ["event_id","date","site_label","seg","surveyed_m2","lat","lon"] if c in df.columns]
     et=df.groupby(g,dropna=False)["n"].sum().reset_index(name="total")
     if "surveyed_m2" in et.columns:
         a=pd.to_numeric(et["surveyed_m2"],errors="coerce")
@@ -1658,7 +1652,6 @@ def stat_strip(df_orig, df_f):
 # ──────────────────────────────────────────────────────────────────
 def color_val(v,vmin,vmax):
     if pd.isna(v): return "#5b8bd9"
-    # Use log-based scaling so low-count sites aren't all the same blue
     import math
     if vmax==vmin: t=0.5
     else:
@@ -1678,7 +1671,7 @@ def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=56
     d=df.copy()
     d[lat]=pd.to_numeric(d[lat],errors="coerce"); d[lon]=pd.to_numeric(d[lon],errors="coerce")
     d=d[d[lat].notna()&d[lon].notna()]
-    # Filter obvious outliers — Santa Cruz corridor is in Tucson metro (lat ~32.0-32.5, lon ~-111.2 to -110.8)
+    # Filter outliers outside Tucson metro area
     d=d[(d[lat]>31.5)&(d[lat]<33.0)&(d[lon]>-112.0)&(d[lon]<-110.0)]
     if len(d)==0: st.info("No rows with valid GPS coordinates in the Tucson area."); return
     vals=pd.to_numeric(d[metric_col],errors="coerce") if metric_col in d.columns else pd.Series([0]*len(d))
@@ -1771,9 +1764,9 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
           onmouseout="this.style.color='{_es_col}'">ES</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
         <span onclick="(()=>{{var u=new URL(window.location.href);u.searchParams.set('signout','1');window.location.href=u.toString();}})()"
-          style="{_btn_sty}color:rgba(255,255,255,.35);text-decoration:none;"
-          onmouseover="this.style.color='rgba(255,255,255,.8)'"
-          onmouseout="this.style.color='rgba(255,255,255,.35)'">Sign Out</span>
+          style="{_btn_sty}color:rgba(255,255,255,.7);text-decoration:none;background:rgba(255,255,255,.08);padding:3px 10px;border-radius:10px;border:1px solid rgba(255,255,255,.15);"
+          onmouseover="this.style.color='#fff';this.style.background='rgba(180,60,30,.5)';this.style.borderColor='rgba(255,255,255,.3)'"
+          onmouseout="this.style.color='rgba(255,255,255,.7)';this.style.background='rgba(255,255,255,.08)';this.style.borderColor='rgba(255,255,255,.15)'">Sign Out</span>
       </div>
     </div>
   </div>
@@ -1782,30 +1775,11 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
 # Sign out button — off-screen but clickable via JS
 st.markdown("""<style>
 div.stButton:has(button[key="_hdr_so"]),
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
-    position:fixed!important;left:-9999px!important;top:-9999px!important;
-    opacity:0!important;pointer-events:auto!important;
-    height:0!important;width:0!important;overflow:hidden!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
-    background:rgba(122,143,53,.15)!important;
-    color:rgba(255,255,255,.85)!important;
-    border:1px solid rgba(255,255,255,.2)!important;
-    font-size:10px!important;
-    letter-spacing:1px!important;
-    text-transform:uppercase!important;
-    font-family:'DM Mono',monospace!important;
-    padding:5px 14px!important;
-    border-radius:16px!important;
-    backdrop-filter:blur(8px)!important;
-    cursor:pointer!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button:hover,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
-    background:rgba(180,60,30,.6)!important;
-    color:white!important;
-    border-color:rgba(255,255,255,.4)!important;
+div.stButton:has(button[key="_hdr_so"]) button {
+    position:absolute!important;left:-9999px!important;top:-9999px!important;
+    width:1px!important;height:1px!important;opacity:0!important;
+    overflow:hidden!important;pointer-events:none!important;
+    padding:0!important;margin:0!important;border:none!important;
 }
 </style>""", unsafe_allow_html=True)
 
@@ -2171,14 +2145,7 @@ elif page == "Map":
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
         f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
-        'Map colors — <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden, '
-        '<span style="color:#f59534;font-weight:700;">Orange</span> and '
-        '<span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. '
-        'Click any circle to see site details and exact counts.'
-        '<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count across all survey events '
-        'determines its color. Sites with more total items recorded appear warmer (orange to red). '
-        'The color scale uses logarithmic spacing so differences among lower-count sites are visible, '
-        'not compressed by a few very high-count outliers. This reflects cumulative litter load, not density per square meter.</div>',
+        'Map colors: <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden, <span style="color:#f59534;font-weight:700;">Orange</span> and <span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. Click any circle to see site details and exact counts.<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count across all survey events determines its color. The color scale uses logarithmic spacing so differences among lower-count sites are visible. This reflects cumulative litter load, not density per square meter.</div>',
         unsafe_allow_html=True
     )
 
@@ -2286,9 +2253,9 @@ elif page == "Trends":
         fb(fig,"Month","Total Items",h=460,title="Month by Month Comparison Across Years"); show(fig,"tr_mby")
         last_updated_insight(df, chart_type="monthly")
         fig_note("The same calendar months compared across survey years.",
-            "Reveals seasonal patterns and whether a particular month is consistently heavy or light.",
-            "Each color represents one survey year. Bars in the same month cluster show that month across years.",
-            "Empty months (no bars) mean no surveys were conducted, not that there was no trash. Summer months (June through August) are typically empty due to extreme heat and reduced volunteer availability.")
+            "Reveals seasonal patterns and year-over-year changes within each month.",
+            "Each color = one survey year. Bars in the same month cluster = that month across years.",
+            "Missing bars for a year-month combination mean no surveys were conducted in that period.")
 
     elif sel_trend == "Average Items Per Survey Event Over Time":
         ef=make_et(lf)
@@ -3208,7 +3175,7 @@ elif page == "Data Entry":
 
     if is_vol:
         page_banner("Volunteer Survey Entry", "Submit Your Trash Counts",
-            "Thank you for volunteering with the Sonoran Institute!",
+            "Thank you for volunteering!",
             "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg")
     else:
         page_banner("Field Data Entry", "Survey Data Entry and Management",
