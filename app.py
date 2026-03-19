@@ -349,45 +349,59 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
 def _clean_hover(fig):
-    """Apply readable hover labels to every trace in a figure.
-    Replaces default Plotly tooltip codes with clean, professional text."""
+    """Apply readable hover labels to every trace. Called by show() on all charts."""
     for trace in fig.data:
-        t = trace.type if hasattr(trace, "type") else ""
-        # Skip if a custom hovertemplate already set
-        if hasattr(trace, "hovertemplate") and trace.hovertemplate and "%{" in str(trace.hovertemplate):
-            # Already customized — but clean up any <extra></extra> that shows "trace X"
-            existing = str(trace.hovertemplate)
-            if "<extra></extra>" not in existing:
-                trace.hovertemplate = existing + "<extra></extra>"
+        t = getattr(trace, "type", "")
+        nm = trace.name if hasattr(trace,"name") and trace.name and str(trace.name) not in ("0","","None") else ""
+        nm_prefix = f"<b>{nm}</b><br>" if nm else ""
+
+        # If already has a clean custom template, just ensure <extra></extra> is present
+        ht = getattr(trace, "hovertemplate", None)
+        if ht and "%{" in str(ht):
+            if "<extra></extra>" not in str(ht):
+                trace.hovertemplate = str(ht).rstrip() + "<extra></extra>"
             continue
-        # Bar charts (vertical)
-        if t in ("bar",) and getattr(trace,"orientation",None) != "h":
-            trace.hovertemplate = (
-                "<b>%{x}</b><br>"
-                + (f"{trace.name}: " if trace.name and trace.name != "0" else "")
-                + "%{y:,.0f} items<extra></extra>"
-            )
-        # Horizontal bar charts
-        elif t == "bar" and getattr(trace,"orientation",None) == "h":
-            trace.hovertemplate = (
-                "<b>%{y}</b><br>"
-                + (f"{trace.name}: " if trace.name and trace.name != "0" else "")
-                + "%{x:,.0f} items<extra></extra>"
-            )
-        # Scatter / line
+
+        if t == "bar":
+            if getattr(trace, "orientation", None) == "h":
+                # Horizontal bar — y is category label, x is value
+                trace.hovertemplate = nm_prefix + "%{y}<br>Count: %{x:,.0f} items<extra></extra>"
+            else:
+                # Vertical bar — x is category/date, y is value
+                trace.hovertemplate = nm_prefix + "%{x}<br>Count: %{y:,.0f} items<extra></extra>"
+
         elif t == "scatter":
-            trace.hovertemplate = (
-                "<b>%{x|%B %Y}</b><br>"
-                + (f"{trace.name}: " if trace.name and trace.name != "0" else "")
-                + "%{y:,.0f} items<extra></extra>"
-            )
-        # Pie / donut
+            # Try date format first; if x is not a date Plotly ignores the format gracefully
+            trace.hovertemplate = nm_prefix + "%{x}<br>Count: %{y:,.0f} items<extra></extra>"
+
         elif t == "pie":
             trace.hovertemplate = (
                 "<b>%{label}</b><br>"
-                "Share: %{percent}<br>"
-                "Items: %{value:,.0f}<extra></extra>"
+                "Share of total: %{percent}<br>"
+                "Items recorded: %{value:,.0f}"
+                "<extra></extra>"
             )
+
+        elif t == "heatmap":
+            trace.hovertemplate = (
+                "<b>%{y}</b><br>"
+                "Year: %{x}<br>"
+                "Items: %{z:,.0f}"
+                "<extra></extra>"
+            )
+
+        elif t in ("scattergeo", "scattermapbox"):
+            trace.hovertemplate = "%{text}<extra></extra>"
+
+        elif t == "box":
+            trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Range: %{lowerfence:,.0f} – %{upperfence:,.0f}<extra></extra>"
+
+        elif t == "violin":
+            trace.hovertemplate = nm_prefix + "%{y:,.0f}<extra></extra>"
+
+        elif t == "histogram":
+            trace.hovertemplate = "Range: %{x}<br>Count: %{y:,.0f}<extra></extra>"
+
     return fig
 
 def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
@@ -412,6 +426,13 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     return fig
 
 def show(fig, key=None):
+    # Apply clean hovers to every chart regardless of whether fb() was called
+    _clean_hover(fig)
+    # Apply consistent hoverlabel style globally
+    fig.update_layout(hoverlabel=dict(
+        bgcolor="white", bordercolor="#d8ceba",
+        font=dict(family="DM Sans, sans-serif", size=12.5, color="#18180f"),
+    ))
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
     # Automatic "Data current as of..." badge — uses real database latest date
     try:
@@ -1140,7 +1161,7 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
       <span class="hdr-pos">{prof.get('position_title','')}</span>
       <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:4px;">
         <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
-        <span onclick="(()=>{{const btns=window.parent.document.querySelectorAll('button');btns.forEach(b=>{{if(b.innerText.trim()==='Sign Out')b.click();}})}})()"
+        <span onclick="(()=>{{var btns=[...document.querySelectorAll('button'),...(window.parent?window.parent.document.querySelectorAll('button'):[])];btns.forEach(b=>{{if(b.innerText.trim()==='Sign Out'||b.textContent.trim()==='Sign Out')b.click();}})}})()"
           style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
           color:rgba(255,255,255,.38);cursor:pointer;text-decoration:underline;
           text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.18);
@@ -3048,6 +3069,7 @@ elif page == "About":
         unsafe_allow_html=True
     )
 
+    st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
     section_title("About This Database")
 
     s1,s2,s3,s4 = st.columns(4)
@@ -3068,34 +3090,34 @@ elif page == "About":
             <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
             </div>""", unsafe_allow_html=True)
 
-    # Full-width layout — image above, text below. Avoids column overlap on all screen sizes.
-    st.markdown(f"""
-    <div style="display:grid;grid-template-columns:280px 1fr;gap:32px;align-items:start;margin-bottom:8px;">
-      <div>
+    _ab1, _ab2 = st.columns([1, 2])
+    with _ab1:
+        st.markdown(f"""
         <img src="https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg"
-          style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);display:block;">
-        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:6px;line-height:1.5;">
-          Field survey crew, Santa Cruz River corridor, 2019</div>
-      </div>
-      <div style="font-size:14px;color:{C['text']};line-height:1.9;">
-        <p style="margin:0 0 14px;">The trash survey protocol uses <strong>plot-based sampling</strong> —
-        fixed, measured survey areas at consistent locations. Each survey event counts and categorizes
-        every piece of litter using a standardized <strong>56-item, 19-category protocol</strong>
-        capturing the full spectrum of urban litter types.</p>
-        <p style="margin:0 0 14px;">Data collection began in September 2020, creating a
-        <strong>longitudinal record</strong> that captures seasonal patterns, post-storm events,
-        encampment-related debris, and the response of specific reaches to cleanup interventions.
-        Protocol consistency across years makes trend analysis possible.</p>
-        <p style="margin:0 0 14px;">This dashboard is the first cloud-hosted, real-time interface for
-        this dataset. Prior to its development, data existed only in a local Excel workbook. The migration
-        to Supabase allows the entire team to access, enter, and analyze data from any device — and
-        generates publication-quality figures for reporting and grant applications.</p>
-        <p style="margin:0;">The <strong>19 survey categories</strong> span the full range of urban litter:
-        food packaging (~33%), clothing (encampment indicator), beverage containers (recyclable fraction),
-        pharmaceutical and drug materials (public health concern), and large debris including appliances
-        and construction waste (illegal dumping indicator).</p>
-      </div>
-    </div>""", unsafe_allow_html=True)
+          style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);display:block;margin-top:8px;">
+        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:8px;line-height:1.5;">
+          Field survey crew, Santa Cruz River corridor, 2019</div>""", unsafe_allow_html=True)
+    with _ab2:
+        st.markdown(f"""
+        <div style="font-size:14px;color:{C['text']};line-height:1.9;padding-top:8px;">
+          <p style="margin:0 0 16px;">The trash survey protocol uses <strong>plot-based sampling</strong>:
+          fixed, measured areas surveyed at consistent locations. Each field visit counts and categorizes
+          every piece of litter found using a standardized <strong>56-item, 19-category protocol</strong>
+          built to capture the full spectrum of urban litter types along the river corridor.</p>
+          <p style="margin:0 0 16px;">Data collection began in September 2020, creating a
+          <strong>longitudinal record</strong> that captures seasonal patterns, post-monsoon debris,
+          encampment-related waste, and how specific reaches respond to cleanup interventions.
+          Consistent methodology across years is what makes year-over-year trend analysis valid.</p>
+          <p style="margin:0 0 16px;">This dashboard is the first cloud-hosted, real-time interface for
+          this dataset. Previously, all data lived in a single local Excel workbook. The move to Supabase
+          means the entire Sonoran Institute team can now access, enter, and analyze records from any
+          device, and export publication-quality figures directly for reports and grant applications.</p>
+          <p style="margin:0;">The <strong>19 survey categories</strong> cover the full range of urban litter:
+          food packaging (roughly a third of all items), clothing and fabric (an encampment indicator),
+          beverage containers (the recyclable fraction that ends up as litter), pharmaceutical and drug
+          materials (a direct public health concern), and large debris such as appliances and construction
+          waste, which typically signals illegal dumping.</p>
+        </div>""", unsafe_allow_html=True)
 
     section_title("Why Longitudinal Trash Data Matters")
 
