@@ -584,7 +584,7 @@ def T(key, lang=None):
     return TR.get(lang,TR["en"]).get(key, TR["en"].get(key,key))
 
 C = dict(
-    forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
+    forest="#7a8f35", green="#93a445", sage="#a8b85a", mint="#ffffff",
     cream="#faf7f0", sand="#f2ede2", sand2="#e8e1d0", sand3="#d8ceba",
     gold="#c9820e", amber="#e8a620", earth="#8b4513", brick="#b5451b",
     sky="#1a5276", water="#2471a3",
@@ -811,7 +811,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 .fade-up{{animation:fadeUp .35s ease both;}}
 
 /* ── FOOTER ── */
-.ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#0b1a0e 100%);
+.ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
       padding:44px 0 32px;margin-top:80px;border-top:2px solid {C["sage"]};}}
 .ftr-in{{max-width:1480px;margin:0 auto;padding:0 160px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
@@ -1672,7 +1672,7 @@ def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=56
 <style>html,body,#map{{height:{height}px;width:100%;margin:0;padding:0;font-family:'DM Sans',sans-serif;}}
 .legend{{position:absolute;bottom:18px;right:18px;z-index:9999;background:rgba(255,255,255,.97);
 padding:13px 16px;border-radius:8px;border:1px solid #d4ccc0;font-size:12px;box-shadow:0 4px 14px rgba(0,0,0,.12);}}
-.lt{{font-weight:700;margin-bottom:9px;color:#1e4d1e;font-size:10px;text-transform:uppercase;letter-spacing:.8px;}}
+.lt{{font-weight:700;margin-bottom:9px;color:#93a445;font-size:10px;text-transform:uppercase;letter-spacing:.8px;}}
 .li{{display:flex;align-items:center;gap:8px;margin:4px 0;font-size:12px;}}
 .ld{{width:9px;height:9px;border-radius:50%;flex-shrink:0;}}
 .leaflet-popup-content{{font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.65;min-width:190px;}}
@@ -1754,7 +1754,7 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     position:sticky !important;
     top:0 !important;
     z-index:200 !important;
-    border-bottom:2px solid #5da832 !important;
+    border-bottom:2px solid #ffffff !important;
     box-shadow:0 3px 14px rgba(0,0,0,.35) !important;
     margin:0 !important;
     margin-top:0 !important;
@@ -3993,7 +3993,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank"
          style="color:rgba(255,255,255,.55);text-decoration:none;letter-spacing:.3px;
          transition:color .15s;"
-         onmouseover="this.style.color='#5da832'" onmouseout="this.style.color='rgba(255,255,255,.55)'">
+         onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">
         sonoraninstitute.org/card/santacruz
       </a>
     </div>
