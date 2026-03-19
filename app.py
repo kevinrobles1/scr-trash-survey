@@ -265,7 +265,16 @@ TR = {
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
         "acct_session":"Account & Session",
-        # Page banners — Overview / Map / Trends / Categories / Data Table
+        # Page banners — all pages
+        "loc_ey":"Site Analysis",
+        "loc_title":"Where the Trash Is — and How Much",
+        "loc_sub":"Trash burden across the 136 recorded survey locations, ordered North to South.",
+        "de_ey":"Field Data Entry",
+        "de_title":"Survey Data Entry & Management",
+        "de_sub":"Submit new survey entries and manage existing records. All changes save directly to the live database.",
+        "ex_ey":"Data Export",
+        "ex_title":"Download the Database",
+        "ex_sub":"Clean, formatted CSVs ready for Excel, R, Python, or ArcGIS.",
         "dt_ey":"Complete Database",
         "dt_title":"Explore the Full Survey Record",
         "dt_sub":"Every recorded count from every survey event. Filter by segment, location, category, or date.",
@@ -1547,7 +1556,7 @@ def last_updated_insight(df, chart_type="general", site=None, category=None):
         n_sites = df["site_label"].nunique() if "site_label" in df.columns else "—"
         msg = f"As of <strong>{as_of}</strong>, the database contains <strong>{total:,}</strong> recorded items across <strong>{n_sites}</strong> survey locations. Most recent data: {as_of}."
 
-    st.markdown(f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};border-radius:6px;border-left:3px solid {C["sage"]};margin:8px 0 16px;line-height:1.7;">{msg}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:12px;color:{C["muted"]};padding:7px 14px 7px 10px;background:{C["sand"]};border-radius:6px;border-right:3px solid {C["sage"]};margin:8px 0 16px;line-height:1.7;text-align:right;">{msg}</div>', unsafe_allow_html=True)
 
 def cat_color_legend():
     """Universal category color guide — shown above every category table/chart."""
