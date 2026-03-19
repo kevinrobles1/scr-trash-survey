@@ -99,6 +99,159 @@ TEAM = ["Luke Cole","Sofia Angkasa","Kimberly Stanley","Marie Olson","S. Griset"
 
 PAGES = ["About","Overview","Map","Trends","Categories","Locations","Data Table","Data Entry","Export"]
 
+# ── TRANSLATIONS ─────────────────────────────────────────────────
+# Used for volunteer-facing UI and optionally full-app language toggle
+TR = {
+    "en": {
+        "lang_label": "Language / Idioma",
+        "lang_en": "English",
+        "lang_es": "Español",
+        # Auth
+        "vol_tab": "Volunteer Entry",
+        "vol_welcome": "Welcome, Volunteer!",
+        "vol_welcome_sub": "You don't need an account to submit trash counts. Fill in your information below and click <strong>Start</strong> to access the data entry form. You will only be able to submit counts — you cannot view, edit, or delete existing data.",
+        "vol_lang_prompt": "Which language would you like to use today?",
+        "vol_fullname": "Your Full Name *",
+        "vol_org": "Organization / Group",
+        "vol_contact": "Phone or Email (optional)",
+        "vol_exp": "Survey experience level",
+        "vol_exp_opts": ["First time today","Participated before (1–3 times)","Regular volunteer (4+ times)"],
+        "vol_how": "How did you hear about this opportunity?",
+        "vol_notes": "Any other notes about yourself or your group",
+        "vol_notes_ph": "e.g. Bringing 5 people, UA Environmental Studies class",
+        "vol_disclaimer": "By submitting, you confirm that the data you enter reflects actual field counts from today&#39;s survey. Your name will appear on submitted entries.",
+        "vol_start_btn": "Start Volunteer Entry",
+        "vol_name_required": "Please enter your full name.",
+        # Entry form
+        "entry_banner_ey": "Volunteer Survey Entry",
+        "entry_banner_title": "Submit Your Trash Counts",
+        "entry_banner_sub": "Thank you for volunteering with the Sonoran Institute! Fill in the counts for each item found during your survey plot. Your submission goes directly into the live database.",
+        "vol_session_label": "Volunteer session",
+        "vol_only_entry": "You can submit survey counts only.",
+        "vol_sign_in_link": "Sign in with a staff account",
+        "event_info": "Event Information",
+        "event_id": "Event ID",
+        "survey_date": "Survey Date",
+        "plot_area": "Plot Area (m²)",
+        "recorder_lbl": "Recorder",
+        "recorder_other": "Recorder full name (fill in if not listed above)",
+        "recorder_other_ph": "e.g. Maria Garcia",
+        "recorder_other_help": "Only needed when 'Other — type below' is selected.",
+        "location_existing": "Survey Location (existing)",
+        "location_new": "Or enter a new location name",
+        "counts_title": "Trash Item Counts",
+        "counts_sub": "Enter the count for each item found during the survey. Leave at 0 if not present.",
+        "field_notes": "Field Notes (optional)",
+        "field_notes_ph": "e.g. Recent flooding, concentrated debris near outfall, unusual items found...",
+        "total_label": "total items counted in this entry",
+        "review_btn": "Review Before Submitting",
+        "event_required": "Event ID is required.",
+        "site_required": "Survey location is required.",
+        "zero_warning": "No items were entered. Are you sure you want to submit a zero-count event?",
+        # Review
+        "review_title": "Review Your Entry — Verify Everything Before Submitting",
+        "review_event_id": "Event ID",
+        "review_date": "Survey Date",
+        "review_location": "Location",
+        "review_recorder": "Recorder",
+        "review_area": "Plot Area",
+        "review_total": "Total Items to Be Saved",
+        "review_items_label": "Items Recorded (non-zero only)",
+        "review_notes_label": "Field Notes",
+        "review_confirm_sub": "Does everything look correct? Once submitted, this entry is saved to the live database.",
+        "confirm_btn": "Confirm and Submit to Database",
+        "back_btn": "Go Back and Edit",
+        "saved_msg": "Saved",
+        # Classification
+        "class_blue": "Recyclable",
+        "class_red": "Health Hazard",
+        "class_amber": "Floatable",
+        "class_green": "Other Non-Recyclable",
+        "section_food": "Food & Beverage",
+        "section_litter": "Litter & Debris",
+        "section_health": "Health Hazards",
+        "section_large": "Large & Bulk",
+        "section_other": "Other",
+    },
+    "es": {
+        "lang_label": "Idioma / Language",
+        "lang_en": "English",
+        "lang_es": "Español",
+        # Auth
+        "vol_tab": "Entrada de Voluntario",
+        "vol_welcome": "¡Bienvenido/a, Voluntario/a!",
+        "vol_welcome_sub": "No necesitas una cuenta para registrar conteos de basura. Llena tu información a continuación y haz clic en <strong>Comenzar</strong> para acceder al formulario de entrada.",
+        "vol_lang_prompt": "¿En qué idioma deseas usar el sistema hoy?",
+        "vol_fullname": "Tu nombre completo *",
+        "vol_org": "Organización / Grupo",
+        "vol_contact": "Teléfono o correo electrónico (opcional)",
+        "vol_exp": "Nivel de experiencia en encuestas",
+        "vol_exp_opts": ["Primera vez hoy","He participado antes (1–3 veces)","Voluntario/a regular (4+ veces)"],
+        "vol_how": "¿Cómo te enteraste de esta oportunidad?",
+        "vol_notes": "Otras notas sobre ti o tu grupo",
+        "vol_notes_ph": "p.ej. Traigo 5 personas, clase de Estudios Ambientales de la UA",
+        "vol_disclaimer": "Al enviar, confirmas que los datos ingresados reflejan los conteos reales del levantamiento de hoy. Tu nombre aparecerá en las entradas enviadas.",
+        "vol_start_btn": "Comenzar Entrada de Voluntario",
+        "vol_name_required": "Por favor ingresa tu nombre completo.",
+        # Entry form
+        "entry_banner_ey": "Entrada de Voluntario",
+        "entry_banner_title": "Registra tus Conteos de Basura",
+        "entry_banner_sub": "¡Gracias por ser voluntario/a con el Sonoran Institute! Ingresa los conteos de cada artículo encontrado durante tu parcela de levantamiento. Tu envío se guarda directamente en la base de datos en vivo.",
+        "vol_session_label": "Sesión de voluntario",
+        "vol_only_entry": "Solo puedes enviar conteos de levantamiento.",
+        "vol_sign_in_link": "Iniciar sesión con cuenta de personal",
+        "event_info": "Información del Evento",
+        "event_id": "ID del Evento",
+        "survey_date": "Fecha del Levantamiento",
+        "plot_area": "Área de la Parcela (m²)",
+        "recorder_lbl": "Registrador/a",
+        "recorder_other": "Nombre completo del registrador (si no está en la lista)",
+        "recorder_other_ph": "p.ej. María García",
+        "recorder_other_help": "Solo necesario si seleccionaste 'Otro — escribir abajo'.",
+        "location_existing": "Ubicación del Levantamiento (existente)",
+        "location_new": "O ingresa un nuevo nombre de ubicación",
+        "counts_title": "Conteo de Artículos de Basura",
+        "counts_sub": "Ingresa el número de cada artículo encontrado durante el levantamiento. Deja en 0 si no estaba presente.",
+        "field_notes": "Notas de Campo (opcional)",
+        "field_notes_ph": "p.ej. Inundación reciente, desechos concentrados cerca de la descarga, artículos inusuales encontrados...",
+        "total_label": "artículos contados en esta entrada",
+        "review_btn": "Revisar Antes de Enviar",
+        "event_required": "Se requiere el ID del evento.",
+        "site_required": "Se requiere la ubicación del levantamiento.",
+        "zero_warning": "No se ingresaron artículos. ¿Estás seguro/a de que deseas enviar un evento con conteo cero?",
+        # Review
+        "review_title": "Revisa Tu Entrada — Verifica Todo Antes de Enviar",
+        "review_event_id": "ID del Evento",
+        "review_date": "Fecha del Levantamiento",
+        "review_location": "Ubicación",
+        "review_recorder": "Registrador/a",
+        "review_area": "Área de Parcela",
+        "review_total": "Total de Artículos a Guardar",
+        "review_items_label": "Artículos Registrados (solo los no cero)",
+        "review_notes_label": "Notas de Campo",
+        "review_confirm_sub": "¿Todo se ve correcto? Una vez enviado, esta entrada se guarda en la base de datos en vivo.",
+        "confirm_btn": "Confirmar y Enviar a la Base de Datos",
+        "back_btn": "Regresar y Editar",
+        "saved_msg": "Guardado",
+        # Classification
+        "class_blue": "Reciclable",
+        "class_red": "Riesgo para la Salud",
+        "class_amber": "Flotante",
+        "class_green": "Otro No Reciclable",
+        "section_food": "Alimentos y Bebidas",
+        "section_litter": "Basura y Desechos",
+        "section_health": "Riesgos para la Salud",
+        "section_large": "Desechos Grandes y Voluminosos",
+        "section_other": "Otros",
+    }
+}
+
+def T(key, lang=None):
+    """Get translation for key in current language."""
+    if lang is None:
+        lang = st.session_state.get("lang","en")
+    return TR.get(lang,TR["en"]).get(key, TR["en"].get(key,key))
+
 C = dict(
     forest="#13291a", green="#1e4d1e", sage="#2d6a2d", mint="#5da832",
     cream="#faf7f0", sand="#f2ede2", sand2="#e8e1d0", sand3="#d8ceba",
@@ -666,10 +819,26 @@ def auth_gate():
         </body></html>""", height=900, scrolling=False)
 
     with rc:
+        # Language selector — top of login panel
+        if "lang" not in st.session_state: st.session_state["lang"] = "en"
+        _lang_col1, _lang_col2 = st.columns([3,1])
+        with _lang_col2:
+            _lang_choice = st.selectbox(
+                T("lang_label"), ["English","Español"],
+                index=0 if st.session_state["lang"]=="en" else 1,
+                label_visibility="collapsed", key="_lang_sel"
+            )
+            if _lang_choice == "Español" and st.session_state["lang"] != "es":
+                st.session_state["lang"] = "es"; st.rerun()
+            elif _lang_choice == "English" and st.session_state["lang"] != "en":
+                st.session_state["lang"] = "en"; st.rerun()
+        with _lang_col1:
+            st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:{C["muted"]};padding-top:10px;">Language / Idioma</div>', unsafe_allow_html=True)
+
         st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
         <div class="auth-ttl">Sign in to<br>your account</div>
         <div class="auth-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>""", unsafe_allow_html=True)
-        t1,t2,t3,t4,t5 = st.tabs(["Sign In","Create Account","Forgot Password","Look Up Username","Volunteer Entry"])
+        t1,t2,t3,t4,t5 = st.tabs(["Sign In","Create Account","Forgot Password","Look Up Username", T("vol_tab")])
 
         with t1:
             with st.form("_login"):
@@ -767,45 +936,47 @@ def auth_gate():
             st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-top:12px;line-height:1.7;padding:10px 12px;background:{C["sand"]};border-radius:6px;">Note: Email-based password reset is not available. This dashboard runs without an email service. The security question system is the recovery method. If you are completely locked out, contact Kevin Robles to reset your account manually in Supabase.</div>', unsafe_allow_html=True)
 
         with t5:
-            st.markdown(f'''<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;
-            border-radius:8px;padding:16px 18px;margin-bottom:16px;line-height:1.75;font-size:13px;">
-            <strong style="color:{C["green"]};">Welcome, Volunteer!</strong><br>
-            You don't need an account to submit trash counts. Fill in your information below
-            and click <strong>Start Volunteer Entry</strong> to access the data entry form.
-            You will only be able to submit counts — you cannot view, edit, or delete existing data.
-            </div>''', unsafe_allow_html=True)
-            with st.form("_vol"):
+            # Language toggle buttons for volunteers
+            _vl1, _vl2 = st.columns(2)
+            with _vl1:
+                if st.button('🇺🇸  English', key='_vol_en', use_container_width=True):
+                    st.session_state['lang']='en'; st.rerun()
+            with _vl2:
+                if st.button('🇲🇽  Español', key='_vol_es', use_container_width=True):
+                    st.session_state['lang']='es'; st.rerun()
+            st.markdown(f'<div style="font-size:11px;color:{C["muted"]};text-align:center;margin:4px 0 14px;font-family:DM Mono,monospace;">{T("vol_lang_prompt")}</div>', unsafe_allow_html=True)
+
+            st.markdown(f'<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;border-radius:8px;padding:16px 18px;margin-bottom:16px;line-height:1.75;font-size:13px;"><strong style="color:{C["green"]};">{T("vol_welcome")}</strong><br>{T("vol_welcome_sub")}</div>', unsafe_allow_html=True)
+            with st.form('_vol'):
                 vc1,vc2 = st.columns(2)
-                v_name   = vc1.text_input("Your Full Name *", placeholder="e.g. Maria Garcia")
-                v_org    = vc2.text_input("Organization / Group", placeholder="e.g. Tucson Audubon, UA Service Day")
-                vc3,vc4  = st.columns(2)
-                v_phone  = vc3.text_input("Phone or Email (optional)", placeholder="In case we need to follow up")
-                v_exp    = vc4.selectbox("Survey experience level",
-                    ["First time today","Participated before (1-3 times)","Regular volunteer (4+ times)"])
-                v_how    = st.text_input("How did you hear about this volunteer opportunity?",
-                    placeholder="e.g. Sonoran Institute newsletter, UA class, friend")
-                v_note   = st.text_area("Any other notes about yourself or your group",
-                    height=70, placeholder="e.g. Bringing 5 people, UA Environmental Studies class")
-                st.markdown(f'<div style="font-size:11px;color:{C["muted"]};margin-top:8px;line-height:1.6;">By submitting, you confirm that the data you enter reflects actual field counts from today&#39;s survey. Your name will appear on submitted entries.</div>', unsafe_allow_html=True)
-                if st.form_submit_button("Start Volunteer Entry", use_container_width=True):
+                v_name  = vc1.text_input(T('vol_fullname'), placeholder='e.g. Maria Garcia / María García')
+                v_org   = vc2.text_input(T('vol_org'), placeholder='e.g. Tucson Audubon, UA Service Day')
+                vc3,vc4 = st.columns(2)
+                v_phone = vc3.text_input(T('vol_contact'), placeholder='In case we need to follow up')
+                v_exp   = vc4.selectbox(T('vol_exp'), T('vol_exp_opts'))
+                v_how   = st.text_input(T('vol_how'), placeholder='e.g. Sonoran Institute newsletter, UA class, friend')
+                v_note  = st.text_area(T('vol_notes'), height=70, placeholder=T('vol_notes_ph'))
+                st.markdown(f'<div style="font-size:11px;color:{C["muted"]};margin-top:8px;line-height:1.6;">{T("vol_disclaimer")}</div>', unsafe_allow_html=True)
+                if st.form_submit_button(T('vol_start_btn'), use_container_width=True):
                     if not v_name.strip():
-                        st.error("Please enter your full name.")
+                        st.error(T('vol_name_required'))
                     else:
-                        st.session_state["auth"] = True
-                        st.session_state["prof"] = {
-                            "user_id": None,
-                            "username": "volunteer",
-                            "full_name": v_name.strip(),
-                            "position_title": f"Volunteer · {v_org.strip()}" if v_org.strip() else "Volunteer",
-                            "is_volunteer": True,
-                            "volunteer_org": v_org.strip(),
-                            "volunteer_exp": v_exp,
-                            "volunteer_how": v_how.strip(),
-                            "volunteer_notes": v_note.strip(),
-                            "volunteer_contact": v_phone.strip(),
+                        st.session_state['auth'] = True
+                        st.session_state['prof'] = {
+                            'user_id': None,
+                            'username': 'volunteer',
+                            'full_name': v_name.strip(),
+                            'position_title': f"Voluntario/a · {v_org.strip()}" if v_org.strip() and st.session_state.get('lang')=='es' else (f"Volunteer · {v_org.strip()}" if v_org.strip() else 'Volunteer'),
+                            'is_volunteer': True,
+                            'volunteer_org': v_org.strip(),
+                            'volunteer_exp': v_exp,
+                            'volunteer_how': v_how.strip(),
+                            'volunteer_notes': v_note.strip(),
+                            'volunteer_contact': v_phone.strip(),
                         }
-                        st.session_state["page"] = "Data Entry"
+                        st.session_state['page'] = 'Data Entry'
                         st.rerun()
+
 
         st.markdown(f"""<div class="auth-ftr"><span style="width:5px;height:5px;border-radius:50%;background:{C["mint"]};display:inline-block;"></span>Cloud database secured by Supabase · Passwords encrypted</div>""",unsafe_allow_html=True)
     st.stop()
@@ -2674,11 +2845,18 @@ elif page == "Data Entry":
                 existing=sorted(long["site_label"].dropna().astype(str).unique().tolist())
                 site_sel=ec5.selectbox("Survey Location (existing)",[""] + existing)
                 site_new=ec6.text_input("Or enter a new location name")
-                rec_other=""
-                if recorder=="Other — type below": rec_other=st.text_input("Recorder full name")
+                # Always render the name field — Streamlit forms don't re-render on selectbox change
+                # Field is always visible; label makes clear it's only needed for 'Other'
+                rec_other = st.text_input(
+                    'Full name (required if "Other" selected above)',
+                    placeholder='Type your full name here',
+                    help='Only needed when "Other — type below" is selected in the Recorder field above.',
+                    key='rec_other_always'
+                )
                 st.markdown('</div>', unsafe_allow_html=True)
 
-                recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
+                recorder_final = rec_other.strip() if (rec_other.strip() and recorder == 'Other — type below') else (recorder if recorder and recorder != 'Other — type below' else '')
+                site_final = site_new.strip() if site_new.strip() else site_sel
                 site_final=site_new.strip() if site_new.strip() else site_sel
 
                 st.markdown(f'''<div class="form-sec">
