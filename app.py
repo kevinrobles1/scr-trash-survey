@@ -3878,12 +3878,12 @@ elif page == "About":
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
             border-top:4px solid {color};border-radius:10px;
-            padding:20px 20px 18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            padding:28px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
             <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
-            color:{C['text']};margin-bottom:3px;">{name}</div>
+            color:{C['text']};margin-bottom:12px;">{name}</div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
-            color:{color};font-family:'DM Mono',monospace;margin-bottom:7px;">{role}</div>
-            <div style="font-size:12.5px;color:{C['muted']};line-height:1.7;">{desc}</div>
+            color:{color};font-family:'DM Mono',monospace;margin-bottom:16px;">{role}</div>
+            <div style="font-size:13.5px;color:{C['muted']};line-height:1.95;letter-spacing:.01em;">{desc}</div>
             </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};border-radius:10px;
