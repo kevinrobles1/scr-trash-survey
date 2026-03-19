@@ -1144,24 +1144,24 @@ def auth_gate():
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,700;1,700&family=DM+Sans:wght@400;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
         <style>
         *{{margin:0;padding:0;box-sizing:border-box;}}
-        body{{background:linear-gradient(165deg,{C["forest"]} 0%,#0b1a0e 45%,#162b1a 100%);
+        body{{background:#93a445;
              min-height:100vh;padding:52px;display:flex;flex-direction:column;
              justify-content:space-between;position:relative;overflow:hidden;font-family:'DM Sans',sans-serif;}}
         body::before{{content:'';position:absolute;inset:0;
-             background-image:radial-gradient(circle at 1px 1px,rgba(93,168,50,.06) 1px,transparent 0);
+             background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1px,transparent 0);
              background-size:28px 28px;}}
         body::after{{content:'';position:absolute;bottom:-160px;right:-160px;width:500px;height:500px;
-             background:radial-gradient(circle,rgba(93,168,50,.14) 0%,transparent 65%);border-radius:50%;}}
+             background:radial-gradient(circle,rgba(255,255,255,.08) 0%,transparent 65%);border-radius:50%;}}
         .brand{{display:flex;align-items:center;gap:14px;position:relative;z-index:2;}}
         .brand img{{height:40px;opacity:.9;}}
         .bn{{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:rgba(255,255,255,.88);line-height:1.25;}}
         .bs{{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.3);letter-spacing:2.5px;text-transform:uppercase;margin-top:3px;}}
         .hero{{flex:1;display:flex;flex-direction:column;justify-content:center;padding:44px 0 36px;position:relative;z-index:2;}}
         .ey{{display:flex;align-items:center;gap:12px;margin-bottom:20px;}}
-        .eyl{{width:36px;height:1px;background:#5da832;}}
-        .eyt{{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#5da832;}}
+        .eyl{{width:36px;height:1px;background:rgba(255,255,255,.6);}}
+        .eyt{{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.8);}}
         h1{{font-family:'Cormorant Garamond',serif;font-size:3.4rem;font-weight:700;line-height:1.06;color:white;letter-spacing:-.03em;margin-bottom:20px;}}
-        h1 em{{font-style:italic;color:#5da832;}}
+        h1 em{{font-style:italic;color:white;}}
         .desc{{font-size:14px;color:rgba(255,255,255,.45);line-height:1.85;max-width:380px;margin-bottom:40px;}}
         .stats{{display:flex;gap:0;}}
         .st{{padding:0 28px 0 0;}}
