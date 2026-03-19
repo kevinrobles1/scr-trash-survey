@@ -1337,112 +1337,95 @@ if page == "Overview":
 
     section_title("Why This Data Matters — and What It Can Achieve")
 
-    st.markdown(f"""
-    <div style="background:white;border:1px solid {C["sand3"]};border-radius:12px;
-    padding:28px 32px;margin-bottom:8px;box-shadow:0 2px 12px rgba(0,0,0,.04);">
+    # Opening statement
+    st.markdown(
+        f'<p style="font-size:14px;color:{C["muted"]};line-height:1.85;margin:0 0 20px;' +
+        f'font-style:italic;border-left:3px solid {C["mint"]};padding-left:16px;">' +
+        "The Santa Cruz River is one of the most ecologically significant and most threatened waterways in "
+        "the American Southwest. What happens to the trash on its banks determines what happens to its water, "
+        "its wildlife, and the communities that depend on it.</p>",
+        unsafe_allow_html=True
+    )
 
-      <p style="font-size:13.5px;color:{C["muted"]};line-height:1.85;margin:0 0 22px;
-      font-style:italic;border-left:3px solid {C["mint"]};padding-left:16px;">
-      The Santa Cruz River is one of the most ecologically significant and most threatened waterways in
-      the American Southwest. What happens to the trash on its banks determines what happens to its water,
-      its wildlife, and the communities that depend on it.
-      </p>
+    # 6 impact cards rendered with st.columns — works in Streamlit reliably
+    _cards = [
+        ("#2471a3", "Regulatory Compliance",
+         "ADEQ stormwater permits and EPA Section 319 nonpoint source pollution programs require "
+         "<strong>documented evidence of active litter management</strong>. This dataset is that evidence — "
+         "with standardized methodology, multi-year records, and site-level resolution that satisfies "
+         "agency requirements. Without longitudinal data, the Sonoran Institute cannot demonstrate "
+         "compliance or progress to regulators."),
+        ("#e8a620", "Grant Funding",
+         "Federal and foundation grants for river restoration require <strong>baseline data and "
+         "demonstrated monitoring capacity</strong>. This database establishes both — showing which "
+         "reaches are most impacted, whether interventions are reducing counts over time, and what "
+         "types of waste dominate. This is the exact framing that secures funding from EPA, NRCS, "
+         "and private conservation foundations."),
+        ("#b5451b", "Public Health",
+         "Syringe and pharmaceutical counts are not abstract statistics — they represent "
+         "<strong>direct needle-stick hazards for field crews and the public</strong>. Documented "
+         "health hazard records support requests for targeted social services, cleanup resource "
+         "allocation, and protocol upgrades. The data makes the case that observation alone cannot."),
+        ("#1e4d1e", "Targeted Cleanup",
+         "Not every site needs the same response. High-mean, low-variability sites are "
+         "<strong>chronic hotspots</strong> requiring routine cleanup. High-variability sites "
+         "signal episodic dumping events that need source investigation. This distinction — "
+         "only visible through longitudinal data — determines how limited cleanup resources "
+         "are allocated most effectively."),
+        ("#2d6a2d", "Policy &amp; Advocacy",
+         "Approximately <strong>63% of recorded items are floatable</strong> — they enter the river "
+         "during monsoon events and travel downstream. Approximately 16% are technically recyclable "
+         "per City of Tucson standards but end up as litter. These numbers are quantified arguments "
+         "for bottle bills, extended producer responsibility legislation, and stormwater ordinances."),
+        ("#6c4f8a", "Urban Wildlife Refuge",
+         "Sonoran Institute and The Wilderness Society are pursuing an <strong>Urban National Wildlife "
+         "Refuge designation</strong> for the Santa Cruz River. Demonstrating active, sustained, and "
+         "measurable litter monitoring is a prerequisite for that designation. This database is part "
+         "of the institutional record that makes the case to the U.S. Fish and Wildlife Service."),
+    ]
 
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px;">
+    _ic1, _ic2, _ic3 = st.columns(3)
+    for idx, (color, title, text) in enumerate(_cards):
+        with [_ic1, _ic2, _ic3][idx % 3]:
+            st.markdown(
+                f'<div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;' +
+                f'border-top:3px solid {color};margin-bottom:16px;">' +
+                f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;' +
+                f'text-transform:uppercase;color:{color};margin-bottom:8px;font-weight:700;">{title}</div>' +
+                f'<div style="font-size:13px;color:{C["text"]};line-height:1.75;">{text}</div>' +
+                '</div>',
+                unsafe_allow_html=True
+            )
 
-        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
-        border-top:3px solid {C["water"]};">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
-          text-transform:uppercase;color:{C["water"]};margin-bottom:8px;">Regulatory Compliance</div>
-          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
-          ADEQ stormwater permits and EPA Section 319 nonpoint source pollution programs require
-          <strong>documented evidence of active litter management</strong>. This dataset is that evidence —
-          with standardized methodology, multi-year records, and site-level resolution that satisfies
-          agency requirements. Without longitudinal data, the Sonoran Institute cannot demonstrate
-          compliance or progress to regulators.
-          </div>
-        </div>
-
-        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
-        border-top:3px solid {C["amber"]};">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
-          text-transform:uppercase;color:{C["amber"]};margin-bottom:8px;">Grant Funding</div>
-          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
-          Federal and foundation grants for river restoration require <strong>baseline data and
-          demonstrated monitoring capacity</strong>. This database establishes both. It shows
-          which reaches are most impacted, whether interventions are reducing counts over time, and
-          what types of waste dominate — the exact framing that secures funding from EPA, NRCS,
-          and private conservation foundations.
-          </div>
-        </div>
-
-        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
-        border-top:3px solid {C["brick"]};">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
-          text-transform:uppercase;color:{C["brick"]};margin-bottom:8px;">Public Health</div>
-          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
-          Syringe and pharmaceutical counts are not abstract statistics — they represent
-          <strong>direct needle-stick hazards for field crews and the public</strong>. Documented
-          health hazard records support requests for targeted social services, cleanup resource
-          allocation, and protocol upgrades. The data makes the case that cannot be made by
-          observation alone.
-          </div>
-        </div>
-
-        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
-        border-top:3px solid {C["green"]};">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
-          text-transform:uppercase;color:{C["green"]};margin-bottom:8px;">Targeted Cleanup</div>
-          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
-          Not every site needs the same response. High-mean, low-variability sites are
-          <strong>chronic hotspots</strong> requiring routine cleanup. High-variability sites
-          signal episodic dumping events that need source investigation. This distinction —
-          only visible through longitudinal data — determines how limited cleanup resources
-          are allocated most effectively.
-          </div>
-        </div>
-
-        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
-        border-top:3px solid {C["sage"]};">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
-          text-transform:uppercase;color:{C["sage"]};margin-bottom:8px;">Policy &amp; Advocacy</div>
-          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
-          Approximately <strong>63% of recorded items are floatable</strong> — they enter the
-          river during monsoon events and travel far downstream. Approximately 16% are technically
-          recyclable per City of Tucson standards but end up as litter. These numbers are not
-          rhetorical — they are quantified arguments for bottle bills, extended producer
-          responsibility legislation, and stormwater management ordinances.
-          </div>
-        </div>
-
-        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
-        border-top:3px solid #6c4f8a;">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
-          text-transform:uppercase;color:#6c4f8a;margin-bottom:8px;">Urban Wildlife Refuge</div>
-          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
-          Sonoran Institute and The Wilderness Society are pursuing an <strong>Urban National
-          Wildlife Refuge designation</strong> for the Santa Cruz River. Demonstrating active,
-          sustained, and measurable litter monitoring is a prerequisite for that designation.
-          This database is part of the institutional record that makes the case to the U.S.
-          Fish and Wildlife Service.
-          </div>
-        </div>
-
-      </div>
-
-      <div style="background:linear-gradient(135deg,{C["forest"]} 0%,{C["green"]} 100%);
-      border-radius:10px;padding:20px 24px;display:flex;align-items:center;gap:20px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;
-        color:{C["mint"]};line-height:1;flex-shrink:0;">32,144</div>
-        <div style="font-size:13.5px;color:rgba(255,255,255,.78);line-height:1.8;">
-          Individual litter items systematically recorded, categorized, and geolocated across
-          the Santa Cruz River corridor since September 2020. Each number represents a decision
-          about where to clean, what to target, and how to argue for the river's protection.
-          <strong style="color:white;">This is not a cleanup database. It is an evidence base.</strong>
-        </div>
-      </div>
-
-    </div>""", unsafe_allow_html=True)
+    # Bottom callout bar
+    _t1, _t2 = st.columns([1, 4])
+    with _t1:
+        st.markdown(
+            f'<div style="background:linear-gradient(160deg,{C["forest"]},{C["green"]});' +
+            f'border-radius:10px;padding:24px 20px;text-align:center;height:100%;' +
+            f'display:flex;flex-direction:column;justify-content:center;">' +
+            f'<div style="font-family:Cormorant Garamond,serif;font-size:3rem;font-weight:700;' +
+            f'color:{C["mint"]};line-height:1;margin-bottom:6px;">32,144</div>' +
+            f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;' +
+            f'text-transform:uppercase;color:rgba(255,255,255,.45);">items recorded</div>' +
+            '</div>',
+            unsafe_allow_html=True
+        )
+    with _t2:
+        st.markdown(
+            f'<div style="background:linear-gradient(160deg,{C["forest"]},{C["green"]});' +
+            f'border-radius:10px;padding:24px 28px;height:100%;' +
+            f'display:flex;flex-direction:column;justify-content:center;">' +
+            f'<div style="font-size:14px;color:rgba(255,255,255,.78);line-height:1.85;">' +
+            "Individual litter items systematically recorded, categorized, and geolocated across "
+            "Individual litter items systematically recorded, categorized, and geolocated across "
+            "the Santa Cruz River corridor since September 2020. Each number in this database "
+            "represents a decision about where to clean, what to target, and how to argue for "
+            "the river&#39;s protection before agencies, funders, and policymakers.<br>"
+            "<strong style='color:white;font-size:15px;'>This is not a cleanup database. "
+            "It is an evidence base.</strong></div></div>",
+            unsafe_allow_html=True
+        )
 
     section_title("Category Summary Table")
     st.markdown('<div class="sec-sub">Total items, number of individual records, and average count per record for each trash category. Sorted by total count descending.</div>', unsafe_allow_html=True)
