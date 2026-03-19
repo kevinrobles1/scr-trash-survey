@@ -617,7 +617,7 @@ header[data-testid="stHeader"]{{height:0!important;min-height:0!important;displa
 [data-testid="stToolbar"]{{display:none!important;}}
 [data-testid="stDecoration"]{{display:none!important;}}
 footer{{display:none!important;}}
-.stApp{{background:{C["sand"]};}}
+.stApp{{background:{C["forest"]};}}
 /* Kill browser/Streamlit default blue link color globally */
 .stApp a, .stApp a:visited, .stMarkdownContainer a, .stMarkdownContainer a:visited,
 [data-testid="stMarkdownContainer"] a, [data-testid="stMarkdownContainer"] a:visited {{
@@ -667,7 +667,7 @@ footer{{display:none!important;}}
 }}
 
 /* ── KILL ALL GAPS — NUCLEAR ── */
-.stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["cream"]};}}
+.stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["forest"]};}}
 section[data-testid="stMain"] {{padding-top:0!important;margin-top:0!important;}}
 section[data-testid="stMain"]>div:first-child {{padding-top:0!important;margin-top:0!important;}}
 [data-testid="stAppViewBlockContainer"]>div:first-child {{padding-top:0!important;margin-top:0!important;}}
@@ -705,7 +705,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:0 48px 80px 48px;}}
+.body{{max-width:1480px;margin:0 auto;padding:24px 48px 80px 48px;background:{C["cream"]};}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -824,7 +824,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
-      padding:36px 0 28px;margin-top:48px;border-top:2px solid {C["sage"]};}}
+      padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
 .ftr-in{{max-width:1480px;margin:0 auto;padding:0 48px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
@@ -1767,12 +1767,12 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign out button — off-screen but clickable via JS
+# Sign out button — visible top-right corner
 st.markdown("""<style>
 div.stButton:has(button[key="_hdr_so"]),
 div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
     position:fixed!important;top:12px!important;right:16px!important;
-    z-index:9999!important;opacity:1!important;pointer-events:auto!important;
+    z-index:99999!important;opacity:1!important;pointer-events:auto!important;
     width:auto!important;height:auto!important;overflow:visible!important;
     left:auto!important;
 }
@@ -1948,8 +1948,8 @@ except Exception:
 # OVERVIEW
 # ══════════════════════════════════════════════════════════════════
 if page == "Overview":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner(T("ov_ey"), T("ov_title"), T("ov_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     with st.expander(T("filter_data"), expanded=False):
         lf = render_filters(long, kp="ov")
@@ -2132,8 +2132,8 @@ if page == "Overview":
 # MAP
 # ══════════════════════════════════════════════════════════════════
 elif page == "Map":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner(T("map_ey"), T("map_title"), T("map_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     map_mode=st.radio(T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else "Map view",[T("map_mode_seg"),T("map_mode_burden"),"Individual Events"],horizontal=True)
 
@@ -2193,8 +2193,8 @@ elif page == "Map":
 # TRENDS
 # ══════════════════════════════════════════════════════════════════
 elif page == "Trends":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner(T("tr_ey"), T("tr_title"), T("tr_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     with st.expander(T("filter_data"), expanded=False):
         lf=render_filters(long, kp="tr", cats=False)
@@ -2341,8 +2341,8 @@ elif page == "Trends":
     st.markdown('</div>', unsafe_allow_html=True)
 
 elif page == "Categories":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner(T("cat_ey"), T("cat_title"), T("cat_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     with st.expander(T("filter_data"), expanded=False):
         lf=render_filters(long, kp="cat")
@@ -2887,8 +2887,8 @@ elif page == "Categories":
 
 
 elif page == "Locations":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner("Site-Level Analysis", "Where the Trash Is — and How Much", "Trash burden across all 136 recorded survey locations. Sites are ordered North to South along the river corridor. Statistics reflect variability across repeated survey visits.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
     <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
     <p style="margin:0 0 8px;"><strong>Mean (average items per event):</strong> The typical number of trash items found during a single survey visit at that site. A site with a mean of 80 means the team usually finds about 80 items each time they visit. This is the most useful number for comparing sites.</p>
@@ -3088,8 +3088,8 @@ elif page == "Locations":
 # DATA TABLE
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Table":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner(T("dt_ey"), T("dt_title"), T("dt_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     with st.expander(T("filter_data"), expanded=True):
         lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
@@ -3191,19 +3191,8 @@ elif page == "Data Table":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Entry":
     is_vol = prof.get("is_volunteer", False)
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     if is_vol:
-        # Volunteer banner
-        st.markdown(f'''<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;
-        border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
-        <div style="width:10px;height:10px;border-radius:50%;background:{C["mint"]};flex-shrink:0;"></div>
-        <div style="font-size:13px;color:{C["text"]};line-height:1.6;">
-        Volunteer session — <strong>{prof.get("full_name","")}</strong>
-        {" · " + prof.get("volunteer_org","") if prof.get("volunteer_org") else ""}
-        &nbsp;·&nbsp; You can submit survey counts only.
-        To access all features, <a href="/" style="color:{C["green"]};font-weight:600;">sign in with a staff account</a>.
-        </div></div>''', unsafe_allow_html=True)
         page_banner(
             "Volunteer Survey Entry",
             "Submit Your Trash Counts",
@@ -3217,6 +3206,20 @@ elif page == "Data Entry":
             "Submit new survey entries and manage existing records. All changes are saved directly to the live database and reflected in every chart immediately.",
             "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
         )
+
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+
+    if is_vol:
+        # Volunteer session info bar
+        st.markdown(f'''<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;
+        border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
+        <div style="width:10px;height:10px;border-radius:50%;background:{C["mint"]};flex-shrink:0;"></div>
+        <div style="font-size:13px;color:{C["text"]};line-height:1.6;">
+        Volunteer session — <strong>{prof.get("full_name","")}</strong>
+        {" · " + prof.get("volunteer_org","") if prof.get("volunteer_org") else ""}
+        &nbsp;·&nbsp; You can submit survey counts only.
+        To access all features, <a href="/" style="color:{C["green"]};font-weight:600;">sign in with a staff account</a>.
+        </div></div>''', unsafe_allow_html=True)
 
     if is_vol:
         # Volunteers only see the entry form — no tabs, no manage section
@@ -3709,8 +3712,8 @@ elif page == "Data Entry":
 # EXPORT
 # ══════════════════════════════════════════════════════════════════
 elif page == "Export":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     page_banner(T("ex_ey"), T("ex_title"), T("ex_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     long_exp=long[[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in long.columns]].copy()
     long_exp=long_exp.rename(columns={"n":"count","seg":"river_segment","site_label":"location"})
@@ -3751,12 +3754,11 @@ elif page == "Export":
 # ABOUT
 # ══════════════════════════════════════════════════════════════════
 elif page == "About":
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     # Hero banner
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
-    border-radius:14px;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
+    border-radius:0;padding:44px 48px;margin-bottom:0;position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;
     background:url('https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg')
     center/cover no-repeat;opacity:.18;border-radius:14px;"></div>
@@ -3770,6 +3772,7 @@ elif page == "About":
     {T("about_hero_sub")}
     </p></div></div>""", unsafe_allow_html=True)
 
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     section_title(T("why_river_title"))
     c1, c2 = st.columns([3,2])
     with c1:
