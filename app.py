@@ -165,18 +165,21 @@ footer{{display:none!important;}}
 
 /* ── KILL STREAMLIT DEFAULT GAPS ── */
 .stApp {{overflow-x:hidden;}}
-/* The main app wrapper — remove ALL padding from Streamlit's default block */
-section.main > div,
-section.main > div.block-container,
-div.block-container,
+/* Nuclear option — target every possible Streamlit wrapper */
+.main .block-container,
+.block-container,
+section[data-testid="stMain"] > div,
+section[data-testid="stMain"] > div > div,
 [data-testid="stMainBlockContainer"],
-[data-testid="stAppViewBlockContainer"] {{
+[data-testid="stAppViewBlockContainer"],
+[data-testid="stAppViewContainer"],
+div[class*="block-container"] {{
     padding-top:0!important;
-    margin-top:0!important;
-    gap:0!important;
     padding-bottom:0!important;
+    margin-top:0!important;
+    margin-bottom:0!important;
 }}
-/* Every vertical block and element container — no margin or padding */
+/* Every vertical stack */
 [data-testid="stVerticalBlock"],
 [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"],
 [data-testid="stVerticalBlock"] > .element-container,
@@ -1015,26 +1018,28 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     position:relative!important;
 }}
 /* Sign-out: fixed pill in the header */
-button[data-testid="baseButton-secondary"] {{
-    position:fixed!important;top:18px!important;right:44px!important;z-index:600!important;
+/* Sign-out: fixed pill — overlaid on the dark header area */
+button[data-testid="baseButton-secondary"],
+button[kind="secondary"] {{
+    position:fixed!important;top:20px!important;right:44px!important;z-index:9999!important;
     background:transparent!important;
     border:1px solid rgba(255,255,255,.32)!important;border-radius:20px!important;
-    color:rgba(255,255,255,.75)!important;
+    color:rgba(255,255,255,.78)!important;
     font-family:'DM Mono',monospace!important;font-size:9.5px!important;
     letter-spacing:1.2px!important;text-transform:uppercase!important;
-    padding:4px 14px!important;line-height:1.5!important;
+    padding:4px 14px!important;line-height:1.5!important;box-shadow:none!important;
     min-height:0!important;height:auto!important;cursor:pointer!important;
     transition:all .15s!important;
 }}
-button[data-testid="baseButton-secondary"]:hover {{
+button[data-testid="baseButton-secondary"]:hover,
+button[kind="secondary"]:hover {{
     background:rgba(255,255,255,.1)!important;color:white!important;
     border-color:rgba(255,255,255,.6)!important;
 }}
-/* Collapse the sign-out button's own row so it takes zero vertical space */
-div[data-testid="stVerticalBlock"] > div.element-container:has(button[data-testid="baseButton-secondary"]) {{
+/* The row containing the sign-out button — collapse completely */
+div.element-container:has(button[data-testid="baseButton-secondary"]) {{
     height:0!important;overflow:hidden!important;margin:0!important;
-    padding:0!important;min-height:0!important;opacity:0!important;
-    pointer-events:none!important;
+    padding:0!important;min-height:0!important;max-height:0!important;
 }}
 </style>""", unsafe_allow_html=True)
 
