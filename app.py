@@ -132,7 +132,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:none;margin-bottom:0;box-shadow:none;}}
-.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 44px 14px 124px;
+.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 44px 14px 160px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -198,7 +198,7 @@ div[class*="appview-container"] > section > div {{
     padding-bottom:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:10px 96px 100px 124px;}}
+.body{{max-width:1480px;margin:0 auto;padding:10px 96px 100px 160px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -318,7 +318,7 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#0b1a0e 100%);
       padding:44px 0 32px;margin-top:80px;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1480px;margin:0 auto;padding:0 124px;}}
+.ftr-in{{max-width:1480px;margin:0 auto;padding:0 160px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
 .ftr-a:hover{{color:{C["mint"]};}}
@@ -398,7 +398,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     img_overlay = f"""background:url('{img_url}') center/cover no-repeat;""" if img_url else ""
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
-    border-radius:0 0 14px 14px;padding:28px 124px;margin:0 0 18px;
+    border-radius:0 0 14px 14px;padding:28px 160px;margin:0 0 18px;
     position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;{img_overlay}opacity:.12;border-radius:0 0 14px 14px;"></div>
     <div style="position:relative;z-index:2;max-width:900px;">
@@ -1065,7 +1065,7 @@ inject_css()
 auth_gate()
 prof=st.session_state.get("prof") or {}
 
-# HEADER — sign out embedded as tiny text in the top-right user block
+# HEADER — sign out sits inside header HTML, triggers hidden Streamlit button
 st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
     <img src="{LOGO_W}" class="hdr-logo">
@@ -1076,36 +1076,28 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
     <div class="hdr-user">
       <strong>{prof.get('full_name','')}</strong>
       <span class="hdr-pos">{prof.get('position_title','')}</span>
-      <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:3px;">
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:4px;">
         <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
+        <span onclick="(()=>{{const btns=window.parent.document.querySelectorAll('button');btns.forEach(b=>{{if(b.innerText.trim()==='Sign Out')b.click();}})}})()"
+          style="font-family:DM Mono,monospace;font-size:8.5px;letter-spacing:1px;text-transform:uppercase;
+          color:rgba(255,255,255,.38);cursor:pointer;text-decoration:underline;
+          text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.18);
+          transition:color .15s;user-select:none;"
+          onmouseover="this.style.color='rgba(255,255,255,.75)'"
+          onmouseout="this.style.color='rgba(255,255,255,.38)'">Sign Out</span>
       </div>
     </div>
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign-out: tiny text link overlaid at top-right of the header
+# Hidden sign-out button — visual is embedded in header HTML above
 st.markdown("""<style>
-/* Tiny sign-out — just a text link, lives fixed in the header */
-button[data-testid="baseButton-secondary"] {
-    position:fixed!important;top:46px!important;right:28px!important;z-index:9999!important;
-    background:transparent!important;border:none!important;box-shadow:none!important;
-    color:rgba(255,255,255,.45)!important;
-    font-family:'DM Mono',monospace!important;font-size:9px!important;
-    letter-spacing:1px!important;text-transform:uppercase!important;
-    padding:0!important;line-height:1!important;
-    min-height:0!important;height:auto!important;cursor:pointer!important;
-    text-decoration:underline!important;text-underline-offset:3px!important;
-    text-decoration-color:rgba(255,255,255,.2)!important;
-    transition:color .15s!important;
-}
-button[data-testid="baseButton-secondary"]:hover {
-    color:rgba(255,255,255,.85)!important;
-    text-decoration-color:rgba(255,255,255,.5)!important;
-}
-/* Collapse the row this button lives in so it takes zero space */
-div.element-container:has(button[data-testid="baseButton-secondary"]) {
+/* Collapse the Streamlit sign-out button row entirely */
+div.element-container:has(button[data-testid="baseButton-secondary"]),
+div.stButton:has(button[key="_hdr_so"]) {
     height:0!important;overflow:hidden!important;margin:0!important;
     padding:0!important;min-height:0!important;max-height:0!important;
+    visibility:hidden!important;position:absolute!important;
 }
 </style>""", unsafe_allow_html=True)
 
@@ -1137,7 +1129,7 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 24px 0 80px !important;
+    padding:0 24px 0 160px !important;
     max-width:1480px !important;
     margin:0 auto !important;
     border:none !important;
@@ -1342,6 +1334,115 @@ if page == "Overview":
                 margin=dict(l=10,r=10,t=56,b=110))
             show(fig,"ov_seg")
         card_close()
+
+    section_title("Why This Data Matters — and What It Can Achieve")
+
+    st.markdown(f"""
+    <div style="background:white;border:1px solid {C["sand3"]};border-radius:12px;
+    padding:28px 32px;margin-bottom:8px;box-shadow:0 2px 12px rgba(0,0,0,.04);">
+
+      <p style="font-size:13.5px;color:{C["muted"]};line-height:1.85;margin:0 0 22px;
+      font-style:italic;border-left:3px solid {C["mint"]};padding-left:16px;">
+      The Santa Cruz River is one of the most ecologically significant and most threatened waterways in
+      the American Southwest. What happens to the trash on its banks determines what happens to its water,
+      its wildlife, and the communities that depend on it.
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:24px;">
+
+        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
+        border-top:3px solid {C["water"]};">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+          text-transform:uppercase;color:{C["water"]};margin-bottom:8px;">Regulatory Compliance</div>
+          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
+          ADEQ stormwater permits and EPA Section 319 nonpoint source pollution programs require
+          <strong>documented evidence of active litter management</strong>. This dataset is that evidence —
+          with standardized methodology, multi-year records, and site-level resolution that satisfies
+          agency requirements. Without longitudinal data, the Sonoran Institute cannot demonstrate
+          compliance or progress to regulators.
+          </div>
+        </div>
+
+        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
+        border-top:3px solid {C["amber"]};">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+          text-transform:uppercase;color:{C["amber"]};margin-bottom:8px;">Grant Funding</div>
+          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
+          Federal and foundation grants for river restoration require <strong>baseline data and
+          demonstrated monitoring capacity</strong>. This database establishes both. It shows
+          which reaches are most impacted, whether interventions are reducing counts over time, and
+          what types of waste dominate — the exact framing that secures funding from EPA, NRCS,
+          and private conservation foundations.
+          </div>
+        </div>
+
+        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
+        border-top:3px solid {C["brick"]};">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+          text-transform:uppercase;color:{C["brick"]};margin-bottom:8px;">Public Health</div>
+          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
+          Syringe and pharmaceutical counts are not abstract statistics — they represent
+          <strong>direct needle-stick hazards for field crews and the public</strong>. Documented
+          health hazard records support requests for targeted social services, cleanup resource
+          allocation, and protocol upgrades. The data makes the case that cannot be made by
+          observation alone.
+          </div>
+        </div>
+
+        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
+        border-top:3px solid {C["green"]};">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+          text-transform:uppercase;color:{C["green"]};margin-bottom:8px;">Targeted Cleanup</div>
+          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
+          Not every site needs the same response. High-mean, low-variability sites are
+          <strong>chronic hotspots</strong> requiring routine cleanup. High-variability sites
+          signal episodic dumping events that need source investigation. This distinction —
+          only visible through longitudinal data — determines how limited cleanup resources
+          are allocated most effectively.
+          </div>
+        </div>
+
+        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
+        border-top:3px solid {C["sage"]};">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+          text-transform:uppercase;color:{C["sage"]};margin-bottom:8px;">Policy &amp; Advocacy</div>
+          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
+          Approximately <strong>63% of recorded items are floatable</strong> — they enter the
+          river during monsoon events and travel far downstream. Approximately 16% are technically
+          recyclable per City of Tucson standards but end up as litter. These numbers are not
+          rhetorical — they are quantified arguments for bottle bills, extended producer
+          responsibility legislation, and stormwater management ordinances.
+          </div>
+        </div>
+
+        <div style="background:{C["sand"]};border-radius:10px;padding:18px 20px;
+        border-top:3px solid #6c4f8a;">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
+          text-transform:uppercase;color:#6c4f8a;margin-bottom:8px;">Urban Wildlife Refuge</div>
+          <div style="font-size:13px;color:{C["text"]};line-height:1.75;">
+          Sonoran Institute and The Wilderness Society are pursuing an <strong>Urban National
+          Wildlife Refuge designation</strong> for the Santa Cruz River. Demonstrating active,
+          sustained, and measurable litter monitoring is a prerequisite for that designation.
+          This database is part of the institutional record that makes the case to the U.S.
+          Fish and Wildlife Service.
+          </div>
+        </div>
+
+      </div>
+
+      <div style="background:linear-gradient(135deg,{C["forest"]} 0%,{C["green"]} 100%);
+      border-radius:10px;padding:20px 24px;display:flex;align-items:center;gap:20px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;
+        color:{C["mint"]};line-height:1;flex-shrink:0;">32,144</div>
+        <div style="font-size:13.5px;color:rgba(255,255,255,.78);line-height:1.8;">
+          Individual litter items systematically recorded, categorized, and geolocated across
+          the Santa Cruz River corridor since September 2020. Each number represents a decision
+          about where to clean, what to target, and how to argue for the river's protection.
+          <strong style="color:white;">This is not a cleanup database. It is an evidence base.</strong>
+        </div>
+      </div>
+
+    </div>""", unsafe_allow_html=True)
 
     section_title("Category Summary Table")
     st.markdown('<div class="sec-sub">Total items, number of individual records, and average count per record for each trash category. Sorted by total count descending.</div>', unsafe_allow_html=True)
@@ -2924,14 +3025,16 @@ elif page == "About":
             <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
             </div>""", unsafe_allow_html=True)
 
-    c3, c4 = st.columns([2,3])
-    with c3:
-        st.markdown(f"""<img src="https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg"
-        style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);">
-        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:6px;">
-        Field survey crew, Santa Cruz River corridor</div>""", unsafe_allow_html=True)
-    with c4:
-        st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:1.9;">
+    # Full-width layout — image above, text below. Avoids column overlap on all screen sizes.
+    st.markdown(f"""
+    <div style="display:grid;grid-template-columns:280px 1fr;gap:32px;align-items:start;margin-bottom:8px;">
+      <div>
+        <img src="https://sonoraninstitute.org/files/IMG_20190702_115922-1-1600x900.jpg"
+          style="width:100%;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.15);display:block;">
+        <div style="font-size:11px;color:{C['muted']};font-style:italic;text-align:center;margin-top:6px;line-height:1.5;">
+          Field survey crew, Santa Cruz River corridor, 2019</div>
+      </div>
+      <div style="font-size:14px;color:{C['text']};line-height:1.9;">
         <p style="margin:0 0 14px;">The trash survey protocol uses <strong>plot-based sampling</strong> —
         fixed, measured survey areas at consistent locations. Each survey event counts and categorizes
         every piece of litter using a standardized <strong>56-item, 19-category protocol</strong>
@@ -2948,7 +3051,8 @@ elif page == "About":
         food packaging (~33%), clothing (encampment indicator), beverage containers (recyclable fraction),
         pharmaceutical and drug materials (public health concern), and large debris including appliances
         and construction waste (illegal dumping indicator).</p>
-        </div>""", unsafe_allow_html=True)
+      </div>
+    </div>""", unsafe_allow_html=True)
 
     section_title("Why Longitudinal Trash Data Matters")
 
@@ -3041,10 +3145,10 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
     <div style="text-align:right;">
       <span class="ftr-section-lbl">Connect with us</span>
       <div>
-        <a href="https://www.facebook.com/SonoranInstitute" target="_blank" class="ftr-social-icon" title="Facebook">f</a>
-        <a href="https://twitter.com/SonoranInst" target="_blank" class="ftr-social-icon" title="Twitter / X">𝕏</a>
-        <a href="https://www.youtube.com/@SonoranInstitute" target="_blank" class="ftr-social-icon" title="YouTube">▶</a>
-        <a href="https://www.instagram.com/sonoraninstitute" target="_blank" class="ftr-social-icon" title="Instagram">◈</a>
+        <a href="https://www.facebook.com/SonoranInstitute/" target="_blank" class="ftr-social-icon" title="Facebook">f</a>
+        <a href="https://twitter.com/SonoranInst/" target="_blank" class="ftr-social-icon" title="Twitter / X">𝕏</a>
+        <a href="https://www.youtube.com/user/SonoranInstitute" target="_blank" class="ftr-social-icon" title="YouTube">▶</a>
+        <a href="https://www.instagram.com/sonoraninstitute/" target="_blank" class="ftr-social-icon" title="Instagram">◈</a>
       </div>
     </div>
   </div>
@@ -3117,12 +3221,16 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
 
   <!-- Row 3: Bottom bar -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div class="ftr-copy" style="color:rgba(255,255,255,.22);">
-      © Sonoran Institute · Santa Cruz River Trash Survey Dashboard v5.0 · Cloud Edition
+    <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.5px;">
+      © Sonoran Institute &nbsp;·&nbsp; Santa Cruz River Trash Survey Dashboard v5.0
     </div>
-    <div class="ftr-copy" style="color:rgba(255,255,255,.22);text-align:right;">
-      <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank" class="ftr-a">
-      sonoraninstitute.org/card/santacruz</a>
+    <div style="font-family:DM Mono,monospace;font-size:10px;text-align:right;">
+      <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank"
+         style="color:rgba(255,255,255,.55);text-decoration:none;letter-spacing:.3px;
+         transition:color .15s;"
+         onmouseover="this.style.color='#5da832'" onmouseout="this.style.color='rgba(255,255,255,.55)'">
+        sonoraninstitute.org/card/santacruz
+      </a>
     </div>
   </div>
 
