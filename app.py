@@ -922,17 +922,14 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
 
 def show(fig, key=None):
     _clean_hover(fig)
-    # Clean raw column names from axis titles and legends
     _nm = {"n":"Total Items","seg":"River Segment","trash_group":"Category",
         "trash_item":"Item","site_label":"Location","year_str":"Year",
         "month_name":"Month","total":"Total Items","avg":"Average Items",
         "weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation",
-        "se":"Standard Error","cv_pct":"CV (%)","mean":"Mean Items per Event",
-        "site_display":"Survey Site","share":"Share of Total (%)","recyclable":"Classification",
-        "floatable":"Classification","avg_per_event":"Avg Items per Event","year":"Year",
-        "date":"Date","count":"Count","Total":"Total Items","Category":"Category",
-        "Item":"Item","Cup Type":"Cup Type"}
-    for ax_name in ["xaxis","yaxis","xaxis2","yaxis2"]:
+        "cv_pct":"CV (%)","mean":"Mean Items per Event","site_display":"Survey Site",
+        "share":"Share of Total (%)","recyclable":"Classification","floatable":"Classification",
+        "year":"Year","date":"Date"}
+    for ax_name in ["xaxis","yaxis"]:
         try:
             ax = fig.layout[ax_name]
             if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm:
@@ -1661,7 +1658,13 @@ def stat_strip(df_orig, df_f):
 # ──────────────────────────────────────────────────────────────────
 def color_val(v,vmin,vmax):
     if pd.isna(v): return "#5b8bd9"
-    t=0.5 if vmax==vmin else max(0,min(1,(float(v)-float(vmin))/(float(vmax)-float(vmin))))
+    # Use log-based scaling so low-count sites aren't all the same blue
+    import math
+    if vmax==vmin: t=0.5
+    else:
+        log_v = math.log1p(float(v) - float(vmin))
+        log_max = math.log1p(float(vmax) - float(vmin))
+        t = max(0, min(1, log_v / log_max)) if log_max > 0 else 0.5
     stops=[(0,(49,130,206)),(0.33,(78,201,176)),(0.66,(245,149,52)),(1,(214,69,65))]
     for i in range(len(stops)-1):
         t0,c0=stops[i]; t1,c1=stops[i+1]
@@ -1675,7 +1678,9 @@ def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=56
     d=df.copy()
     d[lat]=pd.to_numeric(d[lat],errors="coerce"); d[lon]=pd.to_numeric(d[lon],errors="coerce")
     d=d[d[lat].notna()&d[lon].notna()]
-    if len(d)==0: st.info("No rows with valid GPS coordinates."); return
+    # Filter obvious outliers — Santa Cruz corridor is in Tucson metro (lat ~32.0-32.5, lon ~-111.2 to -110.8)
+    d=d[(d[lat]>31.5)&(d[lat]<33.0)&(d[lon]>-112.0)&(d[lon]<-110.0)]
+    if len(d)==0: st.info("No rows with valid GPS coordinates in the Tucson area."); return
     vals=pd.to_numeric(d[metric_col],errors="coerce") if metric_col in d.columns else pd.Series([0]*len(d))
     vmin,vmax=float(vals.min()),float(vals.max())
     recs=[]
@@ -1709,7 +1714,7 @@ if(m.popup) mk.bindPopup(m.popup,{{maxWidth:280}});
 if(m.lbl) mk.bindTooltip('<strong>'+m.lbl+'</strong>',{{permanent:false,direction:'top',offset:[0,-12]}});
 bounds.push([m.lat,m.lon]);
 }});
-if(bounds.length>1) map.fitBounds(bounds,{{padding:[30,30]}});
+if(bounds.length>1) map.fitBounds(bounds,{{padding:[40,40],maxZoom:14}});
 </script></body></html>"""
     components.html(html_src, height=height+10)
 
@@ -2166,11 +2171,14 @@ elif page == "Map":
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
         f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
-        'Map colors — <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden. '
+        'Map colors — <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden, '
         '<span style="color:#f59534;font-weight:700;">Orange</span> and '
         '<span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. '
-        'Segment map uses fixed colors per reach (see legend). '
-        'Click any circle to see site details and exact counts.</div>',
+        'Click any circle to see site details and exact counts.'
+        '<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count across all survey events '
+        'determines its color. Sites with more total items recorded appear warmer (orange to red). '
+        'The color scale uses logarithmic spacing so differences among lower-count sites are visible, '
+        'not compressed by a few very high-count outliers. This reflects cumulative litter load, not density per square meter.</div>',
         unsafe_allow_html=True
     )
 
@@ -2271,16 +2279,16 @@ elif page == "Trends":
 
     elif sel_trend == "Month by Month Comparison Across Years":
         md=df.dropna(subset=["year","month"]).groupby(["year","month","month_name"],observed=False)["n"].sum().reset_index()
-        md["year_str"]=md["year"].astype(str)
+        md["year_str"]=md["year"].astype(int).astype(str)
         fig=px.bar(md,x="month_name",y="n",color="year_str",barmode="group",
             category_orders={"month_name":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},
             color_discrete_sequence=PAL)
         fb(fig,"Month","Total Items",h=460,title="Month by Month Comparison Across Years"); show(fig,"tr_mby")
         last_updated_insight(df, chart_type="monthly")
         fig_note("The same calendar months compared across survey years.",
-            "Reveals seasonal patterns and year-over-year changes within each month.",
-            "Each color = one survey year. Bars in the same month cluster = that month across years.",
-            "Missing bars for a year-month combination mean no surveys were conducted in that period.")
+            "Reveals seasonal patterns and whether a particular month is consistently heavy or light.",
+            "Each color represents one survey year. Bars in the same month cluster show that month across years.",
+            "Empty months (no bars) mean no surveys were conducted, not that there was no trash. Summer months (June through August) are typically empty due to extreme heat and reduced volunteer availability.")
 
     elif sel_trend == "Average Items Per Survey Event Over Time":
         ef=make_et(lf)
