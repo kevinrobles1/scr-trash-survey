@@ -61,7 +61,7 @@ TRASH_GROUPS = {
     "Toys, Games":    ["Balls, Games","Cd, Dvd, Electronic Packaging","School/Office Supplies",
                        "Id Cards, Credit Cards","Batteries"],
     "Paper Litter":   ["News, Books, Magazines","Advertising, Signs, Cards"],
-    "Clothing":       ["Clothes, Shoes, Hats","Ppe","Misc. Fabric"],
+    "Clothing":       ["Clothes, Shoes, Hats","PPE","Misc. Fabric"],
     "Auto":           ["Car Parts (Small)","Car Parts (Large)","Tires"],
     "Construction":   ["Small Items","Large Items"],
     "Appliances":     ["Bikes, Bike Parts","Furniture/Cushions/Pillows","Shopping Carts",
@@ -126,6 +126,17 @@ header[data-testid="stHeader"]{{height:0!important;min-height:0!important;displa
 [data-testid="stDecoration"]{{display:none!important;}}
 footer{{display:none!important;}}
 .stApp{{background:{C["sand"]};}}
+/* Kill browser/Streamlit default blue link color globally */
+.stApp a, .stApp a:visited, .stMarkdownContainer a, .stMarkdownContainer a:visited,
+[data-testid="stMarkdownContainer"] a, [data-testid="stMarkdownContainer"] a:visited {{
+    color:inherit!important;
+    text-decoration:none!important;
+}}
+[data-testid="stMarkdownContainer"] a:hover {{
+    color:{C["mint"]}!important;
+    text-decoration:underline!important;
+    text-decoration-color:rgba(93,168,50,.4)!important;
+}}
 .block-container{{padding:0!important;max-width:100%!important;}}
 [data-testid="stSidebar"],[data-testid="collapsedControl"]{{display:none!important;}}
 
@@ -825,6 +836,12 @@ def load_data():
     if se.empty: se=pd.DataFrame()
     if wt.empty: wt=pd.DataFrame(columns=["event_id","date_recorded","total_weight_oz"])
 
+    # ── Load custom categories (added by staff via Data Entry) ──
+    try:
+        cc = pd.DataFrame(fetch_all("custom_categories","group_name,item_name,created_by,created_at"))
+    except Exception:
+        cc = pd.DataFrame(columns=["group_name","item_name","created_by","created_at"])
+
     tc.rename(columns={"count_value":"n"},inplace=True)
     tc["n"]=pd.to_numeric(tc["n"],errors="coerce").fillna(0)
 
@@ -898,6 +915,10 @@ def load_data():
         wt.rename(columns={"total_weight_oz":"weight_oz"},inplace=True)
     else: wt=pd.DataFrame(columns=["event_id","date","weight_oz"])
 
+    # Store custom categories in session state for runtime TRASH_GROUPS merge
+    if not cc.empty:
+        import streamlit as _st
+        _st.session_state["_custom_cats_df"] = cc
     return long, se, wt
 
 def make_et(df):
@@ -1296,6 +1317,24 @@ with st.spinner("Loading from database…"):
     except Exception as e: st.error(f"Database error: {e}"); st.stop()
 
 et = make_et(long)
+
+# ── Merge custom categories from DB into TRASH_GROUPS for this session ──
+# custom_cats is a DataFrame with group_name, item_name columns
+try:
+    _custom = st.session_state.get("_custom_cats_df", pd.DataFrame())
+    if not _custom.empty:
+        for _, row in _custom.iterrows():
+            g, item = str(row["group_name"]).strip(), str(row["item_name"]).strip()
+            if g and item:
+                if g not in TRASH_GROUPS:
+                    TRASH_GROUPS[g] = []
+                if item not in TRASH_GROUPS[g]:
+                    TRASH_GROUPS[g].append(item)
+                # Also add to GROUP_ORDER if new
+                if g not in GROUP_ORDER:
+                    GROUP_ORDER.append(g)
+except Exception:
+    pass
 
 # Cache the latest survey date globally — used by the "Data current as of" badge on every chart
 try:
@@ -2642,13 +2681,59 @@ elif page == "Data Entry":
                 recorder_final=rec_other.strip() if rec_other.strip() else (recorder if recorder else "")
                 site_final=site_new.strip() if site_new.strip() else site_sel
 
-                st.markdown('<div class="form-sec"><div class="form-sec-title">Trash Item Counts — Enter the count for each item found. Leave at 0 if not present.</div>', unsafe_allow_html=True)
-                counts={}
-                for grp_name,items in TRASH_GROUPS.items():
-                    st.markdown(f'<div class="grp-hdr">{grp_name}</div>', unsafe_allow_html=True)
-                    n=min(4,len(items)); cols=st.columns(n)
-                    for i,item in enumerate(items):
-                        with cols[i%n]: counts[item]=st.number_input(item,min_value=0,value=0,step=1,key=f"c_{grp_name}_{item}")
+                st.markdown(f'''<div class="form-sec">
+                <div class="form-sec-title">Trash Item Counts</div>
+                <div style="font-size:12.5px;color:{C["muted"]};margin-bottom:14px;line-height:1.6;">
+                Enter the count for each item found during the survey. Leave at 0 if the item was not present.
+                Each category is labeled with its environmental classification.
+                <span style="color:{C["water"]};font-weight:700;">Blue</span> = Recyclable &nbsp;
+                <span style="color:{C["brick"]};font-weight:700;">Red</span> = Health Hazard &nbsp;
+                <span style="color:{C["amber"]};font-weight:700;">Amber</span> = Floatable &nbsp;
+                <span style="color:{C["green"]};font-weight:700;">Green</span> = Other
+                </div>''', unsafe_allow_html=True)
+
+                counts = {}
+                # Group categories by classification for smarter visual ordering
+                ENTRY_ORDER = [
+                    ("Food & Beverage", ["Food Packaging","Cups","Beer","Liquor","Soda","Water","Sports Drinks","Juice"]),
+                    ("Litter & Debris",  ["Plastic Bags","Misc","Paper Litter","Clothing","Nicotine"]),
+                    ("Health Hazards",   ["Rx, Drugs","Toiletries"]),
+                    ("Large & Bulk",     ["Construction","Appliances","Auto"]),
+                    ("Other",            ["Toys, Games"]),
+                ]
+                for section_label, grp_list in ENTRY_ORDER:
+                    st.markdown(
+                        f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;' +
+                        f'text-transform:uppercase;color:{C["muted"]};margin:18px 0 6px;padding-bottom:4px;' +
+                        f'border-bottom:1px solid {C["sand3"]};">{section_label}</div>',
+                        unsafe_allow_html=True
+                    )
+                    for grp_name in grp_list:
+                        if grp_name not in TRASH_GROUPS: continue
+                        items = TRASH_GROUPS[grp_name]
+                        # Color by classification
+                        grp_color = (
+                            C["water"] if grp_name in RECYCLABLE_GROUPS else
+                            C["brick"] if grp_name in HEALTH_HAZARD_GROUPS else
+                            C["amber"] if grp_name in FLOATABLE_GROUPS else
+                            C["green"]
+                        )
+                        # Display group header with color dot
+                        st.markdown(
+                            f'<div style="display:flex;align-items:center;gap:8px;margin:10px 0 6px;">' +
+                            f'<div style="width:8px;height:8px;border-radius:50%;background:{grp_color};flex-shrink:0;"></div>' +
+                            f'<span style="font-size:12px;font-weight:700;color:{C["text"]};letter-spacing:.3px;">{grp_name}</span>' +
+                            '</div>',
+                            unsafe_allow_html=True
+                        )
+                        n = min(4, len(items))
+                        cols = st.columns(n)
+                        for idx, item in enumerate(items):
+                            with cols[idx % n]:
+                                counts[item] = st.number_input(
+                                    item, min_value=0, value=0, step=1,
+                                    key=f"c_{grp_name}_{item}"
+                                )
                 st.markdown('</div>', unsafe_allow_html=True)
 
                 st.markdown('<div class="form-sec"><div class="form-sec-title">Field Notes (optional)</div>', unsafe_allow_html=True)
@@ -2938,6 +3023,108 @@ elif page == "Data Entry":
             except ValueError:
                 st.error("Event ID must be a number.")
 
+        # ── ADD NEW CATEGORY ─────────────────────────────────────
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
+        section_title("Add New Survey Category")
+        st.markdown(
+            f'<div style="font-size:13px;color:{C["muted"]};line-height:1.75;margin-bottom:16px;">'
+            'The 19 survey categories are fixed in the field protocol, but new items can be added '
+            'to an existing category, or a brand new category group can be created here. '
+            'New entries appear immediately in the Data Entry form for all staff. '
+            'Confirm with Luke Cole before adding groups to ensure naming aligns with field protocol.'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+        # Show existing custom categories
+        try:
+            existing_cc = pd.DataFrame(get_sb().table("custom_categories")
+                .select("group_name,item_name,created_by,created_at")
+                .order("created_at", desc=False).execute().data or [])
+            if not existing_cc.empty:
+                section_title("Custom Categories Already Added")
+                disp_cc = existing_cc.copy()
+                disp_cc.columns = ["Category Group","Item Name","Added By","Date Added"]
+                disp_cc.index = range(1, len(disp_cc)+1)
+                st.dataframe(disp_cc, use_container_width=True, height=min(300, 52+len(disp_cc)*35))
+        except Exception:
+            pass
+
+        st.markdown(
+            f'<div style="background:{C["sand"]};border:1px solid {C["sand3"]};border-radius:8px;' +
+            f'padding:18px 20px;margin-top:12px;">',
+            unsafe_allow_html=True
+        )
+        with st.form("add_category_form"):
+            st.markdown(f'<div class="form-sec-title">New Category / Item</div>', unsafe_allow_html=True)
+            nc1, nc2 = st.columns(2)
+
+            # Group: either pick existing or type new
+            all_existing_groups = sorted(list(TRASH_GROUPS.keys()))
+            with nc1:
+                grp_choice = st.selectbox(
+                    "Category Group",
+                    ["— Select existing group —", "+ Create new group"] + all_existing_groups,
+                    help="Pick an existing group to add an item to it, or create a completely new group."
+                )
+            with nc2:
+                new_grp_name = st.text_input(
+                    "New group name (if creating new)",
+                    placeholder="e.g. PPE & Safety Equipment",
+                    help="Only fill this if you selected '+ Create new group' above."
+                )
+
+            new_item_name = st.text_input(
+                "Item name *",
+                placeholder="e.g. Face masks, N95 respirators",
+                help="The specific item type. Be precise — this will appear on survey forms and in all charts."
+            )
+            new_cat_note = st.text_area(
+                "Reason for adding (optional)",
+                height=70,
+                placeholder="e.g. Observed increasing volume of PPE waste since 2022, added per Luke Cole field note."
+            )
+
+            if st.form_submit_button("Add to Survey Protocol", use_container_width=True):
+                # Determine final group name
+                if grp_choice == "— Select existing group —":
+                    st.error("Please select a category group.")
+                elif grp_choice == "+ Create new group":
+                    final_group = new_grp_name.strip()
+                    if not final_group:
+                        st.error("Please enter a name for the new group.")
+                        final_group = None
+                else:
+                    final_group = grp_choice
+
+                final_item = new_item_name.strip()
+                if not final_item:
+                    st.error("Item name is required.")
+                    final_group = None
+
+                if final_group and final_item:
+                    # Check for duplicate
+                    existing_items = TRASH_GROUPS.get(final_group, [])
+                    if final_item in existing_items:
+                        st.warning(f"'{final_item}' already exists in {final_group}.")
+                    else:
+                        try:
+                            get_sb().table("custom_categories").insert({
+                                "group_name": final_group,
+                                "item_name": final_item,
+                                "created_by": prof.get("full_name","Unknown"),
+                                "created_at": datetime.now().isoformat(),
+                            }).execute()
+                            load_data.clear()
+                            st.success(
+                                f"Added: **{final_item}** → **{final_group}** category. "
+                                "It will appear in the Data Entry form immediately after the page refreshes."
+                            )
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Could not save: {e}")
+        st.markdown('</div>', unsafe_allow_html=True)
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════
@@ -3212,7 +3399,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       <div>
         <a href="https://www.facebook.com/SonoranInstitute/" target="_blank" class="ftr-social-icon" title="Facebook">f</a>
         <a href="https://twitter.com/SonoranInst/" target="_blank" class="ftr-social-icon" title="Twitter / X">𝕏</a>
-        <a href="https://www.youtube.com/user/SonoranInstitute" target="_blank" class="ftr-social-icon" title="YouTube">▶</a>
+        <a href="https://www.youtube.com/@SonoranInstituteFlix" target="_blank" class="ftr-social-icon" title="YouTube">▶</a>
         <a href="https://www.instagram.com/sonoraninstitute/" target="_blank" class="ftr-social-icon" title="Instagram">◈</a>
       </div>
     </div>
