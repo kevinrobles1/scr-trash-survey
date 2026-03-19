@@ -265,6 +265,8 @@ TR = {
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
         "acct_session":"Account & Session",
+        "items_in_view":"Items in View",
+        "of_all_data":"Of All Data",
         # KPI strip
         "kpi_items":"Total Items Recorded","kpi_items_note":"across all survey events",
         "kpi_events":"Survey Events","kpi_events_note":"individual field visits",
@@ -664,8 +666,12 @@ footer{{display:none!important;}}
     pointer-events:none!important;height:0!important;overflow:hidden!important;
 }}
 
-/* ── KILL ALL GAPS ── */
+/* ── KILL ALL GAPS — NUCLEAR ── */
 .stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["cream"]};}}
+section[data-testid="stMain"] {{padding-top:0!important;margin-top:0!important;}}
+section[data-testid="stMain"]>div:first-child {{padding-top:0!important;margin-top:0!important;}}
+[data-testid="stAppViewBlockContainer"]>div:first-child {{padding-top:0!important;margin-top:0!important;}}
+.css-z5fcl4,.css-1d391kg,.css-ffhzg2 {{padding-top:0!important;margin-top:0!important;}}
 .main .block-container,.block-container,
 section[data-testid="stMain"]>div,section[data-testid="stMain"]>div>div,
 [data-testid="stMainBlockContainer"],[data-testid="stAppViewBlockContainer"],
@@ -703,8 +709,8 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
-.sec-hd{{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;
-          color:{C["text"]};margin-bottom:2px;letter-spacing:-.01em;}}
+.sec-hd{{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;
+          color:{C["text"]};margin-bottom:4px;letter-spacing:-.01em;}}
 .sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:20px;line-height:1.7;}}
 @media print {{
     /* Show the full page on print, not just the visible viewport */
@@ -748,10 +754,10 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
 .kpi-note{{font-size:11px;color:{C["muted"]};margin-top:5px;}}
 
 /* ── CARDS ── */
-.card{{background:#fff;border:1px solid {C["sand3"]};border-radius:10px;
-       padding:28px;margin-bottom:28px;box-shadow:0 2px 10px rgba(0,0,0,.04);}}
+.card{{background:#fff;border:1px solid {C["sand3"]};border-radius:12px;
+       padding:32px 32px 24px;margin-bottom:32px;box-shadow:0 2px 14px rgba(0,0,0,.05);}}
 .card-hd{{display:flex;align-items:flex-start;justify-content:space-between;
-          padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid {C["sand3"]};}}
+          padding-bottom:14px;margin-bottom:20px;border-bottom:1px solid {C["sand3"]};}}
 
 /* ── STAT STRIP ── */
 .stat-strip{{display:flex;gap:0;background:#fff;border:1px solid {C["sand3"]};
@@ -952,9 +958,9 @@ def show(fig, key=None):
 
 def card_open(title, subtitle=""):
     sub = f'<div class="sec-sub">{subtitle}</div>' if subtitle else ""
-    st.markdown(f'<div class="card"><div class="card-hd"><div><div class="sec-hd">{title}</div>{sub}</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="card"><div class="card-hd"><div><div class="sec-hd">{title}</div>{sub}</div></div><div style="padding-top:6px">', unsafe_allow_html=True)
 
-def card_close(): st.markdown('</div>', unsafe_allow_html=True)
+def card_close(): st.markdown('</div></div>', unsafe_allow_html=True)
 
 def tbl_note(text):
     st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
@@ -971,7 +977,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
         background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
         border-radius:0;
         padding:28px 160px 30px;
-        margin:-8px 0 18px;
+        margin:-32px 0 18px;
         position:relative;
         overflow:hidden;
         box-shadow:none;">
@@ -1714,7 +1720,8 @@ if _qp_so == "1":
     st.rerun()
 if _qp_lang in ("en", "es"):
     st.session_state["lang"] = _qp_lang
-    st.query_params.pop("lang", None)
+    try: st.query_params.pop("lang")
+    except: pass
 elif "lang" not in st.session_state:
     st.session_state["lang"] = "en"
 
