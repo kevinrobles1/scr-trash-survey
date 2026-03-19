@@ -699,13 +699,13 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:10px 96px 100px 160px;}}
+.body{{max-width:1480px;margin:0 auto;padding:24px 96px 120px 160px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
 .sec-hd{{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;
           color:{C["text"]};margin-bottom:2px;letter-spacing:-.01em;}}
-.sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:14px;line-height:1.6;}}
+.sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:20px;line-height:1.7;}}
 @media print {{
     /* Show the full page on print, not just the visible viewport */
     .stApp {{ overflow:visible!important; }}
@@ -749,7 +749,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
 
 /* ── CARDS ── */
 .card{{background:#fff;border:1px solid {C["sand3"]};border-radius:10px;
-       padding:24px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,.04);}}
+       padding:28px;margin-bottom:28px;box-shadow:0 2px 10px rgba(0,0,0,.04);}}
 .card-hd{{display:flex;align-items:flex-start;justify-content:space-between;
           padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid {C["sand3"]};}}
 
@@ -960,7 +960,7 @@ def tbl_note(text):
     st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
 
 def section_title(text):
-    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:28px 0 16px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:36px 0 18px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
 
 def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     """Full-bleed hero banner — same size and aesthetic as About page."""
@@ -1518,7 +1518,7 @@ def fig_note(what, why, read, extra=""):
     """Render a styled interpretation box under a chart."""
     extra_html = f'<p style="color:{C["muted"]};margin:4px 0;font-size:13px;"><strong>Additional context:</strong> {extra}</p>' if extra else ""
     st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["green"]};
-    border-radius:0 8px 8px 0;padding:16px 20px;margin:12px 0 20px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+    border-radius:0 8px 8px 0;padding:20px 24px;margin:16px 0 28px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
     <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:{C["green"]};margin-bottom:10px;">How to read this figure</div>
     <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>What it shows:</strong> {what}</p>
     <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>Why it is useful:</strong> {why}</p>
@@ -1562,7 +1562,7 @@ def last_updated_insight(df, chart_type="general", site=None, category=None):
         n_sites = df["site_label"].nunique() if "site_label" in df.columns else "—"
         msg = f"As of <strong>{as_of}</strong>, the database contains <strong>{total:,}</strong> recorded items across <strong>{n_sites}</strong> survey locations. Most recent data: {as_of}."
 
-    st.markdown(f'<div style="font-size:12px;color:{C["muted"]};padding:7px 14px 7px 10px;background:{C["sand"]};border-radius:6px;border-right:3px solid {C["sage"]};margin:8px 0 16px;line-height:1.7;text-align:right;">{msg}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:12px;color:{C["muted"]};padding:7px 14px 7px 10px;background:{C["sand"]};border-radius:6px;border-right:3px solid {C["sage"]};margin:12px 0 24px;line-height:1.7;text-align:right;">{msg}</div>', unsafe_allow_html=True)
 
 def cat_color_legend():
     """Universal category color guide — shown above every category table/chart."""
@@ -3697,7 +3697,7 @@ elif page == "Export":
          f"{len(site_exp):,} rows · {len(site_exp.columns)} columns"),
     ]
     for label,df_exp,fname,desc,sz in exports:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown('<div style="background:#fff;border:1px solid '+C['sand3']+';border-radius:10px;padding:28px;margin-bottom:32px;box-shadow:0 2px 10px rgba(0,0,0,.04);">', unsafe_allow_html=True)
         ec1,ec2=st.columns([3,1])
         with ec1:
             st.markdown(f'<div class="sec-hd">{label}</div><div class="sec-sub">{desc}</div>', unsafe_allow_html=True)
@@ -3863,7 +3863,7 @@ elif page == "About":
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
             border-top:4px solid {color};border-radius:10px;
-            padding:18px 18px 14px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            padding:20px 20px 18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
             <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
             color:{C['text']};margin-bottom:3px;">{name}</div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
