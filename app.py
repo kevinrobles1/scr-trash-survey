@@ -600,18 +600,7 @@ C = dict(
 )
 PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],"#6c4f8a","#2e8b8b",C["mint"],"#888877",C["earth"],"#c0392b","#16a085"]
 
-# Generate Sonoran Institute hummingbird favicon
-import io as _io, base64 as _b64
-from PIL import Image as _Img, ImageDraw as _Draw
-_fav = _Img.new("RGBA", (32, 32), (0,0,0,0))
-_d = _Draw.Draw(_fav)
-_d.ellipse([1,1,30,30], fill=(122,143,53))
-_d.ellipse([10,10,20,20], fill=(255,255,255,240))
-_d.ellipse([17,7,24,14], fill=(255,255,255,240))
-_d.line([(23,10),(28,9)], fill=(255,255,255,240), width=1)
-_d.polygon([(11,14),(6,6),(8,4),(14,10)], fill=(255,255,255,220))
-_d.polygon([(10,18),(5,24),(7,25),(12,20)], fill=(255,255,255,220))
-st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon=_fav,
+st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon="🌊",
                    layout="wide", initial_sidebar_state="collapsed")
 PC = {"displaylogo":False,"modeBarButtonsToRemove":["lasso2d","select2d","autoScale2d","pan2d"]}
 
@@ -1768,49 +1757,23 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
           style="{_btn_sty}color:{_es_col};text-decoration:{_es_dec};"
           onmouseover="this.style.color='rgba(255,255,255,.9)'"
           onmouseout="this.style.color='{_es_col}'">ES</span>
-        <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
-        <span onclick="(()=>{{var u=new URL(window.location.href);u.searchParams.set('signout','1');window.location.href=u.toString();}})()"
-          style="{_btn_sty}color:rgba(255,255,255,.35);text-decoration:none;"
-          onmouseover="this.style.color='rgba(255,255,255,.8)'"
-          onmouseout="this.style.color='rgba(255,255,255,.35)'">Sign Out</span>
+
       </div>
     </div>
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign out button — off-screen but clickable via JS
-st.markdown("""<style>
-div.stButton:has(button[key="_hdr_so"]),
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
-    position:fixed!important;top:12px!important;right:16px!important;
-    z-index:9999!important;opacity:1!important;pointer-events:auto!important;
-    width:auto!important;height:auto!important;overflow:visible!important;
-    left:auto!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
-    background:rgba(122,143,53,.15)!important;
-    color:rgba(255,255,255,.85)!important;
-    border:1px solid rgba(255,255,255,.2)!important;
-    font-size:10px!important;
-    letter-spacing:1px!important;
-    text-transform:uppercase!important;
-    font-family:'DM Mono',monospace!important;
-    padding:5px 14px!important;
-    border-radius:16px!important;
-    backdrop-filter:blur(8px)!important;
-    cursor:pointer!important;
-}
-div.stButton:has(button[key="_hdr_so"]) button:hover,
-div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
-    background:rgba(180,60,30,.6)!important;
-    color:white!important;
-    border-color:rgba(255,255,255,.4)!important;
-}
-</style>""", unsafe_allow_html=True)
-
-if st.button("Sign Out", key="_hdr_so"):
-    st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
+# Sign-out via components.html (zero height, renders clickable link in parent)
+components.html("""<style>body{margin:0;padding:0;overflow:hidden;}</style>
+<a href="?signout=1" target="_parent"
+   style="position:fixed;top:13px;right:56px;z-index:99999;
+   font-family:monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;
+   color:rgba(255,255,255,.7);background:rgba(255,255,255,.1);
+   border:1px solid rgba(255,255,255,.18);padding:4px 13px;border-radius:12px;
+   text-decoration:none;transition:all .25s ease;"
+   onmouseover="this.style.color='#fff';this.style.background='rgba(185,69,27,.55)'"
+   onmouseout="this.style.color='rgba(255,255,255,.7)';this.style.background='rgba(255,255,255,.1)'">Sign Out</a>
+""", height=0, scrolling=False)
 
 # ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
