@@ -149,7 +149,7 @@ TR = {
         "site_required": "Survey location is required.",
         "zero_warning": "No items were entered. Are you sure you want to submit a zero-count event?",
         # Review
-        "review_title": "Review Your Entry: Verify Everything Before Submitting",
+        "review_title": "Review Your Entry — Verify Everything Before Submitting",
         "review_event_id": "Event ID",
         "review_date": "Survey Date",
         "review_location": "Location",
@@ -181,7 +181,7 @@ TR = {
         "map_mode_seg":"By River Segment",
         "map_mode_burden":"By Trash Burden",
         # About
-        "why_river_title":"Why This River and Why This Data",
+        "why_river_title":"Why This River — and Why This Data",
         "about_db_title":"About This Database",
         "about_why_title":"Why Longitudinal Trash Data Matters",
         "about_team_title":"Program Team",
@@ -193,7 +193,7 @@ TR = {
         "about_db_p2":"Data collection began in September 2020, creating a <strong>longitudinal record</strong> that captures seasonal patterns, post-monsoon debris, encampment-related waste, and how specific reaches respond to cleanup interventions.",
         "about_db_p3":"This dashboard is the first cloud-hosted, real-time interface for this dataset. Previously, all data lived in a single local Excel workbook. The move to Supabase means the entire team can access, enter, and analyze records from any device.",
         "about_db_p4":"The <strong>19 survey categories</strong> cover the full range of urban litter: food packaging (~33%), clothing (encampment indicator), beverage containers (recyclable fraction), pharmaceutical materials (public health concern), and large debris including appliances and construction waste.",
-        "why_title":"Why This Data Matters and What It Can Achieve",
+        "why_title":"Why This Data Matters — and What It Can Achieve",
         "why_sub":"The Santa Cruz River runs through the heart of Tucson — one of the few desert rivers in the Southwest with restored perennial flow. Litter that accumulates on its banks washes directly into that flow during monsoon season, carrying plastic, chemicals, and debris into a recovering ecosystem.",
         "impact_reg_title":"Regulatory Compliance",
         "impact_reg":"ADEQ stormwater permits and EPA Section 319 require proof that litter is being actively managed. This dataset provides that with standardized methods, consistent locations, and four years of records.",
@@ -260,7 +260,7 @@ TR = {
         "ftr_blog":"Blog Posts","ftr_events":"Events","ftr_mission":"Our Mission & Vision",
         "ftr_people":"Our People","ftr_careers":"Careers","ftr_contact":"Contact Us",
         "ftr_phone":"Phone",
-        "ftr_copyright":"\u00a9 Sonoran Institute \u00b7 Santa Cruz River Trash Survey Dashboard v5.1",
+        "ftr_copyright":"\u00a9 Sonoran Institute \u00b7 Santa Cruz River Trash Survey Dashboard v5.0",
         "acct_signed_in":"Signed in as","acct_username":"Username","acct_role":"Role",
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
@@ -275,7 +275,7 @@ TR = {
         "kpi_period":"Survey Period","kpi_period_note":"date range",
         # Page banners — all pages
         "loc_ey":"Site Analysis",
-        "loc_title":"Where the Trash Is and How Much",
+        "loc_title":"Where the Trash Is — and How Much",
         "loc_sub":"Trash burden across the 136 recorded survey locations, ordered North to South.",
         "de_ey":"Field Data Entry",
         "de_title":"Survey Data Entry & Management",
@@ -298,9 +298,6 @@ TR = {
         "tr_ey":"Temporal Analysis",
         "tr_title":"How Trash Levels Change Over Time",
         "tr_sub":"Monthly, annual, and seasonal patterns across the full survey record.",
-        "filter_data":"Filter Data",
-        "cat_summary":"Category Summary Table",
-        "cat_summary_sub":"Total items, records, and average count per record for each trash category.",
 
 
     },
@@ -601,9 +598,9 @@ C = dict(
     sky="#1a5276", water="#2471a3",
     text="#18180f", med="#3a3a28", muted="#686854", divider="#cec6b0", white="#ffffff",
 )
-PAL = ["#93a445","#2471a3","#b5451b","#e8a620","#a8b85a","#6c4f8a","#2e8b8b","#d4a017","#888877","#8b4513","#c0392b","#16a085","#e07b4c","#4a7c59","#9b59b6","#34759a","#cc6677","#557a44","#af6e3d"]
+PAL = [C["green"],C["water"],C["brick"],C["amber"],C["sage"],"#6c4f8a","#2e8b8b",C["mint"],"#888877",C["earth"],"#c0392b","#16a085"]
 
-st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon="🌊",
+st.set_page_config(page_title="SCR Trash Survey · Sonoran Institute", page_icon="https://sonoraninstitute.org/wp-content/uploads/2018/02/cropped-si_icon_2018-32x32.png",
                    layout="wide", initial_sidebar_state="collapsed")
 PC = {"displaylogo":False,"modeBarButtonsToRemove":["lasso2d","select2d","autoScale2d","pan2d"]}
 
@@ -638,7 +635,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:none;margin-bottom:0;box-shadow:none;}}
-.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 56px;
+.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 48px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -708,13 +705,13 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:28px 56px 80px 56px;background:{C["cream"]};}}
+.body{{max-width:1480px;margin:0 auto;padding:0 48px 80px 48px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
 .sec-hd{{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;
           color:{C["text"]};margin-bottom:4px;letter-spacing:-.01em;}}
-.sec-sub{{font-size:12.5px;color:{C["muted"]};margin-bottom:24px;line-height:1.85;}}
+.sec-sub{{font-size:11.5px;color:{C["muted"]};margin-bottom:20px;line-height:1.7;}}
 @media print {{
     /* Show the full page on print, not just the visible viewport */
     .stApp {{ overflow:visible!important; }}
@@ -737,14 +734,14 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     h1, h2, h3 {{ page-break-after:avoid; }}
     .js-plotly-plot {{ page-break-inside:avoid; }}
 }}
-.tbl-note{{font-size:12px;color:{C["muted"]};line-height:1.85;padding:16px 0 8px;
+.tbl-note{{font-size:12px;color:{C["muted"]};line-height:1.7;padding:10px 0 2px;
            border-top:1px solid {C["sand3"]};margin-top:10px;font-style:italic;}}
 
 /* ── KPI GRID ── */
 .kpi-grid{{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px;}}
 .kpi-grid-4{{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:28px;}}
 .kpi{{background:#fff;border:1px solid {C["sand3"]};border-radius:10px;
-      padding:24px 24px 20px;position:relative;overflow:hidden;
+      padding:20px 22px 16px;position:relative;overflow:hidden;
       box-shadow:0 2px 10px rgba(0,0,0,.04);transition:box-shadow .2s,transform .2s;}}
 .kpi:hover{{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-2px);}}
 .kpi::after{{content:'';position:absolute;top:0;left:0;right:0;height:3px;
@@ -758,7 +755,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
 
 /* ── CARDS ── */
 .card{{background:#fff;border:1px solid {C["sand3"]};border-radius:12px;
-       padding:36px 36px 28px;margin-bottom:36px;box-shadow:0 2px 14px rgba(0,0,0,.05);}}
+       padding:32px 32px 24px;margin-bottom:32px;box-shadow:0 2px 14px rgba(0,0,0,.05);}}
 .card-hd{{display:flex;align-items:flex-start;justify-content:space-between;
           padding-bottom:14px;margin-bottom:20px;border-bottom:1px solid {C["sand3"]};}}
 
@@ -816,125 +813,19 @@ div[data-testid="stDataFrame"]{{border:1px solid {C["sand3"]};border-radius:8px;
 .streamlit-expanderHeader{{font-family:'DM Sans',sans-serif!important;
   font-size:12.5px!important;font-weight:700!important;color:{C["green"]}!important;
   letter-spacing:.3px!important;}}
-div[data-testid="stExpander"]{{background:{C["cream"]}!important;border:1px solid {C["sand3"]}!important;border-radius:10px!important;}}
-div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{background:{C["cream"]}!important;border:none!important;}}
 
 /* ── SCROLLBAR ── */
 ::-webkit-scrollbar{{width:5px;height:5px;}}
 ::-webkit-scrollbar-track{{background:{C["sand"]};}}
 ::-webkit-scrollbar-thumb{{background:{C["sand3"]};border-radius:3px;}}
 ::-webkit-scrollbar-thumb:hover{{background:{C["sage"]};}}
-/* ══ PREMIUM TRANSITIONS & ANIMATIONS ══ */
-@keyframes fadeUp{{from{{opacity:0;transform:translateY(20px);}}to{{opacity:1;transform:none;}}}}
-@keyframes fadeIn{{from{{opacity:0;}}to{{opacity:1;}}}}
-@keyframes slideUp{{from{{opacity:0;transform:translateY(30px) scale(.98);}}to{{opacity:1;transform:none;}}}}
-@keyframes scaleIn{{from{{opacity:0;transform:scale(.95);}}to{{opacity:1;transform:none;}}}}
-@keyframes slideRight{{from{{opacity:0;transform:translateX(-16px);}}to{{opacity:1;transform:none;}}}}
-@keyframes shimmer{{0%{{background-position:200% 0;}}100%{{background-position:-200% 0;}}}}
-@keyframes bannerReveal{{from{{opacity:0;transform:scale(1.04);}}to{{opacity:.18;transform:scale(1);}}}}
-@keyframes gradientShift{{0%{{background-position:0% 50%;}}50%{{background-position:100% 50%;}}100%{{background-position:0% 50%;}}}}
-
-/* Page content entrance */
-.fade-up{{animation:slideUp .6s cubic-bezier(.16,1,.3,1) both;}}
-.body{{animation:fadeUp .55s cubic-bezier(.16,1,.3,1) .1s both;}}
-
-/* KPI cards stagger in with scale */
-.kpi-grid>.kpi{{animation:scaleIn .5s cubic-bezier(.16,1,.3,1) both;opacity:0;}}
-.kpi-grid>.kpi:nth-child(1){{animation-delay:.08s;}}
-.kpi-grid>.kpi:nth-child(2){{animation-delay:.14s;}}
-.kpi-grid>.kpi:nth-child(3){{animation-delay:.20s;}}
-.kpi-grid>.kpi:nth-child(4){{animation-delay:.26s;}}
-.kpi-grid>.kpi:nth-child(5){{animation-delay:.32s;}}
-
-/* Stat strip items cascade */
-.stat-strip>.stat-item{{animation:fadeUp .4s cubic-bezier(.16,1,.3,1) both;opacity:0;}}
-.stat-strip>.stat-item:nth-child(1){{animation-delay:.06s;}}
-.stat-strip>.stat-item:nth-child(2){{animation-delay:.12s;}}
-.stat-strip>.stat-item:nth-child(3){{animation-delay:.18s;}}
-.stat-strip>.stat-item:nth-child(4){{animation-delay:.24s;}}
-
-/* Cards entrance */
-.card{{animation:fadeUp .5s cubic-bezier(.16,1,.3,1) both;
-       transition:box-shadow .35s cubic-bezier(.16,1,.3,1),transform .35s cubic-bezier(.16,1,.3,1);}}
-.card:hover{{box-shadow:0 12px 40px rgba(0,0,0,.1);transform:translateY(-4px);}}
-
-/* Charts scale in elegantly */
-div[data-testid="stPlotlyChart"]{{animation:scaleIn .5s cubic-bezier(.16,1,.3,1) .15s both;}}
-
-/* Tables slide up */
-div[data-testid="stDataFrame"]{{animation:fadeUp .45s cubic-bezier(.16,1,.3,1) .1s both;}}
-
-/* Expander content reveal */
-div[data-testid="stExpander"] div[data-testid="stExpanderDetails"]{{
-    animation:fadeUp .35s cubic-bezier(.16,1,.3,1) both;}}
-
-/* KPI hover — premium lift with glow */
-.kpi{{transition:box-shadow .35s cubic-bezier(.16,1,.3,1),transform .35s cubic-bezier(.16,1,.3,1);}}
-.kpi:hover{{box-shadow:0 12px 36px rgba(122,143,53,.15),0 4px 12px rgba(0,0,0,.08);transform:translateY(-4px);}}
-.kpi::after{{transition:opacity .3s ease;}}
-.kpi:hover::after{{opacity:.8;background:linear-gradient(90deg,{C["green"]},{C["sage"]},{C["green"]});
-    background-size:200% 100%;animation:gradientShift 2s ease infinite;}}
-
-/* Stat strip hover */
-.stat-item{{transition:background .25s ease,transform .25s ease;}}
-.stat-item:hover{{background:rgba(147,164,69,.06);}}
-
-/* Buttons — smooth all transitions */
-.stButton>button,.stDownloadButton>button{{
-    transition:all .3s cubic-bezier(.16,1,.3,1)!important;}}
-.stButton>button:hover{{transform:translateY(-1px)!important;}}
-
-/* Nav tabs — premium underline animation */
-div[role="radiogroup"] > label {{
-    transition:color .25s ease,border-color .3s cubic-bezier(.16,1,.3,1),background .25s ease !important;}}
-div[role="radiogroup"] > label:hover {{
-    transform:translateY(-1px);}}
-
-/* Section headings slide in from left */
-.sec-hd{{animation:slideRight .45s cubic-bezier(.16,1,.3,1) both;}}
-.sec-sub{{animation:fadeIn .5s ease .1s both;}}
-
-/* Footer links */
-.ftr-a{{transition:color .25s ease,transform .2s ease,letter-spacing .2s ease;}}
-.ftr-a:hover{{transform:translateX(3px);letter-spacing:.3px;}}
-.ftr-social-icon{{transition:all .3s cubic-bezier(.16,1,.3,1);}}
-.ftr-social-icon:hover{{transform:translateY(-3px) scale(1.08);}}
-
-/* Input focus animation */
-div[data-baseweb="select"]>div,div[data-baseweb="input"]>div,
-.stDateInput>div>div,.stTextInput>div>div,.stNumberInput>div>div,.stTextArea>div>div{{
-    transition:border-color .25s ease,box-shadow .25s ease!important;}}
-
-/* Multiselect tags animate in */
-div[data-baseweb="tag"]{{animation:scaleIn .2s ease both;}}
-
-/* Download buttons pulse subtly */
-.stDownloadButton>button{{position:relative;overflow:hidden;}}
-.stDownloadButton>button::after{{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.15),transparent);
-    transition:left .5s ease;}}
-.stDownloadButton>button:hover::after{{left:100%;}}
-
-/* Scrollbar fade */
-::-webkit-scrollbar-thumb{{transition:background .2s ease;}}
-
-/* Print: no animations */
-@media print{{*{{animation:none!important;transition:none!important;}}}}
-
-/* Accessibility: respect reduced motion */
-@media (prefers-reduced-motion: reduce) {{
-    *,.card,.kpi,.stat-item,.fade-up,.body,.sec-hd,.sec-sub,
-    div[data-testid="stPlotlyChart"],div[data-testid="stDataFrame"],
-    div[data-baseweb="tag"],.ftr-a,.ftr-social-icon {{
-        animation-duration:0.01s!important;animation-delay:0s!important;
-        transition-duration:0.01s!important;
-    }}
-}}
+@keyframes fadeUp{{from{{opacity:0;transform:translateY(10px);}}to{{opacity:1;transform:none;}}}}
+.fade-up{{animation:fadeUp .35s ease both;}}
 
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
-      padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1480px;margin:0 auto;padding:0 56px;}}
+      padding:36px 0 28px;margin-top:48px;border-top:2px solid {C["sage"]};}}
+.ftr-in{{max-width:1480px;margin:0 auto;padding:0 48px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
 .ftr-a:hover{{color:{C["mint"]};}}
@@ -965,34 +856,59 @@ div[data-testid="stTabs"] div[role="tabpanel"]{{background:transparent!important
 # CHART HELPERS
 # ──────────────────────────────────────────────────────────────────
 def _clean_hover(fig):
-    """Force clean professional hover labels on every trace."""
+    """Apply readable hover labels to every trace. Called by show() on all charts."""
     for trace in fig.data:
         t = getattr(trace, "type", "")
         nm = trace.name if hasattr(trace,"name") and trace.name and str(trace.name) not in ("0","","None") else ""
         nm_prefix = f"<b>{nm}</b><br>" if nm else ""
+
+        # If already has a clean custom template, just ensure <extra></extra> is present
+        ht = getattr(trace, "hovertemplate", None)
+        if ht and "%{" in str(ht):
+            if "<extra></extra>" not in str(ht):
+                trace.hovertemplate = str(ht).rstrip() + "<extra></extra>"
+            continue
+
         if t == "bar":
             if getattr(trace, "orientation", None) == "h":
-                trace.hovertemplate = nm_prefix + "<b>%{y}</b><br>Total items: %{x:,.0f}<extra></extra>"
+                # Horizontal bar — y is category label, x is value
+                trace.hovertemplate = nm_prefix + "%{y}<br>Count: %{x:,.0f} items<extra></extra>"
             else:
-                trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
+                # Vertical bar — x is category/date, y is value
+                trace.hovertemplate = nm_prefix + "%{x}<br>Count: %{y:,.0f} items<extra></extra>"
+
         elif t == "scatter":
-            trace.hovertemplate = nm_prefix + "<b>%{x}</b><br>Total items: %{y:,.0f}<extra></extra>"
+            # Try date format first; if x is not a date Plotly ignores the format gracefully
+            trace.hovertemplate = nm_prefix + "%{x}<br>Count: %{y:,.0f} items<extra></extra>"
+
         elif t == "pie":
-            trace.hovertemplate = "<b>%{label}</b><br>Share: %{percent}<br>Total items: %{value:,.0f}<extra></extra>"
+            trace.hovertemplate = (
+                "<b>%{label}</b><br>"
+                "Share of total: %{percent}<br>"
+                "Items recorded: %{value:,.0f}"
+                "<extra></extra>"
+            )
+
         elif t == "heatmap":
-            trace.hovertemplate = "<b>%{y}</b><br>Year: %{x}<br>Total items: %{z:,.0f}<extra></extra>"
+            trace.hovertemplate = (
+                "<b>%{y}</b><br>"
+                "Year: %{x}<br>"
+                "Items: %{z:,.0f}"
+                "<extra></extra>"
+            )
+
         elif t in ("scattergeo", "scattermapbox"):
             trace.hovertemplate = "%{text}<extra></extra>"
+
         elif t == "box":
-            trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Lowest: %{lowerfence:,.0f}<br>Highest: %{upperfence:,.0f}<extra></extra>"
+            trace.hovertemplate = nm_prefix + "Median: %{median:,.0f}<br>Range: %{lowerfence:,.0f} – %{upperfence:,.0f}<extra></extra>"
+
         elif t == "violin":
-            trace.hovertemplate = nm_prefix + "Value: %{y:,.0f}<extra></extra>"
+            trace.hovertemplate = nm_prefix + "%{y:,.0f}<extra></extra>"
+
         elif t == "histogram":
-            trace.hovertemplate = "Bin: %{x}<br>Frequency: %{y:,.0f}<extra></extra>"
-        else:
-            ht = getattr(trace, "hovertemplate", None)
-            if ht and "<extra></extra>" not in str(ht):
-                trace.hovertemplate = str(ht) + "<extra></extra>"
+            trace.hovertemplate = "Range: %{x}<br>Count: %{y:,.0f}<extra></extra>"
+
     return fig
 
 def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
@@ -1017,19 +933,13 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
     return fig
 
 def show(fig, key=None):
+    # Apply clean hovers to every chart regardless of whether fb() was called
     _clean_hover(fig)
-    _nm = {"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","site_label":"Location","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation","cv_pct":"CV (%)","mean":"Mean Items per Event","site_display":"Survey Site","share":"Share of Total (%)","recyclable":"Classification","floatable":"Classification","year":"Year","date":"Date"}
-    for ax_name in ["xaxis","yaxis"]:
-        try:
-            ax = fig.layout[ax_name]
-            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm: ax.title.text = _nm[ax.title.text]
-        except: pass
-    try:
-        if fig.layout.legend and fig.layout.legend.title:
-            lt = fig.layout.legend.title.text
-            if lt and lt in _nm: fig.layout.legend.title.text = _nm[lt]
-    except: pass
-    fig.update_layout(hoverlabel=dict(bgcolor="white",bordercolor="#d8ceba",font=dict(family="DM Sans, sans-serif",size=12.5,color="#18180f")))
+    # Apply consistent hoverlabel style globally
+    fig.update_layout(hoverlabel=dict(
+        bgcolor="white", bordercolor="#d8ceba",
+        font=dict(family="DM Sans, sans-serif", size=12.5, color="#18180f"),
+    ))
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
     # Automatic "Data current as of..." badge — uses real database latest date
     try:
@@ -1056,7 +966,7 @@ def tbl_note(text):
     st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
 
 def section_title(text):
-    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:48px 0 22px;padding-bottom:14px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:36px 0 18px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
 
 def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     """Full-bleed hero banner — same size and aesthetic as About page."""
@@ -1066,7 +976,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     <div style="
         background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
         border-radius:0;
-        padding:32px 56px 34px;
+        padding:28px 48px 30px;
         margin:0;
         position:relative;
         overflow:hidden;
@@ -1074,7 +984,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
       <!-- River photo overlay at 18% opacity, identical to About hero -->
       <div style="position:absolute;inset:0;
         background:url('{bg_img}') center/cover no-repeat;
-        opacity:0;border-radius:0 0 16px 16px;animation:bannerReveal .9s cubic-bezier(.16,1,.3,1) .2s both;"></div>
+        opacity:.18;border-radius:0 0 16px 16px;"></div>
       <!-- Subtle dot-grid texture -->
       <div style="position:absolute;inset:0;
         background-image:radial-gradient(circle at 1px 1px,rgba(93,168,50,.05) 1px,transparent 0);
@@ -1557,7 +1467,7 @@ def load_data():
 
 def make_et(df):
     if df.empty: return pd.DataFrame()
-    g=[c for c in ["event_id","date","site_label","seg","surveyed_m2","lat","lon"] if c in df.columns]
+    g=[c for c in ["event_id","date","site_label","seg","surveyed_m2"] if c in df.columns]
     et=df.groupby(g,dropna=False)["n"].sum().reset_index(name="total")
     if "surveyed_m2" in et.columns:
         a=pd.to_numeric(et["surveyed_m2"],errors="coerce")
@@ -1614,7 +1524,7 @@ def fig_note(what, why, read, extra=""):
     """Render a styled interpretation box under a chart."""
     extra_html = f'<p style="color:{C["muted"]};margin:4px 0;font-size:13px;"><strong>Additional context:</strong> {extra}</p>' if extra else ""
     st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["green"]};
-    border-radius:0 8px 8px 0;padding:24px 28px;margin:24px 0 36px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+    border-radius:0 8px 8px 0;padding:20px 24px;margin:16px 0 28px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
     <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:{C["green"]};margin-bottom:10px;">How to read this figure</div>
     <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>What it shows:</strong> {what}</p>
     <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>Why it is useful:</strong> {why}</p>
@@ -1744,12 +1654,7 @@ def stat_strip(df_orig, df_f):
 # ──────────────────────────────────────────────────────────────────
 def color_val(v,vmin,vmax):
     if pd.isna(v): return "#5b8bd9"
-    import math
-    if vmax==vmin: t=0.5
-    else:
-        log_v = math.log1p(float(v) - float(vmin))
-        log_max = math.log1p(float(vmax) - float(vmin))
-        t = max(0, min(1, log_v / log_max)) if log_max > 0 else 0.5
+    t=0.5 if vmax==vmin else max(0,min(1,(float(v)-float(vmin))/(float(vmax)-float(vmin))))
     stops=[(0,(49,130,206)),(0.33,(78,201,176)),(0.66,(245,149,52)),(1,(214,69,65))]
     for i in range(len(stops)-1):
         t0,c0=stops[i]; t1,c1=stops[i+1]
@@ -1763,8 +1668,7 @@ def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=56
     d=df.copy()
     d[lat]=pd.to_numeric(d[lat],errors="coerce"); d[lon]=pd.to_numeric(d[lon],errors="coerce")
     d=d[d[lat].notna()&d[lon].notna()]
-    d=d[(d[lat]>31.5)&(d[lat]<33.0)&(d[lon]>-112.0)&(d[lon]<-110.0)]
-    if len(d)==0: st.info("No rows with valid GPS coordinates in the Tucson area."); return
+    if len(d)==0: st.info("No rows with valid GPS coordinates."); return
     vals=pd.to_numeric(d[metric_col],errors="coerce") if metric_col in d.columns else pd.Series([0]*len(d))
     vmin,vmax=float(vals.min()),float(vals.max())
     recs=[]
@@ -1798,7 +1702,7 @@ if(m.popup) mk.bindPopup(m.popup,{{maxWidth:280}});
 if(m.lbl) mk.bindTooltip('<strong>'+m.lbl+'</strong>',{{permanent:false,direction:'top',offset:[0,-12]}});
 bounds.push([m.lat,m.lon]);
 }});
-if(bounds.length>1) map.fitBounds(bounds,{{padding:[40,40],maxZoom:14}});
+if(bounds.length>1) map.fitBounds(bounds,{{padding:[30,30]}});
 </script></body></html>"""
     components.html(html_src, height=height+10)
 
@@ -1855,16 +1759,47 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
           onmouseout="this.style.color='{_es_col}'">ES</span>
         <span style="color:rgba(255,255,255,.2);font-size:9px;">·</span>
         <span onclick="(()=>{{var u=new URL(window.location.href);u.searchParams.set('signout','1');window.location.href=u.toString();}})()"
-          style="{_btn_sty}color:rgba(255,255,255,.75);text-decoration:none;background:rgba(255,255,255,.1);padding:4px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);transition:all .25s ease;"
-          onmouseover="this.style.color='#fff';this.style.background='rgba(185,69,27,.55)';this.style.borderColor='rgba(255,255,255,.35)'"
-          onmouseout="this.style.color='rgba(255,255,255,.75)';this.style.background='rgba(255,255,255,.1)';this.style.borderColor='rgba(255,255,255,.18)'">Sign Out</span>
+          style="{_btn_sty}color:rgba(255,255,255,.35);text-decoration:none;"
+          onmouseover="this.style.color='rgba(255,255,255,.8)'"
+          onmouseout="this.style.color='rgba(255,255,255,.35)'">Sign Out</span>
       </div>
     </div>
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign out handled via header "SIGN OUT" text -> ?signout=1 query param
-# No st.button needed — query param handler at top of file catches it
+# Sign out button — off-screen but clickable via JS
+st.markdown("""<style>
+div.stButton:has(button[key="_hdr_so"]),
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) {
+    position:fixed!important;top:12px!important;right:16px!important;
+    z-index:9999!important;opacity:1!important;pointer-events:auto!important;
+    width:auto!important;height:auto!important;overflow:visible!important;
+    left:auto!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button {
+    background:rgba(122,143,53,.15)!important;
+    color:rgba(255,255,255,.85)!important;
+    border:1px solid rgba(255,255,255,.2)!important;
+    font-size:10px!important;
+    letter-spacing:1px!important;
+    text-transform:uppercase!important;
+    font-family:'DM Mono',monospace!important;
+    padding:5px 14px!important;
+    border-radius:16px!important;
+    backdrop-filter:blur(8px)!important;
+    cursor:pointer!important;
+}
+div.stButton:has(button[key="_hdr_so"]) button:hover,
+div[data-testid="stButton"]:has(button[data-testid="baseButton-secondary"]) button:hover {
+    background:rgba(180,60,30,.6)!important;
+    color:white!important;
+    border-color:rgba(255,255,255,.4)!important;
+}
+</style>""", unsafe_allow_html=True)
+
+if st.button("Sign Out", key="_hdr_so"):
+    st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
 
 # ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
@@ -1879,7 +1814,7 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     z-index:200 !important;
     border-bottom:none !important;
     margin-top:0 !important;
-    box-shadow:0 0 0 30px {C["forest"]},0 3px 14px rgba(0,0,0,.35) !important;
+    box-shadow:0 3px 14px rgba(0,0,0,.35) !important;
     margin:0 !important;
     margin-top:0 !important;
     margin-bottom:0 !important;
@@ -1892,7 +1827,7 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 56px !important;justify-content:flex-start !important;
+    padding:0 48px !important;justify-content:flex-start !important;
     max-width:1480px !important;
     margin:0 auto !important;
     border:none !important;
@@ -2013,8 +1948,8 @@ except Exception:
 # OVERVIEW
 # ══════════════════════════════════════════════════════════════════
 if page == "Overview":
-    page_banner(T("ov_ey"), T("ov_title"), T("ov_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    page_banner(T("ov_ey"), T("ov_title"), T("ov_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander(T("filter_data"), expanded=False):
         lf = render_filters(long, kp="ov")
@@ -2197,8 +2132,8 @@ if page == "Overview":
 # MAP
 # ══════════════════════════════════════════════════════════════════
 elif page == "Map":
-    page_banner(T("map_ey"), T("map_title"), T("map_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    page_banner(T("map_ey"), T("map_title"), T("map_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     map_mode=st.radio(T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else "Map view",[T("map_mode_seg"),T("map_mode_burden"),"Individual Events"],horizontal=True)
 
@@ -2225,7 +2160,11 @@ elif page == "Map":
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
         f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
-        'Map colors: <span style="color:#3182ce;font-weight:700;">Blue</span> = lower burden, <span style="color:#f59534;font-weight:700;">Orange</span> and <span style="color:#d64541;font-weight:700;">Red</span> = heavier. Click any circle for details.<br><br><strong>How burden is calculated:</strong> Each site\'s total recorded item count determines its color. Logarithmic scaling ensures differences among lower-count sites are visible.</div>',
+        'Map colors — <span style="color:#3182ce;font-weight:700;">Blue</span> = lower trash burden. '
+        '<span style="color:#f59534;font-weight:700;">Orange</span> and '
+        '<span style="color:#d64541;font-weight:700;">Red</span> = heavier burden. '
+        'Segment map uses fixed colors per reach (see legend). '
+        'Click any circle to see site details and exact counts.</div>',
         unsafe_allow_html=True
     )
 
@@ -2239,7 +2178,7 @@ elif page == "Map":
     color_legend("Map Color = Trash Burden", mode="gradient")
     tbl_note("Latitude and longitude values are averaged from all records for that site. 'Avg Items/Event' = total items ÷ number of survey events at that location. Map circles: blue = lower trash burden, red = higher trash burden.")
 
-    section_title("All Sites (Including Those Without GPS)")
+    section_title("All Sites — Including Those Without GPS")
     st.markdown('<div class="sec-sub">Complete list of all recorded locations in the database, with or without coordinates.</div>', unsafe_allow_html=True)
     all_sites_tbl=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique")).reset_index()
     all_sites_tbl["avg"]=(all_sites_tbl["total"]/all_sites_tbl["events"]).round(1)
@@ -2254,8 +2193,8 @@ elif page == "Map":
 # TRENDS
 # ══════════════════════════════════════════════════════════════════
 elif page == "Trends":
-    page_banner(T("tr_ey"), T("tr_title"), T("tr_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    page_banner(T("tr_ey"), T("tr_title"), T("tr_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander(T("filter_data"), expanded=False):
         lf=render_filters(long, kp="tr", cats=False)
@@ -2264,7 +2203,7 @@ elif page == "Trends":
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
 
     TREND_FIGS = {
-        "Monthly Item Count: Full Record": {
+        "Monthly Item Count — Full Record": {
             "desc": "Total recorded trash items by calendar month. Green bars = survey conducted. Gray bars = no survey that month. Gold dashed line = 3-month rolling average.",
             "why": "Best figure for seeing the overall timeline of the program and identifying gaps in survey coverage.",
         },
@@ -2272,7 +2211,7 @@ elif page == "Trends":
             "desc": "Total items recorded within each calendar year, with exact counts labeled above each bar.",
             "why": "Useful for annual reporting and comparing year-over-year changes in overall burden.",
         },
-        "Month by Month Comparison Across Years": {
+        "Month-by-Month Comparison Across Years": {
             "desc": "Same calendar months compared across different survey years. Each color = one year.",
             "why": "Reveals seasonal patterns and whether a particular month is consistently heavy or light.",
         },
@@ -2280,7 +2219,7 @@ elif page == "Trends":
             "desc": "Monthly mean of total items per field visit. Dotted line = grand mean across the full record.",
             "why": "Adjusts for varying survey frequency — fairer than raw totals when the number of events per month changes.",
         },
-        "Items by River Segment (Quarterly)": {
+        "Items by River Segment — Quarterly": {
             "desc": "Quarterly item totals for each named river segment. Each color = one segment.",
             "why": "Shows whether segments are tracking together or whether certain reaches are getting heavier or lighter over time.",
         },
@@ -2297,7 +2236,7 @@ elif page == "Trends":
     fd = TREND_FIGS[sel_trend]
     st.markdown(f'<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};border-radius:0 8px 8px 0;padding:14px 20px;margin:12px 0 20px;"><div style="font-weight:700;font-size:14px;color:{C["text"]};margin-bottom:4px;">{sel_trend}</div><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>What it shows:</strong> {fd["desc"]}</p><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>Why useful:</strong> {fd["why"]}</p></div>', unsafe_allow_html=True)
 
-    if sel_trend == "Monthly Item Count: Full Record":
+    if sel_trend == "Monthly Item Count — Full Record":
         ts=df.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
         full=pd.date_range(ts["date"].min(),ts["date"].max(),freq="MS")
         ts=ts.set_index("date").reindex(full).reset_index().rename(columns={"index":"date"})
@@ -2305,7 +2244,7 @@ elif page == "Trends":
         fig=go.Figure()
         fig.add_bar(x=ts["date"],y=ts["n"],marker_color=[C["sand3"] if g else C["green"] for g in ts["gap"]],name="Monthly")
         fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Mo Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
-        fb(fig,"Month","Total Items",h=460,title="Monthly Item Count: Full Survey Record"); show(fig,"tr_ts")
+        fb(fig,"Month","Total Items",h=460,title="Monthly Item Count — Full Survey Record"); show(fig,"tr_ts")
         last_updated_insight(df, chart_type="monthly")
         fig_note("Total recorded trash items by calendar month across all sites and categories.",
             "Best figure for seeing the broad timeline — peaks, gaps, and overall direction.",
@@ -2324,13 +2263,13 @@ elif page == "Trends":
             "Taller bars = more total recorded items in that year.",
             "Annual totals reflect both trash burden and survey effort — years with more events may show higher counts.")
 
-    elif sel_trend == "Month by Month Comparison Across Years":
+    elif sel_trend == "Month-by-Month Comparison Across Years":
         md=df.dropna(subset=["year","month"]).groupby(["year","month","month_name"],observed=False)["n"].sum().reset_index()
-        md["year_str"]=md["year"].astype(int).astype(str)
+        md["year_str"]=md["year"].astype(str)
         fig=px.bar(md,x="month_name",y="n",color="year_str",barmode="group",
             category_orders={"month_name":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},
             color_discrete_sequence=PAL)
-        fb(fig,"Month","Total Items",h=460,title="Month by Month Comparison Across Years"); show(fig,"tr_mby")
+        fb(fig,"Month","Total Items",h=460,title="Month-by-Month Comparison Across Years"); show(fig,"tr_mby")
         last_updated_insight(df, chart_type="monthly")
         fig_note("The same calendar months compared across survey years.",
             "Reveals seasonal patterns and year-over-year changes within each month.",
@@ -2344,7 +2283,7 @@ elif page == "Trends":
             fig=px.line(ev2,x="date",y="avg",markers=True,color_discrete_sequence=[C["water"]])
             fig.add_hline(y=ev2["avg"].mean(),line_dash="dot",line_color=C["earth"],
                 annotation_text=f"Grand mean: {ev2['avg'].mean():.0f}",annotation_font_size=11)
-            fb(fig,"Month","Avg Items / Event",h=420,title="Average Items Per Survey Event (Monthly)"); show(fig,"tr_avg")
+            fb(fig,"Month","Avg Items / Event",h=420,title="Average Items Per Survey Event — Monthly"); show(fig,"tr_avg")
             last_updated_insight(df, chart_type="general")
             fig_note("Monthly mean of total items per field visit across all sites.",
                 "More interpretable than raw totals when survey frequency varies between months.",
@@ -2352,11 +2291,11 @@ elif page == "Trends":
                 "Grand mean = average across all months in the full record.")
         else: st.info("No event-level data available.")
 
-    elif sel_trend == "Items by River Segment (Quarterly)":
+    elif sel_trend == "Items by River Segment — Quarterly":
         if "seg" in df.columns:
             sg=df[df["seg"].isin(SEG_ORDER[:-1])].groupby(["seg",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(sg,x="date",y="n",color="seg",markers=True,color_discrete_map=SEG_COLORS)
-            fb(fig,"Quarter","Items",h=420,title="Items by River Segment (Quarterly)"); show(fig,"tr_seg")
+            fb(fig,"Quarter","Items",h=420,title="Items by River Segment — Quarterly"); show(fig,"tr_seg")
             color_legend("Segment Colors", mode="segments")
             last_updated_insight(df, chart_type="general")
             fig_note("Quarterly totals split by named river segment.",
@@ -2371,7 +2310,7 @@ elif page == "Trends":
             if len(dated)>0:
                 wtrend=dated.groupby(pd.Grouper(key="date",freq="MS"))["weight_oz"].sum().reset_index()
                 fig=px.bar(wtrend,x="date",y="weight_oz",color_discrete_sequence=[C["earth"]])
-                fb(fig,"Month","Weight (oz)",h=420,title="Weight of Trash Collected (Monthly)"); show(fig,"tr_wt")
+                fb(fig,"Month","Weight (oz)",h=420,title="Weight of Trash Collected — Monthly Total"); show(fig,"tr_wt")
                 last_updated_insight(wt.rename(columns={"weight_oz":"n"}), chart_type="monthly")
                 fig_note("Monthly total weight of trash collected (ounces).",
                     "Provides a physical mass perspective complementing the item count view.",
@@ -2402,8 +2341,8 @@ elif page == "Trends":
     st.markdown('</div>', unsafe_allow_html=True)
 
 elif page == "Categories":
-    page_banner(T("cat_ey"), T("cat_title"), T("cat_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    page_banner(T("cat_ey"), T("cat_title"), T("cat_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander(T("filter_data"), expanded=False):
         lf=render_filters(long, kp="cat")
@@ -2427,25 +2366,25 @@ elif page == "Categories":
     total_all=max(df["n"].sum(),1)
 
     CAT_FIGS = {
-        "All 19 Categories: Total Items Ranked":               ("Totals & Overview",  "Every trash category ranked by cumulative item count. Colors encode environmental classification.", "The most important summary figure — use it to explain which categories drive the problem to any audience."),
-        "All 56 Items: Total Count Ranked":         ("Totals & Overview",  "Every recorded item type ranked by total count from most to least common across all survey events.", "Pinpoints specific items for prevention campaigns, source identification, and partnership messaging."),
-        "Category Share: Proportional Breakdown":              ("Totals & Overview",  "Donut chart showing each category as a percentage of all recorded items.", "Easy to present in reports — shows visually that Food Packaging dominates the composition."),
+        "All 19 Categories — Total Items Ranked":               ("Totals & Overview",  "Every trash category ranked by cumulative item count. Colors encode environmental classification.", "The most important summary figure — use it to explain which categories drive the problem to any audience."),
+        "All 56 Individual Items — Total Count Ranked":         ("Totals & Overview",  "Every recorded item type ranked by total count from most to least common across all survey events.", "Pinpoints specific items for prevention campaigns, source identification, and partnership messaging."),
+        "Category Share — Proportional Breakdown":              ("Totals & Overview",  "Donut chart showing each category as a percentage of all recorded items.", "Easy to present in reports — shows visually that Food Packaging dominates the composition."),
         "Top 10 Heaviest vs Bottom 9 Lightest Categories":      ("Totals & Overview",  "Side-by-side comparison of the 10 heaviest and 9 lightest categories.", "Shows the skewed distribution — a small number of categories account for the vast majority of items."),
         "Average Items per Survey Event by Category":           ("Totals & Overview",  "Mean items per event for each category, adjusting for number of surveys conducted.", "More meaningful than raw totals when comparing categories with different recording frequencies."),
-        "Beverage Containers: Full Breakdown":                 ("Food & Beverage",    "All beverage categories (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Cups) with sub-item detail.", "Beverage containers are a major single-use plastics source. Understanding their composition supports policy work."),
-        "Cups: Styrofoam vs Plastic vs Paper":                 ("Food & Beverage",    "Breakdown of Cups into Styrofoam (Polar Pop), Styrofoam (Qt), Styrofoam (Other), Plastic, and Paper.", "Styrofoam cups are non-recyclable, non-biodegradable, and fragment into microplastics in waterways."),
-        "Food Packaging: All 11 Sub-Items":                    ("Food & Beverage",    "The largest category broken into 11 sub-types including wrappers, straws, 6-pack rings, plates, utensils.", "Food Packaging is the single largest category (10,694 items). Understanding its composition is critical."),
-        "Alcohol Containers: Beer vs Liquor Over Time":        ("Food & Beverage",    "Quarterly time series comparing Beer and Liquor item counts across the survey record.", "Alcohol containers are associated with encampments and chronic littering — useful for community context."),
-        "Recyclable vs Non-Recyclable: Item Counts":           ("Environmental Risk", "All categories split into Recyclable vs Non-Recyclable per City of Tucson recycling guidelines.", "~16% of items are technically recyclable but none are being recycled — a clear intervention target."),
-        "Floatable vs Non-Floatable: River Health Risk":       ("Environmental Risk", "Categories classified by whether they float and enter waterways during rain or flooding events.", "~63% of items are floatable — directly relevant to ADEQ stormwater permits and EPA Section 319 reporting."),
-        "Health Hazard Items: Rx, Drugs, Nicotine, Toiletries":("Environmental Risk", "Items with direct public health risk: syringes, drug packaging, cigarettes, lighters, and toiletries.", "Syringes create needle-stick hazard for field staff. These require special handling protocols."),
-        "Bulk and Large Debris: Appliances, Construction, Auto": ("Environmental Risk", "Large items requiring equipment: appliances, furniture, tires, car parts, construction debris.", "By item count modest, but by weight and removal cost they far exceed smaller categories."),
-        "Category Risk Profile: Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk — the priority removal targets."),
-        "Category Trends Over Time: Top 6 (Quarterly)":         ("Trends by Category", "Quarterly time series for the 6 highest-volume categories.", "Shows whether category composition is stable or shifting over the program period."),
-        "Year over Year Change by Category":                    ("Trends by Category", "Heatmap + stacked bar showing each category's annual item total. Heatmap is the correct chart type — 19 categories × 5 years would be 95 bars if grouped.", "Reveals which categories are increasing, decreasing, or stable year over year. Darker cells = more items."),
-        "Category Composition: How Mix Changed by Year":       ("Trends by Category", "100% stacked bars showing each category's share per year — removes total survey size effect.", "More ecologically meaningful than raw totals for detecting true composition shifts."),
+        "Beverage Containers — Full Breakdown":                 ("Food & Beverage",    "All beverage categories (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Cups) with sub-item detail.", "Beverage containers are a major single-use plastics source. Understanding their composition supports policy work."),
+        "Cups — Styrofoam vs Plastic vs Paper":                 ("Food & Beverage",    "Breakdown of Cups into Styrofoam (Polar Pop), Styrofoam (Qt), Styrofoam (Other), Plastic, and Paper.", "Styrofoam cups are non-recyclable, non-biodegradable, and fragment into microplastics in waterways."),
+        "Food Packaging — All 11 Sub-Items":                    ("Food & Beverage",    "The largest category broken into 11 sub-types including wrappers, straws, 6-pack rings, plates, utensils.", "Food Packaging is the single largest category (10,694 items). Understanding its composition is critical."),
+        "Alcohol Containers — Beer vs Liquor Over Time":        ("Food & Beverage",    "Quarterly time series comparing Beer and Liquor item counts across the survey record.", "Alcohol containers are associated with encampments and chronic littering — useful for community context."),
+        "Recyclable vs Non-Recyclable — Item Counts":           ("Environmental Risk", "All categories split into Recyclable vs Non-Recyclable per City of Tucson recycling guidelines.", "~16% of items are technically recyclable but none are being recycled — a clear intervention target."),
+        "Floatable vs Non-Floatable — River Health Risk":       ("Environmental Risk", "Categories classified by whether they float and enter waterways during rain or flooding events.", "~63% of items are floatable — directly relevant to ADEQ stormwater permits and EPA Section 319 reporting."),
+        "Health Hazard Items — Rx, Drugs, Nicotine, Toiletries":("Environmental Risk", "Items with direct public health risk: syringes, drug packaging, cigarettes, lighters, and toiletries.", "Syringes create needle-stick hazard for field staff. These require special handling protocols."),
+        "Bulk & Large Debris — Appliances, Construction, Auto": ("Environmental Risk", "Large items requiring equipment: appliances, furniture, tires, car parts, construction debris.", "By item count modest, but by weight and removal cost they far exceed smaller categories."),
+        "Category Risk Profile — Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk — the priority removal targets."),
+        "Category Trends Over Time — Top 6 Quarterly":         ("Trends by Category", "Quarterly time series for the 6 highest-volume categories.", "Shows whether category composition is stable or shifting over the program period."),
+        "Year-over-Year Change by Category":                    ("Trends by Category", "Heatmap + stacked bar showing each category's annual item total. Heatmap is the correct chart type — 19 categories × 5 years would be 95 bars if grouped.", "Reveals which categories are increasing, decreasing, or stable year over year. Darker cells = more items."),
+        "Category Composition — How Mix Changed by Year":       ("Trends by Category", "100% stacked bars showing each category's share per year — removes total survey size effect.", "More ecologically meaningful than raw totals for detecting true composition shifts."),
         "Category Mix by River Segment":                        ("Geographic",         "Stacked bars showing category composition across North, Central, South, and Rillito reaches.", "Different segments may have different dominant categories due to adjacent land use patterns."),
-        "Segment Specialization: Top Categories per Reach":    ("Geographic",         "One tab per segment showing the top 10 categories and their share of that segment's total.", "Identifies segment-specific waste profiles for targeted cleanup planning."),
+        "Segment Specialization — Top Categories per Reach":    ("Geographic",         "One tab per segment showing the top 10 categories and their share of that segment's total.", "Identifies segment-specific waste profiles for targeted cleanup planning."),
         "Full Item-Level Statistics Table":                     ("Data Tables",        "Every item with total, % of all items, records, mean, recyclable, floatable flags.", "The authoritative reference table for reporting, grant writing, and agency submissions."),
         "Category Group Summary Table":                         ("Data Tables",        "All 19 groups with total, rank, %, records, mean, and all environmental classifications.", "Use as the primary summary table in any report or presentation."),
     }
@@ -2469,7 +2408,7 @@ elif page == "Categories":
 
     # ── RENDER SELECTED FIGURE ─────────────────────────────────────────────
 
-    if sel_cat == "All 19 Categories: Total Items Ranked":
+    if sel_cat == "All 19 Categories — Total Items Ranked":
         grp_ord=[g for g in GROUP_ORDER if g in df["trash_group"].unique()]
         ct=df.groupby("trash_group")["n"].sum().reindex(grp_ord).dropna().reset_index()
         ct["pct"]=(100*ct["n"]/total_all).round(1)
@@ -2482,7 +2421,7 @@ elif page == "Categories":
             text=[f"{int(v):,} ({p}%)" for v,p in zip(ct["n"],ct["pct"])],
             textposition="outside"))
         fb(fig,"Total Items","Category",h=max(560,32*len(ct)),leg=False,
-            title="All 19 Trash Categories: Total Items Recorded"); show(fig,"cat_all19")
+            title="All 19 Trash Categories — Total Items Recorded, Ranked"); show(fig,"cat_all19")
         st.markdown(
             f'<div style="font-size:12px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};border-radius:6px;margin:8px 0;">'
             f'Color guide: <span style="color:{C["water"]};font-weight:700;">Blue</span> = Recyclable (per City of Tucson) &nbsp;|&nbsp;'
@@ -2501,7 +2440,7 @@ elif page == "Categories":
             "Raw totals are not adjusted for number of sub-items per category. A category with 11 items will naturally accumulate more than one with 1 item, all else being equal."
         )
 
-    elif sel_cat == "All 56 Items: Total Count Ranked":
+    elif sel_cat == "All 56 Individual Items — Total Count Ranked":
         top=df.groupby(["trash_group","trash_item"])["n"].sum().reset_index()
         top=top[top["n"]>0].sort_values("n",ascending=True)
         top["pct"]=(100*top["n"]/total_all).round(2)
@@ -2510,9 +2449,9 @@ elif page == "Categories":
         fig=go.Figure(go.Bar(x=top["n"],y=top["trash_item"],orientation="h",
             marker_color=colors,
             customdata=top[["trash_group","pct"]].values,
-            hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Total items: %{x:,.0f}<br>Share of all: %{customdata[1]}%<extra></extra>"))
+            hovertemplate="<b>%{y}</b><br>Category: %{customdata[0]}<br>Count: %{x:,}<br>Share: %{customdata[1]}%<extra></extra>"))
         fb(fig,"Total Count","Item",h=max(900,20*len(top)),leg=False,
-            title="All 56 Individual Item Types by Total Count"); show(fig,"cat_all56")
+            title="All 56 Individual Item Types — Ranked by Total Count"); show(fig,"cat_all56")
         cat_color_legend()
         fig_note(
             "Every item type in the 56-item survey protocol, ranked from rarest to most common.",
@@ -2521,14 +2460,14 @@ elif page == "Categories":
             "Items recorded as zero across all events are excluded. A long tail of low-count items is scientifically important — presence/absence matters for biodiversity and pollution assessments."
         )
 
-    elif sel_cat == "Category Share: Proportional Breakdown":
+    elif sel_cat == "Category Share — Proportional Breakdown":
         ct2=df.groupby("trash_group")["n"].sum().sort_values(ascending=False).reset_index()
         ct2=ct2[ct2["n"]>0]
         fig=px.pie(ct2,values="n",names="trash_group",hole=.42,color_discrete_sequence=PAL)
         fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=10)
         fig.update_layout(height=540,paper_bgcolor="rgba(0,0,0,0)",font=dict(family="DM Sans"),
             margin=dict(l=8,r=8,t=36,b=8),
-            title=dict(text="Category Composition: Share of All Recorded Items",
+            title=dict(text="Category Composition — Share of All Recorded Items",
                 font=dict(family="Cormorant Garamond, serif",size=16,color=C["green"]),x=0))
         show(fig,"cat_pie2")
         last_updated_insight(df,"general")
@@ -2566,14 +2505,14 @@ elif page == "Categories":
         fig=go.Figure(go.Bar(x=avg_cat["avg"],y=avg_cat["trash_group"],orientation="h",
             marker_color=avg_cat["color"],text=avg_cat["avg"].round(1),textposition="outside"))
         fb(fig,"Avg Items per Event","",h=max(560,32*len(avg_cat)),leg=False,
-            title="Average Items per Survey Event: All Categories"); show(fig,"cat_avg2")
+            title="Average Items per Survey Event — All 19 Categories"); show(fig,"cat_avg2")
         cat_color_legend()
         fig_note("Mean total items per survey event for each category.",
             "Adjusts for recording frequency — a category recorded across 100 events is compared fairly to one recorded across 20.",
             "Higher = more items found per visit. Red = health hazard categories.",
             "Food Packaging will top this chart too — its high average is partly structural (11 sub-items) but also reflects genuine prevalence.")
 
-    elif sel_cat == "Beverage Containers: Full Breakdown":
+    elif sel_cat == "Beverage Containers — Full Breakdown":
         bev=df[df["trash_group"].isin(BEVERAGE_GROUPS)].copy()
         c1c,c2c=st.columns([2,3])
         with c1c:
@@ -2581,13 +2520,13 @@ elif page == "Categories":
             fig=px.bar(bt,x="n",y="trash_group",orientation="h",
                 color_discrete_sequence=[C["water"]],text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Category",h=380,leg=False,title="Beverage Categories: Totals"); show(fig,"bev_grp")
+            fb(fig,"Total","Category",h=380,leg=False,title="Beverage Categories — Totals"); show(fig,"bev_grp")
         with c2c:
             bi=bev.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
             fig=px.bar(bi,x="n",y="trash_item",color="trash_group",orientation="h",
                 color_discrete_sequence=PAL,text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Item",h=500,title="Beverage Items: All Sub-Types"); show(fig,"bev_items")
+            fb(fig,"Total","Item",h=500,title="Beverage Items — All Sub-Types"); show(fig,"bev_items")
         last_updated_insight(df,"general")
         cat_color_legend()
         fig_note("All beverage container categories and their sub-type breakdown.",
@@ -2595,7 +2534,7 @@ elif page == "Categories":
             "Water bottles (1,635) are the most common single beverage item — many from encampments. Beer bottles lead alcohol.",
             "The presence of large quantities of Styrofoam cups is environmentally significant — Styrofoam does not biodegrade and fragments into microplastics.")
 
-    elif sel_cat == "Cups: Styrofoam vs Plastic vs Paper":
+    elif sel_cat == "Cups — Styrofoam vs Plastic vs Paper":
         cups=df[df["trash_group"]=="Cups"].groupby("trash_item")["n"].sum().reset_index().sort_values("n",ascending=False)
         cups["pct"]=(100*cups["n"]/max(cups["n"].sum(),1)).round(1)
         c1c,c2c=st.columns(2)
@@ -2603,7 +2542,7 @@ elif page == "Categories":
             fig=px.bar(cups.sort_values("n",ascending=True),x="n",y="trash_item",orientation="h",
                 color="trash_item",color_discrete_sequence=PAL,text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Cup Type",h=340,leg=False,title="Cups: Sub-Type Breakdown"); show(fig,"cups_bar")
+            fb(fig,"Total","Cup Type",h=340,leg=False,title="Cups — Sub-Type Breakdown"); show(fig,"cups_bar")
         with c2c:
             fig=px.pie(cups,values="n",names="trash_item",color_discrete_sequence=PAL,hole=.4)
             fig.update_traces(textposition="inside",textinfo="percent+label",textfont_size=11)
@@ -2616,7 +2555,7 @@ elif page == "Categories":
             "Polar Pop cups are the large convenience store cups associated with Circle K — useful for source attribution and retailer partnership conversations.",
             "Styrofoam (Other) is the most common sub-type — these are generic foam cups from a wide range of food service sources.")
 
-    elif sel_cat == "Food Packaging: All 11 Sub-Items":
+    elif sel_cat == "Food Packaging — All 11 Sub-Items":
         fp=df[df["trash_group"]=="Food Packaging"].groupby("trash_item")["n"].sum().reset_index().sort_values("n",ascending=True)
         fp["pct"]=(100*fp["n"]/max(fp["n"].sum(),1)).round(1)
         fig=px.bar(fp,x="n",y="trash_item",orientation="h",color="trash_item",
@@ -2624,7 +2563,7 @@ elif page == "Categories":
             text=[f"{int(v):,} ({p}%)" for v,p in zip(fp["n"],fp["pct"])])
         fig.update_traces(textposition="outside")
         fb(fig,"Total Items","Item Type",h=max(440,36*len(fp)),leg=False,
-            title="Food Packaging: All 11 Sub-Types"); show(fig,"fp_items")
+            title="Food Packaging — All 11 Sub-Types Ranked"); show(fig,"fp_items")
         last_updated_insight(df,"category","Food Packaging")
         cat_color_legend()
         fig_note("Food Packaging is the single largest category at 10,694 items — spanning 11 distinct sub-types.",
@@ -2632,13 +2571,13 @@ elif page == "Categories":
             "6-pack rings and straws pose direct entanglement risk to birds and reptiles in the riparian corridor.",
             "Non-cup styrofoam (805) is especially harmful — it breaks into small beads that are indistinguishable from food particles to wildlife.")
 
-    elif sel_cat == "Alcohol Containers: Beer vs Liquor Over Time":
+    elif sel_cat == "Alcohol Containers — Beer vs Liquor Over Time":
         alc=df[df["trash_group"].isin(["Beer","Liquor"])].copy()
         if "date" in alc.columns and alc["date"].notna().any():
             ts_alc=alc.groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(ts_alc,x="date",y="n",color="trash_group",markers=True,
                 color_discrete_map={"Beer":C["amber"],"Liquor":C["brick"]})
-            fb(fig,"Quarter","Items",h=440,title="Alcohol Containers: Beer vs Liquor (Quarterly)"); show(fig,"alc_ts")
+            fb(fig,"Quarter","Items",h=440,title="Alcohol Containers — Beer vs Liquor Quarterly"); show(fig,"alc_ts")
             cat_color_legend()
             fig_note("Quarterly counts of Beer and Liquor items across the survey record.",
                 "Alcohol containers are associated with encampments, informal gatherings, and chronic littering. Understanding their trajectory helps community engagement planning.",
@@ -2647,7 +2586,7 @@ elif page == "Categories":
         else:
             st.info("No date data available for this figure.")
 
-    elif sel_cat == "Recyclable vs Non-Recyclable: Item Counts":
+    elif sel_cat == "Recyclable vs Non-Recyclable — Item Counts":
         rec_df=df.copy()
         rec_df["recyclable"]=rec_df["trash_group"].map(lambda g:
             "Recyclable" if g in RECYCLABLE_GROUPS else "Non-Recyclable")
@@ -2681,7 +2620,7 @@ elif page == "Categories":
             "Blue = recyclable (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Paper Litter). These represent a missed diversion opportunity.",
             "A beverage container deposit program (bottle bill) would directly target the recyclable fraction. This data can directly support such policy advocacy.")
 
-    elif sel_cat == "Floatable vs Non-Floatable: River Health Risk":
+    elif sel_cat == "Floatable vs Non-Floatable — River Health Risk":
         fl_df=df.copy()
         fl_df["floatable"]=fl_df["trash_group"].map(lambda g:
             "Floatable" if g in FLOATABLE_GROUPS else "Non-Floatable")
@@ -2716,7 +2655,7 @@ elif page == "Categories":
             "Blue = enters waterways during rain. Food Packaging, Plastic Bags, Cups, and all beverage bottles are floatable.",
             "This analysis directly supports ADEQ stormwater permit compliance, EPA Section 319 nonpoint source pollution reporting, and conservation grant applications.")
 
-    elif sel_cat == "Health Hazard Items: Rx, Drugs, Nicotine, Toiletries":
+    elif sel_cat == "Health Hazard Items — Rx, Drugs, Nicotine, Toiletries":
         hh=df[df["trash_group"].isin(HEALTH_HAZARD_GROUPS)].copy()
         c1c,c2c=st.columns(2)
         with c1c:
@@ -2726,14 +2665,14 @@ elif page == "Categories":
                 color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]},
                 text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Category",h=280,leg=False,title="Health Hazard Categories: Totals"); show(fig,"hh_grp")
+            fb(fig,"Total","Category",h=280,leg=False,title="Health Hazard Categories — Totals"); show(fig,"hh_grp")
         with c2c:
             hi=hh.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
             fig=px.bar(hi,x="n",y="trash_item",color="trash_group",orientation="h",
                 color_discrete_map={"Rx, Drugs":C["brick"],"Nicotine":C["earth"],"Toiletries":C["amber"]},
                 text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Item",h=280,title="Health Hazard Items: Sub-Types"); show(fig,"hh_items")
+            fb(fig,"Total","Item",h=280,title="Health Hazard Items — Sub-Types"); show(fig,"hh_items")
         if "date" in hh.columns and hh["date"].notna().any():
             ts_hh=hh.groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(ts_hh,x="date",y="n",color="trash_group",markers=True,
@@ -2745,7 +2684,7 @@ elif page == "Categories":
             "All three require special handling protocols and personal protective equipment during removal events.",
             "These numbers should be treated as minimums — syringes are likely underreported due to safety concerns and incomplete detection during surveys.")
 
-    elif sel_cat == "Bulk and Large Debris: Appliances, Construction, Auto":
+    elif sel_cat == "Bulk & Large Debris — Appliances, Construction, Auto":
         bk=df[df["trash_group"].isin(BULK_DEBRIS_GROUPS)].copy()
         c1c,c2c=st.columns(2)
         with c1c:
@@ -2755,21 +2694,21 @@ elif page == "Categories":
                 color_discrete_map={"Appliances":C["earth"],"Construction":C["sage"],"Auto":C["muted"]},
                 text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","",h=260,leg=False,title="Bulk Debris: Category Totals"); show(fig,"bk_grp")
+            fb(fig,"Total","",h=260,leg=False,title="Bulk Debris — Category Totals"); show(fig,"bk_grp")
         with c2c:
             bi2=bk.groupby(["trash_group","trash_item"])["n"].sum().reset_index().sort_values("n",ascending=True)
             fig=px.bar(bi2,x="n",y="trash_item",color="trash_group",orientation="h",
                 color_discrete_map={"Appliances":C["earth"],"Construction":C["sage"],"Auto":C["muted"]},
                 text="n")
             fig.update_traces(texttemplate="%{text:,.0f}",textposition="outside")
-            fb(fig,"Total","Item",h=400,title="Bulk Debris: All Sub-Types"); show(fig,"bk_items")
+            fb(fig,"Total","Item",h=400,title="Bulk Debris — All Sub-Types"); show(fig,"bk_items")
         cat_color_legend()
         fig_note("Appliances (550), Construction (1,147), and Auto (167) are large items requiring equipment to remove.",
             "Construction debris — particularly Small Items (1,104) — indicates illegal dumping of building waste along the corridor.",
             "By item count these seem modest, but by weight and volunteer-hours required for removal they represent a disproportionate burden.",
             "Tires (48) create standing water that breeds mosquitoes. Shopping carts signal commercial area drainage. These require coordinated heavy equipment removal.")
 
-    elif sel_cat == "Category Risk Profile: Composite View":
+    elif sel_cat == "Category Risk Profile — Composite View":
         risk_data=[]
         for g in GROUP_ORDER:
             if g not in df["trash_group"].unique(): continue
@@ -2789,19 +2728,19 @@ elif page == "Categories":
             color_discrete_map={"Recyclable":C["water"],"Floatable":"#2471a3","Health Hazard":C["brick"],"Bulk Debris":C["earth"]},
             category_orders={"Category":list(reversed(GROUP_ORDER))})
         fb(fig,"Total Items","",h=max(540,30*len(risk_df)),
-            title="Category Risk Profile: Volume vs Risk"); show(fig,"risk_scatter")
+            title="Category Risk Profile — Volume vs Environmental Risk Dimensions"); show(fig,"risk_scatter")
         cat_color_legend()
         fig_note("Each dot = a category flagged with a risk dimension. Larger and further right = more items.",
             "Shows which categories combine high volume with high environmental or health risk.",
             "Food Packaging is Floatable. Rx/Drugs is a Health Hazard. Construction is Bulk Debris. Beer is Recyclable.",
             "Categories that are BOTH high-volume AND high-risk are priority targets — e.g. Plastic Bags (3,649 items, Floatable, Non-Recyclable).")
 
-    elif sel_cat == "Category Trends Over Time: Top 6 (Quarterly)":
+    elif sel_cat == "Category Trends Over Time — Top 6 Quarterly":
         top6=df.groupby("trash_group")["n"].sum().nlargest(6).index.tolist()
         if "date" in df.columns and df["date"].notna().any():
             ct6=df[df["trash_group"].isin(top6)].groupby(["trash_group",pd.Grouper(key="date",freq="QS")])["n"].sum().reset_index()
             fig=px.line(ct6,x="date",y="n",color="trash_group",markers=True,color_discrete_sequence=PAL)
-            fb(fig,"Quarter","Items",h=480,title="Top 6 Categories: Quarterly Item Counts"); show(fig,"cat_trend2")
+            fb(fig,"Quarter","Items",h=480,title="Top 6 Categories — Quarterly Item Counts"); show(fig,"cat_trend2")
             last_updated_insight(df,"general")
             cat_color_legend()
             fig_note("Quarterly trends for the 6 highest-volume categories.",
@@ -2811,7 +2750,7 @@ elif page == "Categories":
         else:
             st.info("No date data available.")
 
-    elif sel_cat == "Year over Year Change by Category":
+    elif sel_cat == "Year-over-Year Change by Category":
         if "year" in df.columns and df["year"].notna().any():
             yoy=df.groupby(["year","trash_group"])["n"].sum().reset_index()
             yoy["year_str"]=yoy["year"].astype(int).astype(str)
@@ -2827,21 +2766,21 @@ elif page == "Categories":
                 y=pivot.index.tolist(),
                 colorscale=[[0,"#f8f5ef"],[0.3,C["mint"]],[0.7,C["green"]],[1,C["forest"]]],
                 hoverongaps=False,
-                hovertemplate="<b>%{y}</b><br>Year: %{x}<br>Total items: %{z:,.0f}<extra></extra>",
+                hovertemplate="<b>%{y}</b><br>Year: %{x}<br>Items: %{z:,.0f}<extra></extra>",
                 texttemplate="%{z:.0f}",
                 textfont=dict(size=10),
                 showscale=True,
                 colorbar=dict(title=dict(text="Total Items",font=dict(size=11)))
             ))
             fb(fig,"Year","Category",h=580,leg=False,
-                title="Annual Item Totals by Category (Heatmap)"); show(fig,"yoy_heat")
+                title="Annual Item Totals by Category — Heatmap (Darker = More Items)"); show(fig,"yoy_heat")
 
             # B: Stacked bar for total comparison across years
             fig2=px.bar(yoy,x="year_str",y="n",color="trash_group",barmode="stack",
                 color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats},
                 text=None)
             fb(fig2,"Year","Total Items",h=420,
-                title="Annual Category Totals: Stacked Bar"); show(fig2,"yoy_stack")
+                title="Annual Category Totals — Stacked Bar"); show(fig2,"yoy_stack")
 
             cat_color_legend()
             fig_note(
@@ -2853,7 +2792,7 @@ elif page == "Categories":
         else:
             st.info("No year data available.")
 
-    elif sel_cat == "Category Composition: How Mix Changed by Year":
+    elif sel_cat == "Category Composition — How Mix Changed by Year":
         if "year" in df.columns and df["year"].notna().any():
             yp=df.groupby(["year","trash_group"])["n"].sum().reset_index()
             yp_tot=yp.groupby("year")["n"].sum().reset_index(name="yr_total")
@@ -2863,7 +2802,7 @@ elif page == "Categories":
             ord_cats=[g for g in GROUP_ORDER if g in yp["trash_group"].unique()]
             fig=px.bar(yp,x="year_str",y="share",color="trash_group",barmode="stack",
                 color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
-            fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year: Proportional"); show(fig,"comp_yr")
+            fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year — 100% Stacked Shares"); show(fig,"comp_yr")
             cat_color_legend()
             fig_note("100% stacked bars — each bar totals 100%, showing category SHARE each year.",
                 "Removes the effect of varying survey effort and shows whether the MIX of items is changing.",
@@ -2889,7 +2828,7 @@ elif page == "Categories":
         else:
             st.info("No segment data.")
 
-    elif sel_cat == "Segment Specialization: Top Categories per Reach":
+    elif sel_cat == "Segment Specialization — Top Categories per Reach":
         if "seg" in df.columns:
             named_segs=[s for s in SEG_ORDER if s != "Other"]
             seg_tabs=st.tabs(named_segs)
@@ -2908,7 +2847,7 @@ elif page == "Categories":
                     fig.update_traces(textposition="outside")
                     seg_tot_n=int(df[df["seg"]==seg]["n"].sum())
                     fb(fig,"Total Items","",h=max(380,30*len(seg_df)),leg=False,
-                        title=f"{seg}: All Categories ({seg_tot_n:,} total items)"); show(fig,f"seg_spec_{i}")
+                        title=f"{seg} — All Categories ({seg_tot_n:,} total items)"); show(fig,f"seg_spec_{i}")
             cat_color_legend()
             fig_note("Top categories for each river segment shown in individual tabs.",
                 "Identifies segment-specific waste profiles — useful for targeted cleanup events and reporting to local jurisdictions.",
@@ -2948,8 +2887,8 @@ elif page == "Categories":
 
 
 elif page == "Locations":
-    page_banner("Site-Level Analysis", "Where the Trash Is and How Much", "Trash burden across all 136 recorded survey locations. Sites are ordered North to South along the river corridor. Statistics reflect variability across repeated survey visits.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    page_banner("Site-Level Analysis", "Where the Trash Is — and How Much", "Trash burden across all 136 recorded survey locations. Sites are ordered North to South along the river corridor. Statistics reflect variability across repeated survey visits.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
     st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
     <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
     <p style="margin:0 0 8px;"><strong>Mean (average items per event):</strong> The typical number of trash items found during a single survey visit at that site. A site with a mean of 80 means the team usually finds about 80 items each time they visit. This is the most useful number for comparing sites.</p>
@@ -2987,13 +2926,13 @@ elif page == "Locations":
     color_legend("River Segment Colors", mode="segments")
 
     loc_tab1, loc_tab2, loc_tab3, loc_tab4 = st.tabs([
-        "North to South: Mean", "North to South: Variability",
+        "North to South — Mean", "North to South — Variability",
         "Segment Comparison", "Full Statistics Table"
     ])
 
     with loc_tab1:
         if len(ss)>0:
-            card_open("Average Items per Event: North to South",
+            card_open("Average Items per Survey Event — Sites Ordered North to South",
                       "Each bar = one survey site. Height = mean items per event at that site. Sites are ordered geographically from northernmost (top) to southernmost (bottom). Color indicates river segment.")
             ns_show = ss[ss["lat_num"].notna()].sort_values("north_rank")
             if len(ns_show)>0:
@@ -3004,7 +2943,7 @@ elif page == "Locations":
                 fig.update_yaxes(categoryorder="array", categoryarray=ns_show["site_display"].tolist(), autorange="reversed")
                 fb(fig,"Mean Items per Event","Site (North to South)",
                    h=max(560,26*len(ns_show)),
-                   title="Mean Items per Event: North to South"); show(fig,"ns_mean")
+                   title="Mean Items per Survey Event — North to South"); show(fig,"ns_mean")
                 last_updated_insight(df, chart_type="general")
             fig_note(
                 "Mean number of items recorded per survey event at each site, ordered north to south by GPS latitude.",
@@ -3013,7 +2952,7 @@ elif page == "Locations":
                 "SE = SD ÷ √n. A small SE means the site's mean is reliably estimated. A large SE means high variability between events at that site."
             )
 
-        section_title("Site Statistics: North to South")
+        section_title("Site Statistics — North to South")
         st.markdown('<div class="sec-sub">Full statistical summary for sites with GPS coordinates, ordered north to south. N = number of survey events. Mean ± SD are computed across events at each site.</div>', unsafe_allow_html=True)
         if len(ns_show)>0:
             tbl = ns_show[["north_rank","site_display","seg","n_plots","mean","sd","se","cv","range","total","lat_num","lon"]].copy()
@@ -3030,34 +2969,34 @@ elif page == "Locations":
             ns_show = ss[ss["lat_num"].notna()].sort_values("north_rank")
             c1v,c2v = st.columns(2)
             with c1v:
-                card_open("Standard Deviation: North to South",
+                card_open("Standard Deviation by Site — North to South",
                           "SD measures how much individual events vary at each site. A site with SD=0 had exactly the same count every visit. High SD = unpredictable or patchy litter.")
                 fig=px.bar(ns_show,x="sd",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
                 fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
-                fb(fig,"Standard Deviation","Site",h=max(500,24*len(ns_show)),title="Within-Site Variability: North to South"); show(fig,"ns_sd")
+                fb(fig,"Standard Deviation","Site",h=max(500,24*len(ns_show)),title="Within-Site Variability (SD) — North to South"); show(fig,"ns_sd")
                 fig_note("Standard deviation of total items per event at each site.",
                     "High SD indicates inconsistency — some visits found a lot of trash, others very little.",
                     "Longer bars = more variable sites. A site can have a low mean but high SD if trash events are sporadic.",
                     "SD is not comparable across sites with very different means. Use CV for that.")
             with c2v:
-                card_open("Coefficient of Variation: North to South",
+                card_open("Coefficient of Variation (CV) by Site — North to South",
                           "CV = SD ÷ Mean × 100. It normalizes variability so sites with different mean burden can be fairly compared.")
                 ns_show_cv = ns_show[ns_show["cv"].notna()].copy()
                 ns_show_cv["cv_pct"]=(ns_show_cv["cv"]*100).round(1)
                 if len(ns_show_cv)>0:
                     fig=px.bar(ns_show_cv,x="cv_pct",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
                     fig.update_yaxes(categoryorder="array",categoryarray=ns_show_cv["site_display"].tolist(),autorange="reversed")
-                    fb(fig,"CV (%)","Site",h=max(500,24*len(ns_show_cv)),title="Coefficient of Variation: North to South"); show(fig,"ns_cv")
+                    fb(fig,"CV (%)","Site",h=max(500,24*len(ns_show_cv)),title="Coefficient of Variation (CV%) — North to South"); show(fig,"ns_cv")
                     fig_note("CV = (SD ÷ Mean) × 100, expressed as a percentage.",
                         "Unlike SD, CV adjusts for the size of the mean so you can compare variability across sites fairly.",
                         "CV < 30% = relatively consistent. CV 30–100% = moderate variability. CV > 100% = highly unpredictable.",
                         "A clean site with CV=150% is more unpredictable than a heavy site with CV=25%.")
 
-            card_open("Range of Items: North to South",
+            card_open("Range of Items per Event by Site — North to South",
                       "Range = maximum items recorded minus minimum items recorded across all events at that site. Simple and easy to communicate in presentations.")
             fig=px.bar(ns_show,x="range",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
             fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
-            fb(fig,"Range (Max − Min)","Site",h=max(500,24*len(ns_show)),title="Range of Items: North to South"); show(fig,"ns_range")
+            fb(fig,"Range (Max − Min)","Site",h=max(500,24*len(ns_show)),title="Range of Items per Event — North to South"); show(fig,"ns_range")
             fig_note("The difference between the heaviest and lightest events recorded at each site.",
                 "Range is intuitive for non-technical audiences.",
                 "A range of 0 means the same count every visit. A large range means the site fluctuates dramatically.",
@@ -3105,7 +3044,7 @@ elif page == "Locations":
         card_open("Sites Ranked by Average Items per Event",
                   "Per-event average is a fairer metric than total count — it adjusts for how many times a site was visited.")
         fig=px.bar(top20_avg,x="avg_per_event",y="site_label",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
-        fb(fig,"Avg Items / Event",None,h=max(460,22*len(top20_avg)),title="Top 20 Sites: Avg Items per Event"); show(fig,"loc_avg")
+        fb(fig,"Avg Items / Event",None,h=max(460,22*len(top20_avg)),title="Top 20 Sites — Average Items per Event"); show(fig,"loc_avg")
         fig_note("Average total items recorded per survey visit at each site.",
             "Avoids penalizing well-sampled sites that appear heavier only because they were visited more.",
             "A site visited once with 300 items scores higher than one visited 10 times averaging 20 items.",
@@ -3149,8 +3088,8 @@ elif page == "Locations":
 # DATA TABLE
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Table":
-    page_banner(T("dt_ey"), T("dt_title"), T("dt_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    page_banner(T("dt_ey"), T("dt_title"), T("dt_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     with st.expander(T("filter_data"), expanded=True):
         lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
@@ -3252,28 +3191,33 @@ elif page == "Data Table":
 # ══════════════════════════════════════════════════════════════════
 elif page == "Data Entry":
     is_vol = prof.get("is_volunteer", False)
-
-    if is_vol:
-        page_banner("Volunteer Survey Entry", "Submit Your Trash Counts",
-            "Thank you for volunteering!",
-            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg")
-    else:
-        page_banner("Field Data Entry", "Survey Data Entry and Management",
-            "Submit new survey entries and manage existing records.",
-            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg")
-
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
     if is_vol:
+        # Volunteer banner
         st.markdown(f'''<div style="background:{C["green"]}0f;border:1px solid {C["green"]}30;
         border-radius:8px;padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;">
         <div style="width:10px;height:10px;border-radius:50%;background:{C["mint"]};flex-shrink:0;"></div>
         <div style="font-size:13px;color:{C["text"]};line-height:1.6;">
-        Volunteer session: <strong>{prof.get("full_name","")}</strong>
+        Volunteer session — <strong>{prof.get("full_name","")}</strong>
         {" · " + prof.get("volunteer_org","") if prof.get("volunteer_org") else ""}
         &nbsp;·&nbsp; You can submit survey counts only.
         To access all features, <a href="/" style="color:{C["green"]};font-weight:600;">sign in with a staff account</a>.
         </div></div>''', unsafe_allow_html=True)
+        page_banner(
+            "Volunteer Survey Entry",
+            "Submit Your Trash Counts",
+            "Thank you for volunteering with the Sonoran Institute! Fill in the counts for each item found during your survey plot. Your submission goes directly into the live database.",
+            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
+        )
+    else:
+        page_banner(
+            "Field Data Entry",
+            "Survey Data Entry & Management",
+            "Submit new survey entries and manage existing records. All changes are saved directly to the live database and reflected in every chart immediately.",
+            "https://sonoraninstitute.org/files/BHatch_02042018_1152-1600x900.jpg"
+        )
+
     if is_vol:
         # Volunteers only see the entry form — no tabs, no manage section
         entry_tab = st.container()
@@ -3412,7 +3356,7 @@ elif page == "Data Entry":
                 f'border-radius:10px;padding:22px 28px;margin-bottom:20px;">' +
                 f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;' +
                 f'color:{C["green"]};margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};'+">" +
-                "Review Your Entry: Verify Everything Before Submitting" +
+                "Review Your Entry — Verify Everything Before Submitting" +
                 "</div>",
                 unsafe_allow_html=True
             )
@@ -3765,8 +3709,8 @@ elif page == "Data Entry":
 # EXPORT
 # ══════════════════════════════════════════════════════════════════
 elif page == "Export":
-    page_banner(T("ex_ey"), T("ex_title"), T("ex_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    page_banner(T("ex_ey"), T("ex_title"), T("ex_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
 
     long_exp=long[[c for c in ["event_id","date","seg","site_label","trash_group","trash_item","n","surveyed_m2","recorder"] if c in long.columns]].copy()
     long_exp=long_exp.rename(columns={"n":"count","seg":"river_segment","site_label":"location"})
@@ -3807,10 +3751,12 @@ elif page == "Export":
 # ABOUT
 # ══════════════════════════════════════════════════════════════════
 elif page == "About":
+    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
+    # Hero banner
     st.markdown(f"""
     <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
-    border-radius:0;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
+    border-radius:14px;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
     <div style="position:absolute;inset:0;
     background:url('https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg')
     center/cover no-repeat;opacity:.18;border-radius:14px;"></div>
@@ -3824,12 +3770,11 @@ elif page == "About":
     {T("about_hero_sub")}
     </p></div></div>""", unsafe_allow_html=True)
 
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     section_title(T("why_river_title"))
     c1, c2 = st.columns([3,2])
     with c1:
-        st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:2.05;">
-        <p style="margin:0 0 20px;">{T("about_p1")}</p>
+        st.markdown(f"""<div style="font-size:14px;color:{C['text']};line-height:1.9;">
+        <p style="margin:0 0 14px;">{T("about_p1")}</p>
         <p style="margin:0 0 14px;">{T("about_p2")}</p>
         <p style="margin:0 0 14px;">{T("about_p3")}</p>
         <p style="margin:0;">{T("about_p4")}</p>
@@ -3885,15 +3830,15 @@ elif page == "About":
         [T("stat_items_note"),T("stat_events_note"),T("stat_locs_note"),T("stat_period_note")]):
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};border-radius:10px;
-            padding:24px 20px 20px;text-align:center;position:relative;overflow:hidden;
+            padding:18px 20px 14px;text-align:center;position:relative;overflow:hidden;
             box-shadow:0 2px 10px rgba(0,0,0,.04);">
             <div style="position:absolute;top:0;left:0;right:0;height:3px;
             background:linear-gradient(90deg,{C['green']},{C['mint']});"></div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;
+            <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
             color:{C['green']};line-height:1;">{val}</div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;
-            color:{C['muted']};font-family:'DM Mono',monospace;margin-top:12px;">{lbl}</div>
-            <div style="font-size:11px;color:{C['muted']};margin-top:8px;line-height:1.5;">{note}</div>
+            color:{C['muted']};font-family:'DM Mono',monospace;margin-top:6px;">{lbl}</div>
+            <div style="font-size:11px;color:{C['muted']};margin-top:3px;">{note}</div>
             </div>""", unsafe_allow_html=True)
 
     _ab1, _ab2 = st.columns([1, 2])
@@ -3905,8 +3850,8 @@ elif page == "About":
           {T("about_field_caption")}</div>""", unsafe_allow_html=True)
     with _ab2:
         st.markdown(f"""
-        <div style="font-size:14px;color:{C['text']};line-height:2.05;padding-top:8px;">
-          <p style="margin:0 0 22px;">{T("about_db_p1")}</p>
+        <div style="font-size:14px;color:{C['text']};line-height:1.9;padding-top:8px;">
+          <p style="margin:0 0 16px;">{T("about_db_p1")}</p>
           <p style="margin:0 0 16px;">{T("about_db_p2")}</p>
           <p style="margin:0 0 16px;">{T("about_db_p3")}</p>
           <p style="margin:0;">{T("about_db_p4")}</p>
@@ -3927,10 +3872,10 @@ elif page == "About":
         with (rc1 if i%2==0 else rc2):
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
             border-left:4px solid {color};border-radius:0 10px 10px 0;
-            padding:22px 24px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
+            padding:16px 18px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
             <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;
-            color:{C['text']};margin-bottom:10px;">{title}</div>
-            <div style="font-size:13.5px;color:{C['muted']};line-height:1.9;">{text}</div>
+            color:{C['text']};margin-bottom:5px;">{title}</div>
+            <div style="font-size:13px;color:{C['muted']};line-height:1.7;">{text}</div>
             </div>""", unsafe_allow_html=True)
 
     st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
@@ -3953,12 +3898,12 @@ elif page == "About":
         with col:
             st.markdown(f"""<div style="background:white;border:1px solid {C['sand3']};
             border-top:4px solid {color};border-radius:10px;
-            padding:28px 26px 24px;margin-bottom:18px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            padding:20px 20px 18px;margin-bottom:12px;box-shadow:0 2px 10px rgba(0,0,0,.04);">
             <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
-            color:{C['text']};margin-bottom:10px;line-height:1.3;">{name}</div>
+            color:{C['text']};margin-bottom:3px;">{name}</div>
             <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
-            color:{color};font-family:'DM Mono',monospace;margin-bottom:14px;">{role}</div>
-            <div style="font-size:13.5px;color:{C['muted']};line-height:1.9;">{desc}</div>
+            color:{color};font-family:'DM Mono',monospace;margin-bottom:7px;">{role}</div>
+            <div style="font-size:12.5px;color:{C['muted']};line-height:1.7;">{desc}</div>
             </div>""", unsafe_allow_html=True)
 
     st.markdown(f"""<div style="background:{C['sand']};border:1px solid {C['sand3']};border-radius:10px;
