@@ -664,39 +664,39 @@ footer{{display:none!important;}}
     pointer-events:none!important;height:0!important;overflow:hidden!important;
 }}
 
-/* ── KILL STREAMLIT DEFAULT GAPS ── */
-.stApp {{overflow-x:hidden;}}
-/* Nuclear option — target every possible Streamlit wrapper */
-.main .block-container,
-.block-container,
-section[data-testid="stMain"] > div,
-section[data-testid="stMain"] > div > div,
-[data-testid="stMainBlockContainer"],
-[data-testid="stAppViewBlockContainer"],
-[data-testid="stAppViewContainer"],
-div[class*="block-container"],
-div[class*="appview-container"] > section > div {{
-    padding-top:0!important;
-    padding-bottom:0!important;
-    margin-top:0!important;
-    margin-bottom:0!important;
+/* ── KILL ALL GAPS ── */
+.stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["cream"]};}}
+.main .block-container,.block-container,
+section[data-testid="stMain"]>div,section[data-testid="stMain"]>div>div,
+[data-testid="stMainBlockContainer"],[data-testid="stAppViewBlockContainer"],
+[data-testid="stAppViewContainer"],div[class*="block-container"],
+div[class*="appview-container"]>section>div {{
+    padding-top:0!important;padding-bottom:0!important;
+    margin-top:0!important;margin-bottom:0!important;
 }}
-/* Streamlit v1.x main container — the real gap culprit */
-.stMainBlockContainer > div,
-.stMainBlockContainer > div > div {{
-    padding-top:0!important;
-    margin-top:0!important;
+.stMainBlockContainer>div,.stMainBlockContainer>div>div {{
+    padding-top:0!important;margin-top:0!important;
 }}
-/* Every vertical stack */
 [data-testid="stVerticalBlock"],
-[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"],
-[data-testid="stVerticalBlock"] > .element-container,
+[data-testid="stVerticalBlock"]>[data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlock"]>.element-container,
 [data-testid="block-container"] {{
-    gap:0!important;
-    margin-top:0!important;
-    margin-bottom:0!important;
-    padding-top:0!important;
-    padding-bottom:0!important;
+    gap:0!important;margin-top:0!important;margin-bottom:0!important;
+    padding-top:0!important;padding-bottom:0!important;
+}}
+/* The inter-element gap Streamlit adds between markdown blocks */
+.element-container {{margin-top:0!important;margin-bottom:0!important;padding:0!important;}}
+[data-testid="stMarkdownContainer"] {{margin:0!important;padding:0!important;}}
+/* Override Streamlit's stMainBlockContainer top padding — this is the cream gap source */
+[data-testid="stMainBlockContainer"],
+.stMainBlockContainer,
+[data-testid="stAppViewBlockContainer"] {{
+    padding-top:0!important;margin-top:0!important;
+    padding-left:0!important;padding-right:0!important;
+}}
+/* The header's bottom should bleed into the sticky nav with no cream gap */
+div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child {{
+    margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
 .body{{max-width:1480px;margin:0 auto;padding:10px 96px 100px 160px;}}
@@ -969,12 +969,12 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     st.markdown(f"""
     <div style="
         background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
-        border-radius:0 0 16px 16px;
-        padding:48px 160px 44px;
-        margin:0 0 22px;
+        border-radius:0;
+        padding:28px 160px 30px;
+        margin:0 0 18px;
         position:relative;
         overflow:hidden;
-        box-shadow:0 6px 32px rgba(0,0,0,.22);">
+        box-shadow:none;">
       <!-- River photo overlay at 18% opacity, identical to About hero -->
       <div style="position:absolute;inset:0;
         background:url('{bg_img}') center/cover no-repeat;
@@ -1772,7 +1772,8 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     position:sticky !important;
     top:0 !important;
     z-index:200 !important;
-    border-bottom:2px solid #ffffff !important;
+    border-bottom:none !important;
+    margin-top:0 !important;
     box-shadow:0 3px 14px rgba(0,0,0,.35) !important;
     margin:0 !important;
     margin-top:0 !important;
@@ -1786,7 +1787,7 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 24px 0 160px !important;
+    padding:0 44px !important;justify-content:flex-start !important;
     max-width:1480px !important;
     margin:0 auto !important;
     border:none !important;
@@ -1797,7 +1798,7 @@ div[role="radiogroup"] {{
 div[role="radiogroup"] > label {{
     display:flex !important;
     align-items:center !important;
-    padding:13px 16px !important;
+    padding:10px 16px !important;
     font-family:'DM Sans',sans-serif !important;
     font-size:11px !important;
     font-weight:700 !important;
