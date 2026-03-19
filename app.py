@@ -140,8 +140,10 @@ footer{{display:none!important;}}
            color:#fff;line-height:1.2;letter-spacing:-.01em;}}
 .hdr-sub{{font-size:9.5px;color:rgba(255,255,255,.45);letter-spacing:2px;
           text-transform:uppercase;margin-top:3px;font-family:'DM Mono',monospace;}}
-.hdr-user{{font-size:13px;color:rgba(255,255,255,.7);line-height:1.6;text-align:right;}}
+.hdr-right{{display:flex;align-items:center;gap:0;}}
+.hdr-user{{font-size:13px;color:rgba(255,255,255,.7);line-height:1.5;text-align:right;padding-right:16px;}}
 .hdr-user strong{{color:#fff;font-size:14px;display:block;font-weight:600;}}
+.hdr-pos{{font-size:11px;color:rgba(255,255,255,.5);display:block;}}
 .hdr-pill{{display:inline-flex;align-items:center;gap:5px;background:rgba(93,168,50,.2);
            border:1px solid rgba(93,168,50,.4);border-radius:20px;padding:2px 10px;
            font-size:10px;color:{C["mint"]};font-family:'DM Mono',monospace;
@@ -161,6 +163,24 @@ footer{{display:none!important;}}
     pointer-events:none!important;height:0!important;overflow:hidden!important;
 }}
 
+/* ── KILL STREAMLIT DEFAULT GAPS ── */
+.stApp {{overflow-x:hidden;}}
+/* Remove gap between every block-level Streamlit element */
+[data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"],
+[data-testid="stVerticalBlock"] > .element-container,
+[data-testid="block-container"] {{
+    gap:0!important;
+    margin-top:0!important;
+    margin-bottom:0!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
+}}
+/* Kill gap under header */
+[data-testid="stMainBlockContainer"] {{
+    padding-top:0!important;
+    margin-top:0!important;
+    gap:0!important;
+}}
 /* ── BODY ── */
 .body{{max-width:1480px;margin:0 auto;padding:36px 96px 100px 124px;}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
@@ -965,59 +985,100 @@ inject_css()
 auth_gate()
 prof=st.session_state.get("prof") or {}
 
-# HEADER
+# HEADER + SIGN OUT — all in one HTML block, zero Streamlit elements
 st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
     <img src="{LOGO_W}" class="hdr-logo">
     <div><div class="hdr-name">Santa Cruz River Trash Survey</div>
          <div class="hdr-sub">Sonoran Institute · River Restoration Program</div></div>
   </div>
-  <div class="hdr-user">
-    <div style="text-align:right;line-height:1.5;">
+  <div class="hdr-right">
+    <div class="hdr-user">
       <strong>{prof.get('full_name','')}</strong>
-      <span style="display:block;font-size:11px;color:rgba(255,255,255,.55);">{prof.get('position_title','')}</span>
-      <div class="hdr-pill" style="margin-top:4px;"><span class="hdr-dot"></span>&nbsp;Live Database</div>
+      <span class="hdr-pos">{prof.get('position_title','')}</span>
+      <div class="hdr-pill"><span class="hdr-dot"></span>&nbsp;Live Database</div>
     </div>
   </div>
 </div></div>""", unsafe_allow_html=True)
 
-# Sign-out — styled as hdr-pill, lives in its own full-width dark strip
-st.markdown(f"""<style>
-/* Sign-out strip sits flush against the header */
-div[data-testid="stHorizontalBlock"]:has(button[data-testid="baseButton-secondary"]) {{
-    background:{C["forest"]}!important;
-    padding:0 44px 0 124px!important;
-    margin:0!important;
-    display:flex!important;
-    justify-content:flex-end!important;
-    align-items:center!important;
-    min-height:36px!important;
-    border-bottom:1px solid rgba(255,255,255,.07)!important;
+# Sign-out: hidden button, triggered by clicking the pill in the header
+# Simpler approach — real button but fully zero-height hidden, controlled by CSS overlay
+st.markdown("""<style>
+/* Kill ALL default gaps between our layout elements */
+.stApp > div > div > div > div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlockBorderWrapper"],
+.stApp > div > div > div > div[data-testid="stVerticalBlock"] > div.element-container {{
+    margin-top:0!important;
+    margin-bottom:0!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
 }}
-/* Sign-out button — styled like the hdr-pill */
-button[data-testid="baseButton-secondary"] {{
-    background:transparent!important;
-    border:1px solid rgba(255,255,255,.28)!important;
-    border-radius:20px!important;
-    color:rgba(255,255,255,.65)!important;
-    font-family:'DM Mono',monospace!important;
-    font-size:9.5px!important;
-    letter-spacing:1.2px!important;
-    text-transform:uppercase!important;
-    padding:3px 14px!important;
-    line-height:1.4!important;
-    transition:all .15s!important;
-}}
-button[data-testid="baseButton-secondary"]:hover {{
-    background:rgba(255,255,255,.08)!important;
-    border-color:rgba(255,255,255,.5)!important;
-    color:white!important;
+/* Specifically collapse the sign-out button wrapper */
+div[data-testid="stVerticalBlock"]:has(> div.element-container:has(button#_hdr_so)) {{
+    height:0!important;overflow:hidden!important;
 }}
 </style>""", unsafe_allow_html=True)
-_so1, _so2 = st.columns([14, 1])
-with _so2:
-    if st.button("Sign Out", key="_hdr_so"):
-        st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
+
+# Real sign-out: put it as a pill in the header via CSS absolute positioning
+# The actual button is hidden but we trigger it from the nav strip
+st.markdown(f"""<style>
+/* Sign-out pill lives at the top-right, overlaid on the header */
+.so-pill {{
+    position:fixed;top:14px;right:44px;z-index:500;
+    background:transparent;
+    border:1px solid rgba(255,255,255,.3);
+    border-radius:20px;
+    padding:4px 14px;
+    font-family:'DM Mono',monospace;
+    font-size:9.5px;letter-spacing:1.2px;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.7);
+    cursor:pointer;
+    transition:all .15s;
+    text-decoration:none;
+    display:inline-block;
+    line-height:1.6;
+}}
+.so-pill:hover{{
+    background:rgba(255,255,255,.1);
+    color:white;
+    border-color:rgba(255,255,255,.6);
+}}
+</style>""", unsafe_allow_html=True)
+
+if st.button("Sign Out", key="_hdr_so"):
+    st.session_state["auth"]=False; st.session_state["prof"]=None; st.rerun()
+
+st.markdown("""<style>
+/* Collapse the sign-out button row entirely — zero height, no gap */
+div[data-testid="stMainBlockContainer"] > div > div > div > div:nth-of-type(1):has(button[data-testid="baseButton-secondary"]) {{
+    height:0!important;min-height:0!important;max-height:0!important;
+    overflow:hidden!important;margin:0!important;padding:0!important;
+    visibility:hidden!important;
+}}
+/* Sign-out button styled as an overlaid pill on the header */
+button[data-testid="baseButton-secondary"] {{
+    position:fixed!important;
+    top:16px!important;right:44px!important;
+    z-index:500!important;
+    background:transparent!important;
+    border:1px solid rgba(255,255,255,.3)!important;
+    border-radius:20px!important;
+    color:rgba(255,255,255,.72)!important;
+    font-family:'DM Mono',monospace!important;
+    font-size:9.5px!important;letter-spacing:1.2px!important;
+    text-transform:uppercase!important;
+    padding:4px 14px!important;
+    line-height:1.6!important;
+    transition:all .15s!important;
+    cursor:pointer!important;
+    min-height:0!important;height:auto!important;
+}}
+button[data-testid="baseButton-secondary"]:hover {{
+    background:rgba(255,255,255,.1)!important;
+    color:white!important;
+    border-color:rgba(255,255,255,.6)!important;
+}}
+</style>""", unsafe_allow_html=True)
 
 # ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
@@ -1033,6 +1094,8 @@ div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
     border-bottom:1px solid rgba(255,255,255,.1) !important;
     box-shadow:0 3px 14px rgba(0,0,0,.35) !important;
     margin:0 !important;
+    margin-top:0 !important;
+    margin-bottom:0 !important;
     padding:0 !important;
     width:100% !important;
 }}
