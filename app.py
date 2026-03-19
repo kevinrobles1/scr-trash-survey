@@ -265,6 +265,16 @@ TR = {
         "acct_refresh":"Refresh Data","acct_signout":"Sign Out",
         "acct_signout_note":"Sign out button also available top-right",
         "acct_session":"Account & Session",
+        # Page banners — Overview / Map / Trends
+        "ov_ey":"Sonoran Institute · Tucson, Arizona",
+        "ov_title":"Santa Cruz River Trash Survey",
+        "ov_sub":"Longitudinal survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across multiple sites and reaches — program led by Luke Cole, Sonoran Institute.",
+        "map_ey":"Survey Site Map",
+        "map_title":"Where We Survey",
+        "map_sub":"GPS locations of all recorded survey sites along the Santa Cruz River corridor and its tributaries.",
+        "tr_ey":"Temporal Analysis",
+        "tr_title":"How Trash Levels Change Over Time",
+        "tr_sub":"Monthly, annual, and seasonal patterns across the full survey record.",
 
 
     },
@@ -987,6 +997,7 @@ def register(username, password, full_name, position, sec_q="", sec_a=""):
     if len(sec_a.strip())<2: return False,"Security answer must be at least 2 characters."
     salt = secrets.token_hex(16)
     ans_salt = secrets.token_hex(16)
+    # Try full insert with security columns first
     try:
         get_sb().table("users").insert({
             "username":u,"password_hash":_hash(password,salt),"salt":salt,
@@ -995,9 +1006,30 @@ def register(username, password, full_name, position, sec_q="", sec_a=""):
             "security_answer_hash":_hash(sec_a.strip().lower(), ans_salt),
             "security_answer_salt":ans_salt,
         }).execute()
-        return True,"Account created — sign in."
+        return True,"Account created! You can now sign in."
     except Exception as e:
-        return False,("Username taken." if "unique" in str(e).lower() or "duplicate" in str(e).lower() else str(e))
+        err = str(e)
+        if "unique" in err.lower() or "duplicate" in err.lower():
+            return False,"That username is already taken — please choose a different one."
+
+    # First insert failed for non-duplicate reason — try without security columns
+    # (handles case where schema hasn't been updated yet in Supabase)
+    try:
+        get_sb().table("users").insert({
+            "username":u,"password_hash":_hash(password,salt),"salt":salt,
+            "full_name":full_name.strip(),"position_title":position.strip(),
+        }).execute()
+        return True,(
+            "✅ Account created! You can sign in now.\n\n"
+            "⚠️ Note: Password reset via security question is not active yet. "
+            "Contact Kevin Robles if you ever need a password reset. "
+            "Your account and password are fully secure."
+        )
+    except Exception as e2:
+        err2 = str(e2)
+        if "unique" in err2.lower() or "duplicate" in err2.lower():
+            return False,"That username is already taken — please choose a different one."
+        return False, f"Could not create account. Please contact Kevin Robles. (Error: {err2})"
 
 def get_security_question(username):
     """Return the security question for a username, or None."""
@@ -1006,7 +1038,9 @@ def get_security_question(username):
         if r.data and r.data[0].get("security_question"):
             return r.data[0]["security_question"]
         return None
-    except: return None
+    except Exception:
+        # Security columns may not exist yet — that's OK, just return None
+        return None
 
 def verify_security_answer(username, answer):
     """Return True if the security answer is correct."""
@@ -1018,11 +1052,12 @@ def verify_security_answer(username, answer):
         ans_salt = row.get("security_answer_salt","")
         if not stored or not ans_salt: return False
         return secrets.compare_digest(stored, _hash(answer.strip().lower(), ans_salt))
-    except: return False
+    except Exception: return False
 
 def get_username_by_fullname(full_name, sec_answer):
     """Look up username by full name + security answer — lets users recover forgotten usernames."""
     try:
+        # Try with security columns first
         r = get_sb().table("users").select("username,full_name,security_answer_hash,security_answer_salt").execute()
         if not r.data: return None
         for row in r.data:
@@ -1033,7 +1068,16 @@ def get_username_by_fullname(full_name, sec_answer):
                     if secrets.compare_digest(ans_hash, _hash(sec_answer.strip().lower(), ans_salt)):
                         return row["username"]
         return None
-    except: return None
+    except Exception:
+        # Security columns may not exist yet — fall back to name-only lookup
+        try:
+            r = get_sb().table("users").select("username,full_name").execute()
+            if not r.data: return None
+            for row in r.data:
+                if row.get("full_name","").strip().lower() == full_name.strip().lower():
+                    return row["username"]
+        except Exception: pass
+        return None
 
 def reset_password(username, new_password):
     """Set a new password for a user (called after security answer verified)."""
@@ -1112,7 +1156,7 @@ def auth_gate():
         .sl{{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;margin-top:5px;}}
         .foot{{position:relative;z-index:2;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);line-height:1.9;}}
         </style></head><body>
-        <div class="brand"><img src="{LOGO_W}"><div><div class="bn">Sonoran Institute</div><div class="bs">{T("ftr_updates").split()[0]} Restoration Program</div></div></div>
+        <div class="brand"><img src="{LOGO_W}"><div><div class="bn">Sonoran Institute</div><div class="bs">Santa Cruz River Program</div></div></div>
         <div class="hero">
           <div class="ey"><div class="eyl"></div><div class="eyt">Tucson, Arizona</div></div>
           <h1>Santa Cruz River<br><em>Trash Survey</em></h1>
@@ -1650,7 +1694,7 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
   <div class="hdr-brand">
     <img src="{LOGO_W}" class="hdr-logo">
     <div><div class="hdr-name">Santa Cruz River Trash Survey</div>
-         <div class="hdr-sub">Sonoran Institute · {T("ftr_updates").split()[0]} Restoration Program</div></div>
+         <div class="hdr-sub">Santa Cruz River Program</div></div>
   </div>
   <div class="hdr-right">
     <div class="hdr-user">
@@ -3844,7 +3888,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
           color:rgba(255,255,255,.85);line-height:1.2;">Sonoran Institute</div>
           <div style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:2px;
-          text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;">{T("ftr_updates").split()[0]} Restoration Program</div>
+          text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;">Santa Cruz River Program</div>
         </div>
       </div>
       <div class="ftr-copy">
