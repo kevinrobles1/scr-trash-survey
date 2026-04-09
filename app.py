@@ -956,6 +956,194 @@ def fmt_full_date_local(val):
         return str(val)
 
 
+CATEGORY_ES = {
+    "Cups": "Vasos",
+    "Beer": "Cerveza",
+    "Liquor": "Licor",
+    "Soda": "Refresco",
+    "Water": "Agua",
+    "Sports Drinks": "Bebidas deportivas",
+    "Juice": "Jugo",
+    "Food Packaging": "Empaques de comida",
+    "Nicotine": "Nicotina",
+    "Toiletries": "Artículos de higiene",
+    "Rx, Drugs": "Medicamentos y drogas",
+    "Toys, Games": "Juguetes y juegos",
+    "Paper Litter": "Papel tirado",
+    "Clothing": "Ropa",
+    "Auto": "Auto",
+    "Construction": "Construcción",
+    "Appliances": "Electrodomésticos",
+    "Plastic Bags": "Bolsas de plástico",
+    "Misc": "Misceláneos",
+}
+
+ITEM_ES = {
+    "Food Wrappers (Candy, Etc.)": "Envolturas de comida (dulces, etc.)",
+    "Non-Cup Styrofoam": "Unicel no usado como vaso",
+    "Non-Cup Plastic": "Plástico no usado como vaso",
+    "Non-Cup Paper (Bags, Boxes)": "Papel no usado como vaso (bolsas, cajas)",
+    "Straws": "Popotes",
+    "6-Pack Rings": "Aros de six-pack",
+    "Plates And Bowls Plastic": "Platos y tazones de plástico",
+    "Cans, Milk Jugs, Mixes": "Latas, jarras de leche y envases mixtos",
+    "Plates, Styrofoam": "Platos de unicel",
+    "Utensils": "Utensilios",
+    "Misc": "Misceláneos",
+    "Bottles": "Botellas",
+    "Cans": "Latas",
+    "Plastic Bottles": "Botellas de plástico",
+    "Glass": "Vidrio",
+    "Cigs, Cigars, Lighters, Dip, Packs": "Cigarros, puros, encendedores, tabaco y cajetillas",
+    "Toiletries": "Artículos de higiene",
+    "Packaging": "Empaques",
+    "Rx And Drug Packaging": "Empaques de medicamentos y drogas",
+    "Syringes, Paraphernalia": "Jeringas y parafernalia",
+    "Balls, Games": "Pelotas y juegos",
+    "Cd, Dvd, Electronic Packaging": "Empaques de CD, DVD y electrónicos",
+    "School/Office Supplies": "Útiles escolares y de oficina",
+    "Id Cards, Credit Cards": "Identificaciones y tarjetas",
+    "Batteries": "Baterías",
+    "News, Books, Magazines": "Periódicos, libros y revistas",
+    "Advertising, Signs, Cards": "Publicidad, letreros y tarjetas",
+    "Clothes, Shoes, Hats": "Ropa, zapatos y sombreros",
+    "PPE": "EPP",
+    "Misc. Fabric": "Tela miscelánea",
+    "Car Parts (Small)": "Partes pequeñas de auto",
+    "Car Parts (Large)": "Partes grandes de auto",
+    "Tires": "Llantas",
+    "Small Items": "Artículos pequeños",
+    "Large Items": "Artículos grandes",
+    "Bikes, Bike Parts": "Bicicletas y partes",
+    "Furniture/Cushions/Pillows": "Muebles, cojines y almohadas",
+    "Shopping Carts": "Carritos de compra",
+    "Carpet": "Alfombra",
+    "Rope/Line": "Cuerda o línea",
+    "Buckets": "Cubetas",
+    "Appliances": "Electrodomésticos",
+    "Plastic Bags": "Bolsas de plástico",
+    "Sm. Debris (Ex. Metal, Plastic Scraps)": "Desechos pequeños (metal, restos de plástico)",
+    "Lg. Debris (Ex. Garbage Cans)": "Desechos grandes (como botes de basura)",
+    "Styrofoam (Polar Pop)": "Vaso de unicel (Polar Pop)",
+    "Styrofoam (Qt)": "Vaso de unicel (cuarto)",
+    "Styrofoam (Other)": "Unicel (otro)",
+    "Plastic": "Plástico",
+    "Paper": "Papel",
+}
+
+COMMON_PLOT_ES = {
+    "Monthly": "Mensual",
+    "3-Month Rolling Avg": "Promedio móvil de 3 meses",
+    "Top 15 Items in the Current View": "Top 15 artículos en la vista actual",
+    "Monthly Items Recorded": "Artículos registrados por mes",
+    "Share by Trash Category": "Proporción por categoría de basura",
+    "Top 15 Recorded Items": "Top 15 artículos registrados",
+    "Trash by River Segment": "Basura por tramo del río",
+    "Category": "Categoría",
+    "Item": "Artículo",
+    "Total Count": "Conteo total",
+    "Month": "Mes",
+    "Months": "Meses",
+    "Items": "Artículos",
+    "Segment": "Tramo",
+    "North Reach": "Tramo norte",
+    "Central Reach": "Tramo central",
+    "South Reach": "Tramo sur",
+    "Other": "Otro",
+    "River Segment": "Tramo del río",
+    "Total Items": "Artículos totales",
+    "Average Items": "Promedio de artículos",
+    "Weight (oz)": "Peso (oz)",
+    "Top 15 Most Frequently Recorded Items": "Top 15 artículos registrados",
+    "Items by River Segment and Category": "Basura por tramo del río",
+    "Ranked by cumulative count across all survey events and locations.": "Ordenados por el conteo acumulado en todos los eventos y sitios de muestreo.",
+    "Most common items in the current view, ranked by total count across all kept records.": "Artículos más comunes en la vista actual, ordenados por el conteo total en todos los registros conservados.",
+    "Each bar shows how total items are distributed across trash categories within each mapped river segment in the current view.": "Cada barra muestra cómo se distribuyen los artículos totales entre categorías de basura dentro de cada tramo del río mapeado en la vista actual.",
+    "Proportional breakdown of all items recorded across every category. Food Packaging, Clothing, and Misc typically dominate.": "Desglose proporcional de todos los artículos registrados en cada categoría. Empaques de comida, ropa y misceláneos suelen dominar.",
+}
+
+SPANISH_MONTH_ABBR = {
+    "Jan": "ene", "Feb": "feb", "Mar": "mar", "Apr": "abr", "May": "may", "Jun": "jun",
+    "Jul": "jul", "Aug": "ago", "Sep": "sep", "Oct": "oct", "Nov": "nov", "Dec": "dic"
+}
+
+
+def translate_display_value(val):
+    if st.session_state.get("lang", "en") != "es":
+        return val
+    if val is None:
+        return val
+    if isinstance(val, str):
+        v = COMMON_PLOT_ES.get(val, val)
+        v = CATEGORY_ES.get(v, CATEGORY_ES.get(val, v))
+        v = ITEM_ES.get(v, ITEM_ES.get(val, v))
+        v = TEXT_ES.get(v, TEXT_ES.get(val, v))
+        for en, es in SPANISH_MONTH_ABBR.items():
+            v = v.replace(en + " ", es + " ")
+        return v
+    return val
+
+
+def _translate_seq(seq):
+    try:
+        if isinstance(seq, (list, tuple)):
+            return [translate_display_value(v) for v in seq]
+        if hasattr(seq, 'tolist'):
+            vals = seq.tolist()
+            if isinstance(vals, list):
+                return [translate_display_value(v) for v in vals]
+        return seq
+    except Exception:
+        return seq
+
+
+def localize_plotly_figure(fig):
+    if st.session_state.get("lang", "en") != "es":
+        return fig
+    try:
+        if fig.layout.title and hasattr(fig.layout.title, 'text'):
+            fig.layout.title.text = translate_display_value(fig.layout.title.text)
+    except Exception:
+        pass
+    for axis_name in ["xaxis", "yaxis"]:
+        try:
+            ax = fig.layout[axis_name]
+            if ax and ax.title and hasattr(ax.title, 'text'):
+                ax.title.text = translate_display_value(ax.title.text)
+        except Exception:
+            pass
+    try:
+        if fig.layout.legend and fig.layout.legend.title and hasattr(fig.layout.legend.title, 'text'):
+            fig.layout.legend.title.text = translate_display_value(fig.layout.legend.title.text)
+    except Exception:
+        pass
+    try:
+        if fig.layout.annotations:
+            for ann in fig.layout.annotations:
+                if hasattr(ann, 'text'):
+                    ann.text = translate_display_value(ann.text)
+    except Exception:
+        pass
+    for trace in fig.data:
+        try:
+            if hasattr(trace, 'name') and trace.name is not None:
+                trace.name = translate_display_value(trace.name)
+        except Exception:
+            pass
+        for attr in ['labels','x','y','text']:
+            try:
+                cur = getattr(trace, attr, None)
+                if cur is not None:
+                    setattr(trace, attr, _translate_seq(cur))
+            except Exception:
+                pass
+    return fig
+
+
+TEXT_ES.update(COMMON_PLOT_ES)
+TEXT_ES.update(CATEGORY_ES)
+TEXT_ES.update(ITEM_ES)
+
 TEXT_ES.update({
     "River Segments": "Tramos del río",
     "Trash Burden": "Carga de basura",
@@ -1355,14 +1543,21 @@ def show(fig, key=None):
     for a in ["xaxis","yaxis"]:
         try:
             ax=fig.layout[a]
-            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm: ax.title.text=_nm[ax.title.text]
-            elif ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm_en: ax.title.text=_nm[_nm_en[ax.title.text]] if _nm_en[ax.title.text] in _nm else L(_nm_en[ax.title.text])
-        except: pass
+            if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm:
+                ax.title.text=_nm[ax.title.text]
+            elif ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm_en:
+                ax.title.text=_nm[_nm_en[ax.title.text]] if _nm_en[ax.title.text] in _nm else L(_nm_en[ax.title.text])
+        except Exception:
+            pass
     try:
         lt=fig.layout.legend.title.text
-        if lt and lt in _nm: fig.layout.legend.title.text=_nm[lt]
-        elif lt and lt in _nm_en: fig.layout.legend.title.text=L(_nm_en[lt])
-    except: pass
+        if lt and lt in _nm:
+            fig.layout.legend.title.text=_nm[lt]
+        elif lt and lt in _nm_en:
+            fig.layout.legend.title.text=L(_nm_en[lt])
+    except Exception:
+        pass
+    localize_plotly_figure(fig)
     fig.update_layout(hoverlabel=dict(bgcolor="white",bordercolor="#d8ceba",font=dict(family="DM Sans, sans-serif",size=12.5,color="#18180f")))
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
     try:
@@ -1378,7 +1573,8 @@ def show(fig, key=None):
             f'letter-spacing:.3px;padding:2px 0 6px;text-align:right;opacity:.75;">{_badge}</div>',
             unsafe_allow_html=True
         )
-    except Exception: pass
+    except Exception:
+        pass
 
 def card_open(title, subtitle=""):
     title = L(title)
@@ -1955,7 +2151,7 @@ def load_data():
     long["trash_item"]=long["trash_item"].fillna("Unknown")
     long["year"]=long["date"].dt.year
     long["month"]=long["date"].dt.month
-    long["month_name"]=pd.Categorical(long["date"].dt.strftime("%b"),
+    long["month_name"]=pd.Categorical(long["date"].dt.strftime("%b").map(lambda m: SPANISH_MONTH_ABBR.get(m,m) if st.session_state.get("lang", "en")=="es" else m),
         categories=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],ordered=True)
 
     if not wt.empty:
@@ -3008,7 +3204,7 @@ elif page == "Trends":
         md=df.dropna(subset=["year","month"]).groupby(["year","month","month_name"],observed=False)["n"].sum().reset_index()
         md["year_str"]=md["year"].astype(int).astype(str)
         fig=px.bar(md,x="month_name",y="n",color="year_str",barmode="group",
-            category_orders={"month_name":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]},
+            category_orders={"month_name":[SPANISH_MONTH_ABBR.get(m,m) if st.session_state.get("lang", "en")=="es" else m for m in ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]]},
             color_discrete_sequence=PAL)
         fb(fig,"Month","Total Items",h=460,title="Month by Month Comparison Across Years"); show(fig,"tr_mby")
         last_updated_insight(df, chart_type="monthly")
