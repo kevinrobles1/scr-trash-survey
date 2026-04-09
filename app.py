@@ -967,10 +967,21 @@ def show(fig, key=None):
     except Exception: pass
 
 def card_open(title, subtitle=""):
-    sub = f'<div class="sec-sub">{subtitle}</div>' if subtitle else ""
-    st.markdown(f'<div class="card"><div class="card-hd"><div><div class="sec-hd">{title}</div>{sub}</div></div><div style="padding-top:6px">', unsafe_allow_html=True)
+    sub = f'<div class="sec-sub" style="margin-bottom:0;">{subtitle}</div>' if subtitle else ""
+    st.markdown(
+        f"""
+        <div style="background:white;border:1px solid {C['sand3']};border-radius:12px;
+                    padding:18px 22px 14px;margin:0 0 10px 0;
+                    box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            <div class="sec-hd" style="margin-bottom:2px;">{title}</div>
+            {sub}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
-def card_close(): st.markdown('</div></div>', unsafe_allow_html=True)
+def card_close():
+    return
 
 def tbl_note(text):
     st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
@@ -1471,7 +1482,7 @@ def load_data():
         m15 = long["event_id"].astype(str) == "15"
         long.loc[m15 & (long["lon"] > -110.5), "lon"] = -111.080527
     # ────────────────────────────────────────────────────────────────
-    long["seg"]=long["site_label"].map({s:seg for seg,sites in RIVER_SEGMENTS.items() for s in sites}).fillna("Other")
+    long["seg"] = [assign_segment(s, la, lo) for s, la, lo in zip(long["site_label"], long["lat"], long["lon"])]
     long["trash_group"]=long["trash_group"].fillna("Misc")
     long["trash_item"]=long["trash_item"].fillna("Unknown")
     long["year"]=long["date"].dt.year
