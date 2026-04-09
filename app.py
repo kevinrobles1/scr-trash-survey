@@ -1677,6 +1677,7 @@ def build_site_stats_ns(df):
     ss = ss.sort_values(["north_rank","site_label"]).reset_index(drop=True)
     return ss
 
+
 def render_analysis_scope_selector(df, context_label=""):
     """
     Global page-level scope selector used across charts and tables.
@@ -1698,32 +1699,49 @@ def render_analysis_scope_selector(df, context_label=""):
     scoped_events = int(scoped["event_id"].nunique()) if "event_id" in scoped.columns else 0
     total_sites = int(df["site_label"].nunique()) if "site_label" in df.columns else 0
     scoped_sites = int(scoped["site_label"].nunique()) if "site_label" in scoped.columns else 0
+    total_items = int(pd.to_numeric(df["n"], errors="coerce").fillna(0).sum()) if "n" in df.columns and len(df) > 0 else 0
+    scoped_items = int(pd.to_numeric(scoped["n"], errors="coerce").fillna(0).sum()) if "n" in scoped.columns and len(scoped) > 0 else 0
     total_sessions = len(strict_triplicate_sessions(df))
+    dropped_events = max(total_events - scoped_events, 0)
+    dropped_items = max(total_items - scoped_items, 0)
+    kept_pct = round(100 * scoped_events / total_events, 1) if total_events > 0 else 0
     scoped_label = "Strict triplicate sessions only" if strict_only else "All recorded plots"
 
     if strict_only:
         body = (
             f"<strong>Current view:</strong> {scoped_label}. "
-            f"This page is showing only exact triplicate sessions, groups with exactly 3 plots in one comparable session. "
-            f"<strong>Why this matters:</strong> single plots, doubles, and larger mixed team days can make the record harder to compare across sites and years. "
-            f"The raw counts are still real either way, but the strict triplicate view is the more defensible paper-style view. "
-            f"<br><br><strong>Kept in this view:</strong> {scoped_events:,} plot records across {total_sessions:,} exact triplicate sessions and {scoped_sites:,} sites."
+            f"This view keeps only <strong>exact triplicate sessions</strong>. "
+            f"In plain language, that means the <strong>same site</strong> on the <strong>same date</strong> with <strong>exactly 3 plot records</strong>. "
+            f"Single plots, double plots, and larger 4+ plot days are left out of this stricter view. "
+            f"<br><br><strong>Why this matters:</strong> this is the more defensible paper-style comparison view, because each kept session follows the same sampling structure. "
+            f"The raw counts are still real either way. What changes here is <strong>comparability</strong>."
+            f"<br><br><strong>What is kept right now:</strong> {scoped_events:,} plot records, {total_sessions:,} exact triplicate sessions, {scoped_sites:,} sites, and {scoped_items:,} total counted items."
+            f"<br><strong>What is left out right now:</strong> {dropped_events:,} plot records and {dropped_items:,} counted items that came from non-triplicate sampling days."
         )
     else:
         body = (
             f"<strong>Current view:</strong> {scoped_label}. "
-            f"This page is showing every recorded plot. "
-            f"<strong>Why this matters:</strong> this is useful for full descriptive totals, but repeated same-day plots can make comparisons look more certain than they really are. "
-            f"Use the strict triplicate option when you want the more conservative reporting view. "
-            f"<br><br><strong>Shown in this view:</strong> {total_events:,} plot records across {total_sites:,} sites."
+            f"This view shows <strong>every recorded plot</strong>, including single plots, doubles, exact triplicates, and larger multi-plot team days. "
+            f"<br><br><strong>Why this matters:</strong> this is useful for full descriptive viewing of the whole database, but it mixes different sampling structures together. "
+            f"That can make site-to-site and year-to-year comparisons look more certain than they really are."
+            f"<br><br><strong>What is shown right now:</strong> {total_events:,} plot records, {total_sites:,} sites, and {total_items:,} total counted items."
+            f"<br><strong>Comparable exact triplicate subset inside this full database:</strong> {total_sessions:,} sessions, which would keep {scoped_events:,} plot records ({kept_pct}%)."
         )
 
     st.markdown(
-        f'''<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};
-        border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 18px;font-size:13px;line-height:1.8;color:{C["text"]};">
-        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:8px;">Analysis scope</div>
+        f"""<div style="background:white;border:1px solid {C['sand3']};border-left:4px solid {C['water']};
+        border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 18px;font-size:13px;line-height:1.8;color:{C['text']};">
+        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C['muted']};margin-bottom:8px;">Analysis scope</div>
         {body}
-        </div>''',
+        </div>""",
+        unsafe_allow_html=True
+    )
+
+    st.markdown(
+        f"""<div style="margin:-4px 0 16px 2px;font-size:12.5px;line-height:1.75;color:{C['muted']};">
+        <strong>Why some charts may still look similar:</strong> the toggle can change the underlying rows and totals even when the dominant patterns stay in the same order.
+        For example, Food Packaging may still rank first in both views. Similar shape does <strong>not</strong> mean the toggle failed.
+        </div>""",
         unsafe_allow_html=True
     )
 
@@ -2222,21 +2240,24 @@ if page == "Overview":
                   "Stacked bar chart showing contribution of each trash category within each known river segment. Only sites with assigned segment labels are shown.")
         if "seg" in lf.columns:
             sg=lf[lf["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
-            sg["seg"]=pd.Categorical(sg["seg"],SEG_ORDER,ordered=True); sg=sg.sort_values("seg")
-            # Color each category by its environmental classification
-            grp_color_map = {g:
-                C["water"] if g in RECYCLABLE_GROUPS else
-                C["brick"] if g in HEALTH_HAZARD_GROUPS else
-                C["amber"] if g in FLOATABLE_GROUPS else
-                C["green"] for g in sg["trash_group"].unique()}
-            fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",
-                color_discrete_map=grp_color_map,category_orders={"seg":SEG_ORDER})
-            fig.update_layout(
-                legend=dict(orientation="h",yanchor="top",y=-0.16,xanchor="left",x=0,
-                    font=dict(size=10,family="DM Sans"),title_text="Category",
-                    bgcolor="rgba(255,255,255,.95)",bordercolor=C["divider"],borderwidth=1),
-                margin=dict(l=10,r=10,t=56,b=110))
-            show(fig,"ov_seg")
+            if len(sg) > 0:
+                sg["seg"]=pd.Categorical(sg["seg"],SEG_ORDER,ordered=True); sg=sg.sort_values("seg")
+                # Color each category by its environmental classification
+                grp_color_map = {g:
+                    C["water"] if g in RECYCLABLE_GROUPS else
+                    C["brick"] if g in HEALTH_HAZARD_GROUPS else
+                    C["amber"] if g in FLOATABLE_GROUPS else
+                    C["green"] for g in sg["trash_group"].unique()}
+                fig=px.bar(sg,x="seg",y="n",color="trash_group",barmode="stack",
+                    color_discrete_map=grp_color_map,category_orders={"seg":SEG_ORDER})
+                fig.update_layout(
+                    legend=dict(orientation="h",yanchor="top",y=-0.16,xanchor="left",x=0,
+                        font=dict(size=10,family="DM Sans"),title_text="Category",
+                        bgcolor="rgba(255,255,255,.95)",bordercolor=C["divider"],borderwidth=1),
+                    margin=dict(l=10,r=10,t=56,b=110))
+                show(fig,"ov_seg")
+            else:
+                st.info("No river-segment data is available in the current scope for this figure.")
         card_close()
 
     section_title(T("why_title"))
@@ -2386,7 +2407,7 @@ elif page == "Map":
     all_sites_tbl.index=range(1,len(all_sites_tbl)+1)
     all_sites_tbl.columns=["Location","River Segment","Total Items","# Events","Avg Items/Event"]
     st.dataframe(all_sites_tbl, use_container_width=True, height=480)
-    tbl_note(f"Showing all {len(all_sites_tbl)} unique location names recorded in the database. Many may have slight spelling variations (e.g. 'Drexel and Irvington' vs 'Drexel and irvington') which cause them to appear as separate entries.")
+    tbl_note(f"Showing {len(all_sites_tbl)} unique location names in the current analysis scope. Many may have slight spelling variations (e.g. 'Drexel and Irvington' vs 'Drexel and irvington') which cause them to appear as separate entries.")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════
