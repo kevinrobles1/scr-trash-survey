@@ -857,6 +857,51 @@ TEXT_ES.update({
     "One row per survey event. Columns show each of the 56 recorded item types plus event metadata—exactly like the original Excel format. Zero = item was not found that visit.": "Una fila por evento de muestreo. Las columnas muestran cada uno de los 56 tipos de artículos registrados más los metadatos del evento, igual que en el formato original de Excel. Cero significa que ese artículo no apareció en esa visita."
 })
 
+
+TEXT_ES.update({
+    "River Segments": "Tramos del río",
+    "Trash Burden": "Carga de basura",
+    "Low": "Baja",
+    "High": "Alta",
+    "North Reach": "Tramo norte",
+    "Central Reach": "Tramo central",
+    "South Reach": "Tramo sur",
+    "Rillito": "Rillito",
+    "Other": "Otro",
+    "Sites with GPS": "Sitios con GPS",
+    "Total Sites in DB": "Total de sitios en la base de datos",
+    "Events Mapped": "Eventos en el mapa",
+    "Grand Avg Items/Site": "Promedio general de artículos por sitio",
+    "River Segment Colors": "Colores por tramo del río",
+    "Map Color = Trash Burden (Total Items)": "Color del mapa = carga de basura (artículos totales)",
+    "Map Color = Trash Burden": "Color del mapa = carga de basura",
+    "Sites with GPS Coordinates": "Sitios con coordenadas GPS",
+    "All survey locations that have latitude/longitude data. Sorted by total items recorded descending.": "Todos los sitios de muestreo que tienen datos de latitud y longitud. Están ordenados de mayor a menor según el total de artículos registrados.",
+    "Site Name": "Nombre del sitio",
+    "Total Items": "Artículos totales",
+    "# Events": "# Eventos",
+    "Avg Items/Event": "Promedio de artículos por evento",
+    "Latitude": "Latitud",
+    "Longitude": "Longitud",
+    "All Sites (Including Those Without GPS)": "Todos los sitios, incluso los que no tienen GPS",
+    "Complete list of all recorded locations in the database, with or without coordinates.": "Lista completa de todos los sitios registrados en la base de datos, con o sin coordenadas.",
+    "Showing": "Mostrando",
+    "unique location names in the current analysis scope. Many may have slight spelling variations (e.g. 'Drexel and Irvington' vs 'Drexel and irvington') which cause them to appear as separate entries.": "nombres únicos de ubicación dentro del alcance actual del análisis. Varias ubicaciones pueden tener diferencias pequeñas de escritura, por ejemplo mayúsculas o variaciones leves del nombre, y por eso pueden aparecer como entradas separadas.",
+    "Latitude and longitude values are averaged from all records for that site. 'Avg Items/Event' = total items ÷ number of survey events at that location. Map circles: blue = lower trash burden, red = higher trash burden.": "Los valores de latitud y longitud se promedian usando todos los registros de ese sitio. 'Promedio de artículos por evento' = artículos totales ÷ número de eventos de muestreo en esa ubicación. En el mapa, los círculos azules indican menor carga de basura y los rojos indican mayor carga.",
+    "Map colors": "Colores del mapa",
+    "Blue": "Azul",
+    "Orange": "Naranja",
+    "Red": "Rojo",
+    "Click any circle to see site details and exact counts.": "Haz clic en cualquier círculo para ver los detalles del sitio y los conteos exactos.",
+    "How trash burden is calculated": "Cómo se calcula la carga de basura",
+    "Each site's color is determined by the total number of individual trash items recorded at that site across all survey events in the database. This is the sum of all 19 trash categories (food packaging, cups, clothing, nicotine products, construction debris, etc.) counted during every field visit to that location. Sites with more total items appear warmer (orange to red), while sites with fewer items appear cooler (blue to teal).": "El color de cada sitio se basa en la cantidad total de artículos de basura registrados en ese lugar a lo largo de todos los eventos de muestreo de la base de datos. Es la suma de las 19 categorías de basura, como empaques de comida, vasos, ropa, productos de nicotina y desechos de construcción, contadas en cada visita de campo a esa ubicación. Los sitios con más artículos se ven en colores más cálidos, de naranja a rojo, y los sitios con menos artículos se ven en colores más fríos, de azul a verde azulado.",
+    "Why logarithmic color scaling": "Por qué se usa una escala logarítmica de color",
+    "A few high-count sites would compress all other sites into the same blue if a linear scale were used. Logarithmic spacing spreads the colors across the full range so differences among lower-count sites remain visible.": "Si se usara una escala lineal, unos pocos sitios con conteos muy altos harían que casi todos los demás se vieran del mismo azul. La escala logarítmica reparte mejor los colores en todo el rango para que también se noten las diferencias entre sitios con conteos más bajos.",
+    "What this metric represents": "Qué representa esta medida",
+    "Cumulative litter load over time, not density per square meter or items per single visit. A site surveyed more often will naturally accumulate a higher total, so read this alongside the number of survey events shown in each popup.": "Representa la carga acumulada de basura a lo largo del tiempo, no la densidad por metro cuadrado ni la cantidad de artículos en una sola visita. Un sitio muestreado más veces normalmente tendrá un total más alto, así que conviene leer este valor junto con el número de eventos de muestreo que aparece en cada ventana del mapa.",
+    "Date": "Fecha"
+})
+
 C = dict(
     forest="#7a8f35", green="#93a445", sage="#a8b85a", mint="#ffffff",
     cream="#faf7f0", sand="#f2ede2", sand2="#e8e1d0", sand3="#d8ceba",
@@ -2157,22 +2202,23 @@ def cat_color_legend():
 
 def color_legend(title="Trash Burden", mode="gradient"):
     """Render a color legend below a map or chart."""
+    title_disp = L(title)
     if mode == "gradient":
         st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;
         padding:14px 18px;margin:10px 0;display:inline-flex;align-items:center;gap:16px;
         font-size:12px;color:{C["muted"]};box-shadow:0 2px 6px rgba(0,0,0,.04);">
-        <strong style="color:{C["text"]};font-size:12px;">{title}:</strong>
+        <strong style="color:{C["text"]};font-size:12px;">{title_disp}:</strong>
         <div style="width:160px;height:10px;border-radius:4px;
         background:linear-gradient(to right,#3182ce,#4ec9b0,#f59534,#d64541);"></div>
-        <span>Lower</span><span style="font-size:16px;">→</span><span>Higher</span>
+        <span>{L("Lower")}</span><span style="font-size:16px;">→</span><span>{L("Higher")}</span>
         </div>""", unsafe_allow_html=True)
     else:
-        segs = [("North Reach","#2980b9"),("Central Reach","#27ae60"),("South Reach","#e67e22"),("Rillito","#8e44ad")]
+        segs = [(L("North Reach"),"#2980b9"),(L("Central Reach"),"#27ae60"),(L("South Reach"),"#e67e22"),(L("Rillito"),"#8e44ad")]
         dots = "".join(f'<span style="display:inline-flex;align-items:center;gap:5px;margin-right:12px;"><span style="width:10px;height:10px;border-radius:50%;background:{c};display:inline-block;"></span>{s}</span>' for s,c in segs)
         st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-radius:8px;
         padding:12px 18px;margin:10px 0;font-size:12px;color:{C["text"]};
         box-shadow:0 2px 6px rgba(0,0,0,.04);">
-        <strong>River Segments:</strong>&nbsp;&nbsp;{dots}
+        <strong>{L("River Segments")}:</strong>&nbsp;&nbsp;{dots}
         </div>""", unsafe_allow_html=True)
 
 def render_filters(df, kp="", cats=True):
@@ -2229,22 +2275,56 @@ def color_val(v,vmin,vmax):
     return "#d64541"
 
 def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=560):
-    if df is None or len(df)==0: st.info(L("No coordinate data available.")); return
+    if df is None or len(df)==0:
+        st.info(L("No coordinate data available."))
+        return
+
+    popup_labels = {
+        "event_id": L("Event ID"),
+        "site_label": L("Site Name"),
+        "seg": L("River Segment"),
+        "total": L("Total Items"),
+        "events": L("# Events"),
+        "avg_per_event": L("Avg Items/Event"),
+        "date": L("Date"),
+        "lat": L("Latitude"),
+        "lon": L("Longitude")
+    }
+
     d=df.copy()
-    d[lat]=pd.to_numeric(d[lat],errors="coerce"); d[lon]=pd.to_numeric(d[lon],errors="coerce")
+    d[lat]=pd.to_numeric(d[lat],errors="coerce")
+    d[lon]=pd.to_numeric(d[lon],errors="coerce")
     d=d[d[lat].notna()&d[lon].notna()]
     d=d[(d[lat]>31.5)&(d[lat]<33.0)&(d[lon]>-112.0)&(d[lon]<-110.0)]
-    if len(d)==0: st.info(L("No valid GPS coordinates.")); return
+    if len(d)==0:
+        st.info(L("No valid GPS coordinates."))
+        return
+
     vals=pd.to_numeric(d[metric_col],errors="coerce") if metric_col in d.columns else pd.Series([0]*len(d))
     vmin,vmax=float(vals.min()),float(vals.max())
     recs=[]
     for _,r in d.iterrows():
-        popup="<br>".join([f"<b>{html.escape(str(c).replace('_',' ').strip().title())}</b>: {html.escape(str(r.get(c,'') or ''))}" for c in popup_cols if c in d.columns])
-        color=SEG_COLORS.get(str(r.get(seg_col,"Other")),"#888") if seg_col else color_val(r.get(metric_col,np.nan),vmin,vmax)
+        popup_parts=[]
+        for c in popup_cols:
+            if c not in d.columns:
+                continue
+            label = popup_labels.get(c, L(str(c).replace("_"," ").strip().title()))
+            value = r.get(c,'') or ''
+            if c == "seg":
+                value = L(str(value))
+            popup_parts.append(f"<b>{html.escape(str(label))}</b>: {html.escape(str(value))}")
+        popup="<br>".join(popup_parts)
+        seg_value = str(r.get(seg_col,"Other")) if seg_col else None
+        color=SEG_COLORS.get(seg_value,"#888") if seg_col else color_val(r.get(metric_col,np.nan),vmin,vmax)
         recs.append({"lat":float(r[lat]),"lon":float(r[lon]),"lbl":str(r.get(label_col,"")),"popup":popup,"color":color})
+
     clat,clon=float(d[lat].mean()),float(d[lon].mean())
-    leg_html="".join(f'<div class="li"><div class="ld" style="background:{c}"></div>{s}</div>' for s,c in SEG_COLORS.items() if s!="Other") if seg_col else '<div style="width:130px;height:7px;border-radius:2px;background:linear-gradient(to right,#3182ce,#4ec9b0,#f59534,#d64541);margin-bottom:4px;"></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#888;"><span>Low</span><span>High</span></div>'
-    leg_title="River Segments" if seg_col else "Trash Burden"
+    if seg_col:
+        leg_html="".join(f'<div class="li"><div class="ld" style="background:{c}"></div>{html.escape(L(s))}</div>' for s,c in SEG_COLORS.items() if s!="Other")
+    else:
+        leg_html=f'<div style="width:130px;height:7px;border-radius:2px;background:linear-gradient(to right,#3182ce,#4ec9b0,#f59534,#d64541);margin-bottom:4px;"></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#888;"><span>{html.escape(L("Low"))}</span><span>{html.escape(L("High"))}</span></div>'
+    leg_title=L("River Segments") if seg_col else L("Trash Burden")
+
     html_src=f"""<!DOCTYPE html><html><head><meta charset="utf-8">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>html,body,#map{{height:{height}px;width:100%;margin:0;padding:0;font-family:'DM Sans',sans-serif;}}
@@ -2256,7 +2336,7 @@ padding:13px 16px;border-radius:8px;border:1px solid #d4ccc0;font-size:12px;box-
 .leaflet-popup-content{{font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.65;min-width:190px;}}
 </style></head><body>
 <div id="map"></div>
-<div class="legend"><div class="lt">{leg_title}</div>{leg_html}</div>
+<div class="legend"><div class="lt">{html.escape(leg_title)}</div>{leg_html}</div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const map=L.map('map').setView([{clat},{clon}],12);
@@ -2675,71 +2755,75 @@ elif page == "Map":
     scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Map")
     scope_et = make_et(scope_long)
 
-    map_mode=st.radio(T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else L("Map view"),[T("map_mode_seg"),T("map_mode_burden"),L("Individual Events")],horizontal=True)
+    map_opt_seg = T("map_mode_seg")
+    map_opt_burden = T("map_mode_burden")
+    map_opt_events = L("Individual Events")
+    map_mode = st.radio(
+        T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else L("Map view"),
+        [map_opt_seg, map_opt_burden, map_opt_events],
+        horizontal=True
+    )
 
     site_agg=scope_long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),lat=("lat","mean"),lon=("lon","mean")).reset_index()
     site_agg["avg_per_event"]=(site_agg["total"]/site_agg["events"]).round(1)
     wc=site_agg[site_agg["lat"].notna()&site_agg["lon"].notna()]
 
     m1,m2,m3,m4=st.columns(4)
-    m1.metric("Sites with GPS",len(wc)); m2.metric("Total Sites in DB",len(site_agg))
-    m3.metric("Events Mapped",int(wc["events"].sum()))
-    m4.metric("Grand Avg Items/Site",f"{site_agg['avg_per_event'].mean():.1f}" if len(site_agg)>0 else "—")
+    m1.metric(L("Sites with GPS"),len(wc))
+    m2.metric(L("Total Sites in DB"),len(site_agg))
+    m3.metric(L("Events Mapped"),int(wc["events"].sum()))
+    m4.metric(L("Grand Avg Items/Site"),f"{site_agg['avg_per_event'].mean():.1f}" if len(site_agg)>0 else "—")
 
-    if map_mode=="By River Segment":
+    if map_mode == map_opt_seg:
         render_map(wc,"lat","lon","site_label",["site_label","seg","total","events","avg_per_event"],"total",seg_col="seg")
         color_legend("River Segment Colors", mode="segments")
-    elif map_mode=="By Trash Burden":
+    elif map_mode == map_opt_burden:
         render_map(wc,"lat","lon","site_label",["site_label","seg","total","events","avg_per_event"],"total")
         color_legend("Map Color = Trash Burden (Total Items)", mode="gradient")
     else:
         ev_geo=scope_et[scope_et["lat"].notna()&scope_et["lon"].notna()] if "lat" in scope_et.columns else pd.DataFrame()
-        if len(ev_geo)>0: render_map(ev_geo,"lat","lon","site_label",["event_id","site_label","date","total"],"total",seg_col="seg")
-        else: st.info(L("No individual event coordinates in database."))
+        if len(ev_geo)>0:
+            render_map(ev_geo,"lat","lon","site_label",["event_id","site_label","date","total"],"total",seg_col="seg")
+        else:
+            st.info(L("No individual event coordinates in database."))
 
+    map_note = (
+        f'{L("Map colors")}: <span style="color:#3182ce;font-weight:700;">{L("Blue")}</span> = {L("Low")}, ' 
+        f'<span style="color:#f59534;font-weight:700;">{L("Orange")}</span>/' 
+        f'<span style="color:#d64541;font-weight:700;">{L("Red")}</span> = {L("High")}. ' 
+        f'{L("Click any circle to see site details and exact counts.")}'
+        f'<br><br><strong>{L("How trash burden is calculated")}:</strong> ' 
+        f'{L("Each site's color is determined by the total number of individual trash items recorded at that site across all survey events in the database. This is the sum of all 19 trash categories (food packaging, cups, clothing, nicotine products, construction debris, etc.) counted during every field visit to that location. Sites with more total items appear warmer (orange to red), while sites with fewer items appear cooler (blue to teal).")}'
+        f'<br><br><strong>{L("Why logarithmic color scaling")}:</strong> ' 
+        f'{L("A few high-count sites would compress all other sites into the same blue if a linear scale were used. Logarithmic spacing spreads the colors across the full range so differences among lower-count sites remain visible.")}'
+        f'<br><br><strong>{L("What this metric represents")}:</strong> ' 
+        f'{L("Cumulative litter load over time, not density per square meter or items per single visit. A site surveyed more often will naturally accumulate a higher total, so read this alongside the number of survey events shown in each popup.")}'
+    )
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
-        f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">'
-        "Map colors: <span style=\"color:#3182ce;font-weight:700;\">Blue</span> = lower burden, "
-        "<span style=\"color:#f59534;font-weight:700;\">Orange</span>/"
-        "<span style=\"color:#d64541;font-weight:700;\">Red</span> = heavier burden. "
-        "Click any circle to see site details and exact counts."
-        "<br><br><strong>How trash burden is calculated:</strong> "
-        "Each site&#39;s color is determined by the <strong>total number of individual trash items</strong> "
-        "recorded at that site across all survey events in the database. This is the sum of all 19 trash "
-        "categories (food packaging, cups, clothing, nicotine products, construction debris, etc.) counted "
-        "during every field visit to that location. Sites with more total items appear warmer (orange to red), "
-        "while sites with fewer items appear cooler (blue to teal)."
-        "<br><br><strong>Why logarithmic color scaling:</strong> "
-        "A few high-count sites would compress all other sites into the same blue if a linear scale were used. "
-        "Logarithmic spacing spreads the colors across the full range so differences among lower-count sites "
-        "remain visible."
-        "<br><br><strong>What this metric represents:</strong> "
-        "Cumulative litter load over time, not density per square meter or items per single visit. A site "
-        "surveyed more often will naturally accumulate a higher total, so read this alongside the number of "
-        "survey events shown in each popup.</div>",
+        f'border-radius:6px;margin:4px 0 12px;line-height:1.7;">{map_note}</div>',
         unsafe_allow_html=True
     )
 
-    section_title("Sites with GPS Coordinates")
-    st.markdown('<div class="sec-sub">All survey locations that have latitude/longitude data. Sorted by total items recorded descending.</div>', unsafe_allow_html=True)
+    section_title(L("Sites with GPS Coordinates"))
+    st.markdown(f'<div class="sec-sub">{L("All survey locations that have latitude/longitude data. Sorted by total items recorded descending.")}</div>', unsafe_allow_html=True)
     disp=wc[["site_label","seg","total","events","avg_per_event","lat","lon"]].copy()
-    disp.columns=["Site Name","River Segment","Total Items","# Events","Avg Items/Event","Latitude","Longitude"]
-    disp=disp.sort_values("Total Items",ascending=False).round(2).reset_index(drop=True)
+    disp.columns=[L("Site Name"),L("River Segment"),L("Total Items"),L("# Events"),L("Avg Items/Event"),L("Latitude"),L("Longitude")]
+    disp=disp.sort_values(L("Total Items"),ascending=False).round(2).reset_index(drop=True)
     disp.index=range(1,len(disp)+1)
     st.dataframe(disp, use_container_width=True, height=420)
     color_legend("Map Color = Trash Burden", mode="gradient")
-    tbl_note("Latitude and longitude values are averaged from all records for that site. 'Avg Items/Event' = total items ÷ number of survey events at that location. Map circles: blue = lower trash burden, red = higher trash burden.")
+    tbl_note(L("Latitude and longitude values are averaged from all records for that site. 'Avg Items/Event' = total items ÷ number of survey events at that location. Map circles: blue = lower trash burden, red = higher trash burden."))
 
-    section_title("All Sites (Including Those Without GPS)")
-    st.markdown('<div class="sec-sub">Complete list of all recorded locations in the database, with or without coordinates.</div>', unsafe_allow_html=True)
-    all_sites_tbl=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique")).reset_index()
+    section_title(L("All Sites (Including Those Without GPS)"))
+    st.markdown(f'<div class="sec-sub">{L("Complete list of all recorded locations in the database, with or without coordinates.")}</div>', unsafe_allow_html=True)
+    all_sites_tbl=scope_long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique")).reset_index()
     all_sites_tbl["avg"]=(all_sites_tbl["total"]/all_sites_tbl["events"]).round(1)
     all_sites_tbl=all_sites_tbl.sort_values("total",ascending=False).reset_index(drop=True)
     all_sites_tbl.index=range(1,len(all_sites_tbl)+1)
-    all_sites_tbl.columns=["Location","River Segment","Total Items","# Events","Avg Items/Event"]
+    all_sites_tbl.columns=[L("Location"),L("River Segment"),L("Total Items"),L("# Events"),L("Avg Items/Event")]
     st.dataframe(all_sites_tbl, use_container_width=True, height=480)
-    tbl_note(f"Showing {len(all_sites_tbl)} unique location names in the current analysis scope. Many may have slight spelling variations (e.g. 'Drexel and Irvington' vs 'Drexel and irvington') which cause them to appear as separate entries.")
+    tbl_note(f"{L('Showing')} {len(all_sites_tbl)} {L("unique location names in the current analysis scope. Many may have slight spelling variations (e.g. 'Drexel and Irvington' vs 'Drexel and irvington') which cause them to appear as separate entries.")}")
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ══════════════════════════════════════════════════════════════════
