@@ -920,9 +920,9 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
       padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
 .ftr-in{{max-width:1360px;margin:0 auto;padding:0 96px;}}
-.ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
-.ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
-.ftr-a:hover{{color:{C["mint"]};}}
+.ftr-copy{{color:rgba(255,255,255,.96);font-size:12px;line-height:1.9;font-family:'DM Sans',sans-serif;font-weight:500;}}
+.ftr-a{{color:rgba(255,255,255,.97)!important;text-decoration:none!important;transition:color .15s;font-weight:500;}}
+.ftr-a:hover{{color:#ffffff!important;text-decoration:underline!important;text-decoration-color:rgba(255,255,255,.45)!important;}}
 .ftr-social-icon{{display:inline-flex;align-items:center;justify-content:center;
     width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.08);
     border:1px solid rgba(255,255,255,.15);margin-right:6px;text-decoration:none;
@@ -931,7 +931,7 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 .ftr-divider{{border:none;border-top:1px solid rgba(255,255,255,.08);margin:20px 0;}}
 .ftr-links-row{{display:flex;flex-wrap:wrap;gap:6px 28px;}}
 .ftr-section-lbl{{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;
-    text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px;display:block;}}
+    text-transform:uppercase;color:rgba(255,255,255,.82);margin-bottom:12px;display:block;}}
 
 /* Auth tabs */
 div[data-testid="stTabs"]>div:first-child{{background:transparent!important;
@@ -1027,13 +1027,13 @@ def show(fig, key=None):
     except Exception: pass
 
 def card_open(title, subtitle=""):
-    sub = f'<div class="sec-sub" style="margin-bottom:0;">{subtitle}</div>' if subtitle else ""
+    sub = f'<div class="sec-sub" style="margin:0;line-height:1.7;color:{C["muted"]};max-width:920px;">{subtitle}</div>' if subtitle else ""
     st.markdown(
         f"""
-        <div style="background:white;border:1px solid {C['sand3']};border-radius:12px;
-                    padding:18px 22px 14px;margin:0 0 10px 0;
+        <div style="background:white;border:1px solid {C['sand3']};border-radius:14px;
+                    padding:24px 34px 18px;margin:0 0 12px 0;
                     box-shadow:0 2px 10px rgba(0,0,0,.04);">
-            <div class="sec-hd" style="margin-bottom:2px;">{title}</div>
+            <div class="sec-hd" style="margin:0 0 8px 0;font-size:1.55rem;line-height:1.15;color:{C['text']};">{title}</div>
             {sub}
         </div>
         """,
@@ -1781,37 +1781,37 @@ def render_analysis_scope_selector(df, context_label=""):
     if strict_only:
         body = (
             f"<strong>Current view:</strong> {scoped_label}. "
-            f"This view keeps only <strong>exact triplicate sessions</strong>. "
-            f"In plain language, that means the <strong>same site</strong> on the <strong>same date</strong> with <strong>exactly 3 plot records</strong>. "
-            f"Single plots, double plots, and larger 4+ plot days are left out of this stricter view. "
-            f"<br><br><strong>Why this matters:</strong> this is the more defensible paper-style comparison view, because each kept session follows the same sampling structure. "
-            f"The raw counts are still real either way. What changes here is <strong>comparability</strong>."
-            f"<br><br><strong>What is kept right now:</strong> {scoped_events:,} plot records, {total_sessions:,} exact triplicate sessions, {scoped_sites:,} sites, and {scoped_items:,} total counted items."
-            f"<br><strong>What is left out right now:</strong> {dropped_events:,} plot records and {dropped_items:,} counted items that came from non-triplicate sampling days."
+            f"<br><br><strong>What this means:</strong> this page is only using survey days where the database shows <strong>one site, one date, and exactly three plot records</strong>. "
+            f"Those three plots make one matched sampling set. "
+            f"If a day has only one plot, two plots, or a larger team setup with four or more plots, it is left out of this stricter view."
+            f"<br><br><strong>Why this matters:</strong> this is the cleaner apples-to-apples view. It puts sites and dates on the same sampling pattern, so comparisons are easier to defend in a report, presentation, or paper. "
+            f"The trash counts are still real in both views. What changes here is which sampling days are included in the comparison."
+            f"<br><br><strong>What is included right now:</strong> {scoped_events:,} plot records from {total_sessions:,} exact triplicate sessions, covering {scoped_sites:,} sites and {scoped_items:,} counted items."
+            f"<br><strong>What is left out right now:</strong> {dropped_events:,} plot records and {dropped_items:,} counted items from days that did not follow that exact three-plot structure."
+            f"<br><strong>Best use of this view:</strong> comparing sites, discussing patterns over time, and showing figures that need a more consistent sampling frame."
         )
     else:
         body = (
             f"<strong>Current view:</strong> {scoped_label}. "
-            f"This view shows <strong>every recorded plot</strong>, including single plots, doubles, exact triplicates, and larger multi-plot team days. "
-            f"<br><br><strong>Why this matters:</strong> this is useful for full descriptive viewing of the whole database, but it mixes different sampling structures together. "
-            f"That can make site-to-site and year-to-year comparisons look more certain than they really are."
-            f"<br><br><strong>What is shown right now:</strong> {total_events:,} plot records, {total_sites:,} sites, and {total_items:,} total counted items."
-            f"<br><strong>Comparable exact triplicate subset inside this full database:</strong> {total_sessions:,} sessions, which would keep {scoped_events:,} plot records ({kept_pct}%)."
+            f"<br><br><strong>What this means:</strong> this page is using the full database, including single plots, doubles, exact triplicates, and larger multi-plot team days."
+            f"<br><br><strong>Why this matters:</strong> this is the broadest descriptive view of everything that was counted in the field. It is useful when you want the full record, but it mixes different survey setups together, so it is not as clean for direct comparison."
+            f"<br><br><strong>What is shown right now:</strong> {total_events:,} plot records, {total_sites:,} sites, and {total_items:,} counted items."
+            f"<br><strong>Comparable triplicate subset inside this full database:</strong> {total_sessions:,} exact triplicate sessions, which would keep {scoped_events:,} plot records ({kept_pct}%)."
+            f"<br><strong>Best use of this view:</strong> seeing the full database, checking totals, and exploring everything that has been recorded, even when the sampling structure varies."
         )
 
     st.markdown(
         f"""<div style="background:white;border:1px solid {C['sand3']};border-left:4px solid {C['water']};
-        border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 18px;font-size:13px;line-height:1.8;color:{C['text']};">
-        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C['muted']};margin-bottom:8px;">Analysis scope</div>
+        border-radius:0 10px 10px 0;padding:18px 22px;margin:0 0 18px;font-size:13.5px;line-height:1.85;color:{C['text']};">
+        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C['muted']};margin-bottom:10px;">Analysis scope</div>
         {body}
         </div>""",
         unsafe_allow_html=True
     )
 
     st.markdown(
-        f"""<div style="margin:-4px 0 16px 2px;font-size:12.5px;line-height:1.75;color:{C['muted']};">
-        <strong>Why some charts may still look similar:</strong> the toggle can change the underlying rows and totals even when the dominant patterns stay in the same order.
-        For example, Food Packaging may still rank first in both views. Similar shape does <strong>not</strong> mean the toggle failed.
+        f"""<div style="margin:-4px 0 16px 2px;font-size:12.5px;line-height:1.78;color:{C['muted']};">
+        <strong>Why some charts may still look similar:</strong> the same kinds of trash can still stay near the top in both views. That does not mean the toggle failed. It only means the overall pattern stayed similar even though the rows, totals, and sampling days changed underneath.
         </div>""",
         unsafe_allow_html=True
     )
@@ -2270,8 +2270,8 @@ if page == "Overview":
 
     c3,c4 = st.columns([2,3])
     with c3:
-        card_open("Top 15 Most Frequently Recorded Items",
-                  "Ranked by cumulative count across all survey events and locations.")
+        card_open("Top 15 Recorded Items",
+                  "Most common items in the current view, ranked by total count across all kept records.")
         top=lf.groupby("trash_item")["n"].sum().nlargest(15).reset_index().sort_values("n")
         # Find which group each item belongs to (for classification color)
         item_to_group = {item: grp for grp, items in TRASH_GROUPS.items() for item in items}
@@ -2297,7 +2297,7 @@ if page == "Overview":
             height=460, paper_bgcolor="white", plot_bgcolor="rgba(0,0,0,0)",
             margin=dict(l=10, r=160, t=56, b=80),
             font=dict(family="DM Sans"),
-            title=dict(text="Top 15 Items by Total Count", font=dict(
+            title=dict(text="Top 15 Items in the Current View", font=dict(
                 family="Cormorant Garamond", size=15, color=C["text"]), x=0, xanchor="left"),
             xaxis=dict(title="Total Count", gridcolor=C["sand3"], gridwidth=1),
             yaxis=dict(title="", autorange=True),
@@ -2307,8 +2307,8 @@ if page == "Overview":
         cat_color_legend()
         card_close()
     with c4:
-        card_open("Items by River Segment and Category",
-                  "Stacked bar chart showing contribution of each trash category within each known river segment. Only sites with assigned segment labels are shown.")
+        card_open("Trash by River Segment",
+                  "Each bar shows how total items are distributed across trash categories within each mapped river segment in the current view.")
         if "seg" in lf.columns:
             sg=lf[lf["seg"].isin(SEG_ORDER[:-1])].groupby(["seg","trash_group"])["n"].sum().reset_index()
             if len(sg) > 0:
@@ -4269,7 +4269,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
   <hr class="ftr-divider">
 
   <!-- Row 2: Navigation links -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:20px 32px;margin-bottom:20px;">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:22px 36px;margin-bottom:20px;">
     <div>
       <span class="ftr-section-lbl">{T("ftr_our_work")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
@@ -4334,12 +4334,12 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
 
   <!-- Row 3: Bottom bar -->
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.5px;">
+    <div style="font-family:DM Mono,monospace;font-size:10px;color:rgba(255,255,255,.90);letter-spacing:.5px;">
       {T("ftr_copyright")}
     </div>
     <div style="font-family:DM Mono,monospace;font-size:10px;text-align:right;">
       <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank"
-         style="color:rgba(255,255,255,.55);text-decoration:none;letter-spacing:.3px;
+         style="color:rgba(255,255,255,.95);text-decoration:none;letter-spacing:.3px;
          transition:color .15s;"
          onmouseover="this.style.color='#ffffff'" onmouseout="this.style.color='rgba(255,255,255,.55)'">
         sonoraninstitute.org/card/santacruz
