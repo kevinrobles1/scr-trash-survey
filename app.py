@@ -842,6 +842,20 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 .ftr-social-icon{{transition:all .25s ease;}}
 .ftr-social-icon:hover{{transform:translateY(-2px);}}
 
+/* ── ABOUT PAGE WRAPPER ── */
+.about-shell{{max-width:1220px;margin:0 auto;padding:0 132px;box-sizing:border-box;}}
+.about-hero{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
+    border-radius:12px;padding:44px 56px;margin:0 0 28px 0;position:relative;overflow:hidden;}}
+.about-body{{max-width:1220px;margin:0 auto;padding:0 132px 80px 132px;box-sizing:border-box;background:{C["cream"]};}}
+@media (max-width: 1200px){{
+  .about-shell,.about-body{{padding-left:88px;padding-right:88px;}}
+  .about-hero{{padding-left:44px;padding-right:44px;}}
+}}
+@media (max-width: 900px){{
+  .about-shell,.about-body{{padding-left:28px;padding-right:28px;}}
+  .about-hero{{padding-left:24px;padding-right:24px;}}
+}}
+
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
       padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
@@ -3795,23 +3809,24 @@ elif page == "Export":
 # ══════════════════════════════════════════════════════════════════
 elif page == "About":
 
+    st.markdown('<div class="about-shell fade-up">', unsafe_allow_html=True)
     st.markdown(f"""
-    <div style="background:linear-gradient(160deg,{C['forest']} 0%,{C['green']} 60%,{C['sage']} 100%);
-    border-radius:0;padding:44px 48px;margin-bottom:28px;position:relative;overflow:hidden;">
+    <div class="about-hero">
     <div style="position:absolute;inset:0;
     background:url('https://sonoraninstitute.org/files/246-Santa-Cruz-River-%C2%A9jeffsmith2014-1600x900.jpg')
-    center/cover no-repeat;opacity:.18;border-radius:14px;"></div>
+    center/cover no-repeat;opacity:.18;border-radius:12px;"></div>
     <div style="position:relative;z-index:2;">
     <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;
     color:{C['mint']};margin-bottom:16px;">{T("about_hero_eyebrow")}</div>
     <h1 style="font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:white;
-    line-height:1.1;letter-spacing:-.02em;margin:0 0 16px;">
+    line-height:1.1;letter-spacing:-.02em;margin:0 0 16px;max-width:820px;">
     {T("about_hero_title")}</h1>
     <p style="font-size:15px;color:rgba(255,255,255,.75);max-width:680px;line-height:1.85;margin:0;">
     {T("about_hero_sub")}
     </p></div></div>""", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
+    st.markdown('<div class="about-body fade-up">', unsafe_allow_html=True)
     section_title(T("why_river_title"))
     c1, c2 = st.columns([3,2])
     with c1:
