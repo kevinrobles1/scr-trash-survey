@@ -652,6 +652,205 @@ def T(key, lang=None):
         lang = st.session_state.get("lang","en")
     return TR.get(lang,TR["en"]).get(key, TR["en"].get(key,key))
 
+TEXT_ES = {
+    "Strict triplicate sessions only": "Solo sesiones triplicadas estrictas",
+    "All recorded plots": "Todas las parcelas registradas",
+    "Analysis scope": "Alcance del análisis",
+    "Current view": "Vista actual",
+    "What this means": "Qué significa esto",
+    "Why this matters": "Por qué importa",
+    "What is included right now": "Qué está incluido ahora",
+    "What is left out right now": "Qué queda fuera ahora",
+    "Best use of this view": "Cuándo conviene usar esta vista",
+    "Why some charts may still look similar": "Por qué algunas gráficas todavía pueden verse parecidas",
+    "Monthly Items Recorded Over Time": "Artículos registrados por mes a lo largo del tiempo",
+    "Green bars = survey conducted · Gray = no survey that month (trash still present—see note below) · Gold dashed line = 3-month rolling average": "Barras verdes = sí hubo muestreo · barras grises = no hubo muestreo ese mes (la basura puede seguir presente) · línea dorada punteada = promedio móvil de 3 meses",
+    "Share by Trash Category": "Proporción por categoría de basura",
+    "Proportional breakdown of all items recorded across every category. Food Packaging, Clothing, and Misc typically dominate.": "Desglose proporcional de todos los artículos registrados en cada categoría. Empaques de comida, ropa y misceláneos suelen dominar.",
+    "Top 15 Recorded Items": "Top 15 artículos registrados",
+    "Most common items in the current view, ranked by total count across all kept records.": "Artículos más comunes en la vista actual, ordenados por conteo total en todos los registros conservados.",
+    "Trash by River Segment": "Basura por tramo del río",
+    "Each bar shows how total items are distributed across trash categories within each mapped river segment in the current view.": "Cada barra muestra cómo se distribuyen los artículos totales entre categorías de basura dentro de cada tramo del río en la vista actual.",
+    "Average Items per Plot: North to South": "Promedio de artículos por parcela, de norte a sur",
+    "Each bar = one survey site. Height = mean items per event at that site. Sites are ordered geographically from northernmost (top) to southernmost (bottom). Color indicates river segment.": "Cada barra representa un sitio de muestreo. La altura muestra el promedio de artículos por evento en ese sitio. Los sitios están ordenados geográficamente de norte a sur. El color indica el tramo del río.",
+    "Standard Deviation: North to South": "Desviación estándar, de norte a sur",
+    "SD measures how much exact triplicate sessions vary at each site. A site with SD=0 had the same triplicate session mean every time. High SD = unpredictable or patchy litter.": "La DE muestra cuánto cambian las sesiones triplicadas exactas en cada sitio. Un sitio con DE=0 tuvo el mismo promedio en cada sesión triplicada. Una DE alta indica basura más variable o irregular.",
+    "Coefficient of Variation: North to South": "Coeficiente de variación, de norte a sur",
+    "CV = SD ÷ Mean × 100. It normalizes variability so sites with different mean burden can be fairly compared.": "CV = DE ÷ media × 100. Normaliza la variabilidad para poder comparar de forma más justa sitios con distintas cargas promedio.",
+    "Range of Items: North to South": "Rango de artículos, de norte a sur",
+    "Range = maximum triplicate session mean minus minimum triplicate session mean at that site. Simple and easy to communicate in presentations.": "Rango = promedio máximo de sesión triplicada menos promedio mínimo de sesión triplicada en ese sitio. Es una medida simple y fácil de comunicar.",
+    "Total Items by River Segment": "Artículos totales por tramo del río",
+    "Sum of all recorded items across all events and sites within each named segment. Only sites with segment labels are included.": "Suma de todos los artículos registrados en todos los eventos y sitios dentro de cada tramo con nombre. Solo se incluyen sitios con etiqueta de tramo.",
+    "Triplicate Sessions by River Segment": "Sesiones triplicadas por tramo del río",
+    "Number of independent exact triplicate sessions within each segment, showing conservative sampling effort distribution.": "Número de sesiones triplicadas exactas e independientes dentro de cada tramo, para mostrar de forma conservadora el esfuerzo de muestreo.",
+    "Sites Ranked by Average Items per Plot": "Sitios ordenados por promedio de artículos por parcela",
+    "Average items per plot is a fairer metric than total count because it adjusts for how many strict triplicate sessions a site has.": "El promedio de artículos por parcela es una medida más justa que el conteo total porque ajusta por cuántas sesiones triplicadas estrictas tiene cada sitio.",
+    "No coordinate data available.": "No hay datos de coordenadas disponibles.",
+    "No valid GPS coordinates.": "No hay coordenadas GPS válidas.",
+    "No river-segment data is available in the current scope for this figure.": "No hay datos de tramo del río disponibles en el alcance actual para esta figura.",
+    "No individual event coordinates in database.": "No hay coordenadas de eventos individuales en la base de datos.",
+    "No event-level data available.": "No hay datos a nivel de evento disponibles.",
+    "No segment data available.": "No hay datos de tramos disponibles.",
+    "No weight data in the database.": "No hay datos de peso en la base de datos.",
+    "No date data available for this figure.": "No hay datos de fecha disponibles para esta figura.",
+    "No date data available.": "No hay datos de fecha disponibles.",
+    "No year data available.": "No hay datos de año disponibles.",
+    "No segment data.": "No hay datos de tramos.",
+    "Map view": "Vista del mapa",
+    "Individual Events": "Eventos individuales",
+    "Sort order": "Orden",
+    "North to South (GPS)": "De norte a sur (GPS)",
+    "By Total Items": "Por artículos totales",
+    "By Mean per Plot": "Por promedio por parcela",
+    "Filter by River Segment": "Filtrar por tramo del río",
+    "All": "Todos",
+    L("Table format"): "Formato de tabla",
+    L("Wide format—one row per event, each item as a column (like Excel)"): "Formato ancho, una fila por evento y cada artículo como columna (como en Excel)",
+    L("Long format—one row per item per event"): "Formato largo, una fila por artículo por evento",
+    "Toggle Categories (include/exclude from all figures)": "Cambiar categorías (incluir o excluir en todas las figuras)",
+    L("Categories to include in figures"): "Categorías que se mostrarán en las figuras",
+    "Select a figure to display": "Selecciona una figura para mostrar",
+    "Choose chart": "Elegir gráfica",
+    "What it shows": "Qué muestra",
+    "Why useful": "Por qué sirve",
+    "Why it matters": "Por qué importa",
+    "How to read this figure": "Cómo leer esta figura",
+    "How to interpret it": "Cómo interpretarla",
+    "Additional context": "Contexto adicional",
+    "Top 15 Most Frequently Recorded Items": "Top 15 artículos registrados con mayor frecuencia",
+    "Ranked by cumulative count across all survey events and locations.": "Ordenados por conteo acumulado en todos los eventos y sitios de muestreo.",
+    "Items by River Segment and Category": "Artículos por tramo del río y categoría",
+    "Stacked bar chart showing contribution of each trash category within each known river segment. Only sites with assigned segment labels are shown.": "Gráfica de barras apiladas que muestra la contribución de cada categoría de basura dentro de cada tramo conocido del río. Solo se muestran sitios con tramo asignado.",
+    "Category Colors:": "Colores de categorías:",
+    "Recyclable": "Reciclable",
+    "Health Hazard": "Riesgo para la salud",
+    "Floatable": "Flotable",
+    "Other Non-Recyclable": "Otro no reciclable",
+    "City of Tucson standard": "estándar de la Ciudad de Tucson",
+    "Rx, Drugs, Nicotine, Toiletries": "medicamentos, drogas, nicotina y artículos de higiene",
+    "river health / ADEQ risk": "salud del río / riesgo ADEQ",
+    "Plot Records": "Registros de parcelas",
+    "Authorized Personnel Only": "Solo personal autorizado",
+    "Sign in to\nyour account": "Inicia sesión\nen tu cuenta",
+    "Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.": "Accede al panel de datos del Río Santa Cruz,<br>a las herramientas de captura de campo y a los reportes de análisis.",
+    "Sign In": "Iniciar sesión",
+    "Create Account": "Crear cuenta",
+    "Forgot Password": "Olvidé mi contraseña",
+    "Look Up Username": "Buscar nombre de usuario",
+    "Username": "Nombre de usuario",
+    "Password": "Contraseña",
+    "Your username is how you sign in. Write it down—there is no way to look it up later. Choose something simple like your first name or initials.": "Tu nombre de usuario es lo que usarás para iniciar sesión. Guárdalo. El sistema no lo recupera automáticamente después. Elige algo simple, como tu nombre o tus iniciales.",
+    "Security question (for password reset)": "Pregunta de seguridad (para restablecer contraseña)",
+    "— Select one —": "— Selecciona una —",
+    "Security question for": "Pregunta de seguridad para",
+    "Start over": "Empezar de nuevo",
+    "Download CSV": "Descargar CSV",
+    "Preview first 30 rows": "Vista previa de las primeras 30 filas",
+    "Our Work": "Nuestro trabajo",
+    "Santa Cruz River": "Río Santa Cruz",
+    "Colorado River Delta": "Delta del Río Colorado",
+    "Growing Water Smart": "Growing Water Smart",
+    "One Basin": "One Basin",
+    "Resources": "Recursos",
+    "About Us": "Sobre nosotros",
+    "Our Mission & Vision": "Nuestra misión y visión",
+    "Our People": "Nuestro equipo",
+    "Board": "Consejo",
+    "Partners": "Aliados",
+    "Financials": "Finanzas",
+    "Careers": "Empleo",
+    "Sonoran Updates": "Novedades de Sonoran",
+    "Sign Up for Newsletter": "Suscríbete al boletín",
+    "Become a Sonoran Sustainer": "Hazte miembro de Sonoran",
+    "Blog Posts": "Publicaciones del blog",
+    "Events": "Eventos",
+    "Contact Us": "Contáctanos",
+    "Support Us": "Apóyanos",
+    "Donate →": "Donar →",
+    "Endangered Rivers Report": "Informe de ríos en peligro",
+    "Urban Wildlife Refuge": "Refugio urbano de vida silvestre",
+    "Living River Reports 2025": "Informes Un Río Vivo 2025",
+    "Downtown Tucson to Marana 2025": "Centro de Tucson a Marana 2025",
+    "Supplementary Data 2025": "Datos suplementarios 2025",
+    "Un Río Vivo—Español 2025": "Un Río Vivo, Español 2025",
+    "Site-Level Analysis": "Análisis a nivel de sitio",
+    "Where the Trash Is and How Much": "Dónde está la basura y cuánta hay",
+    "Trash burden across recorded survey locations. Sites are ordered North to South along the river corridor.": "Carga de basura en los sitios de muestreo registrados. Los sitios están ordenados de norte a sur a lo largo del corredor del río.",
+    "Monthly Item Count: Full Record": "Conteo mensual de artículos, registro completo",
+    "Annual Totals by Year": "Totales anuales por año",
+    "Month by Month Comparison Across Years": "Comparación mes a mes entre años",
+    "Average Items Per Survey Event Over Time": "Promedio de artículos por evento de muestreo a lo largo del tiempo",
+    "Items by River Segment (Quarterly)": "Artículos por tramo del río, trimestral",
+    "Weight of Trash Collected Over Time": "Peso de la basura recolectada a lo largo del tiempo",
+    "Totals & Overview": "Totales y panorama general",
+    "Food & Beverage": "Alimentos y bebidas",
+    "Environmental Risk": "Riesgo ambiental",
+    "Trends by Category": "Tendencias por categoría",
+    "Geographic": "Geográfico",
+    "Data Tables": "Tablas de datos",
+    "All 19 Categories: Total Items Ranked": "Las 19 categorías, artículos totales ordenados",
+    "All 56 Items: Total Count Ranked": "Los 56 artículos, conteo total ordenado",
+    "Category Share: Proportional Breakdown": "Proporción por categoría",
+    "Top 10 Heaviest vs Bottom 9 Lightest Categories": "Las 10 categorías más altas frente a las 9 más bajas",
+    "Average Items per Survey Event by Category": "Promedio de artículos por evento según categoría",
+    "Beverage Containers: Full Breakdown": "Envases de bebidas, desglose completo",
+    "Cups: Styrofoam vs Plastic vs Paper": "Vasos, unicel frente a plástico y papel",
+    "Food Packaging: All 11 Sub-Items": "Empaques de comida, los 11 subartículos",
+    "Alcohol Containers: Beer vs Liquor Over Time": "Envases de alcohol, cerveza frente a licor a lo largo del tiempo",
+    "Recyclable vs Non-Recyclable: Item Counts": "Reciclable frente a no reciclable, conteo de artículos",
+    "Floatable vs Non-Floatable: River Health Risk": "Flotable frente a no flotable, riesgo para la salud del río",
+    "Health Hazard Items: Rx, Drugs, Nicotine, Toiletries": "Artículos de riesgo para la salud, medicamentos, drogas, nicotina y artículos de higiene",
+    "Bulk and Large Debris: Appliances, Construction, Auto": "Desechos grandes y voluminosos, electrodomésticos, construcción y automotriz",
+    "Category Risk Profile: Composite View": "Perfil de riesgo por categoría, vista compuesta",
+    "Category Trends Over Time: Top 6 (Quarterly)": "Tendencias por categoría a lo largo del tiempo, top 6 trimestral",
+    "Year over Year Change by Category": "Cambio por categoría año con año",
+    "Category Composition: How Mix Changed by Year": "Composición por categoría, cómo cambió la mezcla por año",
+    "Category Mix by River Segment": "Mezcla de categorías por tramo del río",
+    "Segment Specialization: Top Categories per Reach": "Especialización por tramo, principales categorías por alcance",
+    "Full Item-Level Statistics Table": "Tabla completa de estadísticas por artículo",
+    "Category Group Summary Table": "Tabla resumen por grupo de categoría",
+    "Total Items": "Artículos totales",
+    "River Segment": "Tramo del río",
+    "Category": "Categoría",
+    "Item": "Artículo",
+    "Location": "Ubicación",
+    "Year": "Año",
+    "Month": "Mes",
+    "Average Items": "Promedio de artículos",
+    "Weight (oz)": "Peso (oz)",
+    "Number of Events": "Número de eventos",
+    "Standard Deviation": "Desviación estándar",
+    "Mean Items per Plot": "Promedio de artículos por parcela",
+    "Survey Site": "Sitio de muestreo",
+    "Share (%)": "Proporción (%)",
+    "Classification": "Clasificación",
+    "Date": "Fecha"
+}
+
+def L(text, lang=None):
+    if text is None:
+        return text
+    if not isinstance(text, str):
+        return text
+    if lang is None:
+        lang = st.session_state.get("lang", "en")
+    if lang != "es":
+        return text
+    return TEXT_ES.get(text, text)
+
+
+TEXT_ES.update({
+    "Santa Cruz River Program": "Programa del Río Santa Cruz",
+    "Tucson, Arizona": "Tucson, Arizona",
+    "Trash Survey": "Estudio de basura",
+    "Longitudinal monitoring of litter and debris along the Santa Cruz River corridor and tributaries. Plot-based surveys across multiple sites and reaches.": "Monitoreo longitudinal de basura y desechos a lo largo del corredor del Río Santa Cruz y sus tributarios. Muestreos por parcelas en múltiples sitios y tramos.",
+    "Program Director": "Director del programa",
+    "No exact triplicate sessions are available under the current filters or page scope.": "No hay sesiones triplicadas exactas disponibles con los filtros o el alcance actual de la página.",
+    "Total items, number of events, and average items per event by calendar year. Sorted most recent first.": "Artículos totales, número de eventos y promedio de artículos por evento por año calendario. Ordenado del más reciente al más antiguo.",
+    "Total items by calendar month across all years combined.": "Artículos totales por mes calendario, sumando todos los años.",
+    "One row per survey event. Columns show each of the 56 recorded item types plus event metadata—exactly like the original Excel format. Zero = item was not found that visit.": "Una fila por evento de muestreo. Las columnas muestran cada uno de los 56 tipos de artículos registrados más los metadatos del evento, igual que en el formato original de Excel. Cero significa que ese artículo no apareció en esa visita."
+})
+
 C = dict(
     forest="#7a8f35", green="#93a445", sage="#a8b85a", mint="#ffffff",
     cream="#faf7f0", sand="#f2ede2", sand2="#e8e1d0", sand3="#d8ceba",
@@ -977,6 +1176,9 @@ def _clean_hover(fig):
     return fig
 
 def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
+    xt = L(xt)
+    yt = L(yt)
+    title = L(title)
     fig.update_layout(
         height=h, paper_bgcolor="white", plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family="DM Sans, sans-serif", color=C["text"], size=12),
@@ -999,19 +1201,21 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
 
 def show(fig, key=None):
     _clean_hover(fig)
-    _nm={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","site_label":"Location","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation","cv_pct":"CV (%)","mean":"Mean Items per Plot","site_display":"Survey Site","share":"Share (%)","recyclable":"Classification","floatable":"Classification","year":"Year","date":"Date"}
+    _nm_en={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","site_label":"Location","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation","cv_pct":"CV (%)","mean":"Mean Items per Plot","site_display":"Survey Site","share":"Share (%)","recyclable":"Classification","floatable":"Classification","year":"Year","date":"Date"}
+    _nm={k:L(v) for k,v in _nm_en.items()}
     for a in ["xaxis","yaxis"]:
         try:
             ax=fig.layout[a]
             if ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm: ax.title.text=_nm[ax.title.text]
+            elif ax and ax.title and hasattr(ax.title,"text") and ax.title.text in _nm_en: ax.title.text=_nm[_nm_en[ax.title.text]] if _nm_en[ax.title.text] in _nm else L(_nm_en[ax.title.text])
         except: pass
     try:
         lt=fig.layout.legend.title.text
         if lt and lt in _nm: fig.layout.legend.title.text=_nm[lt]
+        elif lt and lt in _nm_en: fig.layout.legend.title.text=L(_nm_en[lt])
     except: pass
     fig.update_layout(hoverlabel=dict(bgcolor="white",bordercolor="#d8ceba",font=dict(family="DM Sans, sans-serif",size=12.5,color="#18180f")))
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
-    # Automatic "Data current as of..." badge—uses real database latest date
     try:
         _ldate = st.session_state.get("_db_latest_date","")
         _today = date.today().strftime("%B %d, %Y")
@@ -1026,6 +1230,58 @@ def show(fig, key=None):
         )
     except Exception: pass
 
+def card_open(title, subtitle=""):
+    title = L(title)
+    subtitle = L(subtitle)
+    sub = f'<div class="sec-sub" style="margin:8px 0 0 0;line-height:1.85;color:{C["muted"]};max-width:980px;font-size:13px;">{subtitle}</div>' if subtitle else ""
+    st.markdown(
+        f"""
+        <div style="background:white;border:1px solid {C['sand3']};border-radius:14px;
+                    padding:28px 38px 22px;margin:0 0 14px 0;
+                    box-shadow:0 2px 10px rgba(0,0,0,.04);">
+            <div class="sec-hd" style="margin:0 0 10px 0;font-size:1.6rem;line-height:1.12;color:{C['text']};">{title}</div>
+            {sub}
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+def card_close():
+    return
+
+def tbl_note(text):
+    st.markdown(f'<div class="tbl-note">{L(text)}</div>', unsafe_allow_html=True)
+
+def section_title(text):
+    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:36px 0 18px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{L(text)}</div>', unsafe_allow_html=True)
+
+def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
+    """Full-bleed hero banner, same size and aesthetic as About page."""
+    eyebrow, title, subtitle = L(eyebrow), L(title), L(subtitle)
+    bg_img = img_url or "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg"
+    st.markdown(f"""
+    <div style="
+        background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
+        border-radius:0;
+        padding:36px 96px 36px;
+        margin:0;
+        position:relative;
+        overflow:hidden;
+        box-shadow:none;">
+      <div style="position:absolute;inset:0;
+        background:url('{bg_img}') center/cover no-repeat;
+        opacity:.18;border-radius:0 0 16px 16px;"></div>
+      <div style="position:absolute;inset:0;
+        background-image:radial-gradient(circle at 1px 1px,rgba(93,168,50,.05) 1px,transparent 0);
+        background-size:28px 28px;"></div>
+      <div style="position:relative;z-index:2;max-width:860px;">
+        <div style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:3px;
+          text-transform:uppercase;color:{C["mint"]};margin-bottom:16px;">{eyebrow}</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:700;
+          color:white;line-height:1.08;letter-spacing:-.02em;margin-bottom:14px;">{title}</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.8);line-height:1.9;max-width:700px;">{subtitle}</div>
+      </div>
+    </div>""", unsafe_allow_html=True)
 def card_open(title, subtitle=""):
     sub = f'<div class="sec-sub" style="margin:0;line-height:1.7;color:{C["muted"]};max-width:920px;">{subtitle}</div>' if subtitle else ""
     st.markdown(
@@ -1264,35 +1520,35 @@ def auth_gate():
         .sl{{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:1.5px;margin-top:5px;}}
         .foot{{position:relative;z-index:2;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.2);line-height:1.9;}}
         </style></head><body>
-        <div class="brand"><img src="{LOGO_W}"><div><div class="bn">Sonoran Institute</div><div class="bs">Santa Cruz River Program</div></div></div>
+        <div class="brand"><img src="{LOGO_W}"><div><div class="bn">Sonoran Institute</div><div class="bs">{L("Santa Cruz River Program")}</div></div></div>
         <div class="hero">
-          <div class="ey"><div class="eyl"></div><div class="eyt">Tucson, Arizona</div></div>
-          <h1>Santa Cruz River<br><em>Trash Survey</em></h1>
-          <div class="desc">Longitudinal monitoring of litter and debris along the Santa Cruz River corridor and tributaries. Plot-based surveys across multiple sites and reaches.</div>
+          <div class="ey"><div class="eyl"></div><div class="eyt">{L("Tucson, Arizona")}</div></div>
+          <h1>{L("Santa Cruz River")}<br><em>{L("Trash Survey")}</em></h1>
+          <div class="desc">{L("Longitudinal monitoring of litter and debris along the Santa Cruz River corridor and tributaries. Plot-based surveys across multiple sites and reaches.")}</div>
           <div class="stats">
-            <div class="st"><div class="sv">395+</div><div class="sl">Plot Records</div></div>
+            <div class="st"><div class="sv">395+</div><div class="sl">{L("Plot Records")}</div></div>
           </div>
         </div>
-        <div class="foot">Program Director: Luke Cole<br>sonoraninstitute.org</div>
+        <div class="foot">{L("Program Director")}: Luke Cole<br>sonoraninstitute.org</div>
         </body></html>""", height=900, scrolling=False)
 
     with rc:
-        st.markdown(f"""<div class="auth-ey">Authorized Personnel Only</div>
-        <div class="auth-ttl">Sign in to<br>your account</div>
-        <div class="auth-sub">Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.</div>""", unsafe_allow_html=True)
-        t1,t2,t3,t4,t5 = st.tabs(["Sign In","Create Account","Forgot Password","Look Up Username", T("vol_tab")])
+        st.markdown(f"""<div class="auth-ey">{L("Authorized Personnel Only")}</div>
+        <div class="auth-ttl">{L("Sign in to\nyour account").replace(chr(10),"<br>")}</div>
+        <div class="auth-sub">{L("Access the Santa Cruz River data dashboard,<br>field entry tools, and analysis reports.")}</div>""", unsafe_allow_html=True)
+        t1,t2,t3,t4,t5 = st.tabs([L("Sign In"),L("Create Account"),L("Forgot Password"),L("Look Up Username"), T("vol_tab")])
 
         with t1:
             with st.form("_login"):
-                un=st.text_input("Username"); pw=st.text_input("Password",type="password")
+                un=st.text_input(L("Username")); pw=st.text_input(L("Password"),type="password")
                 st.markdown("<div style='height:6px'></div>",unsafe_allow_html=True)
-                if st.form_submit_button("Sign In",use_container_width=True):
+                if st.form_submit_button(L("Sign In"),use_container_width=True):
                     ok,prof=login(un,pw)
                     if ok: st.session_state["auth"]=True; st.session_state["prof"]=prof; st.rerun()
                     else: st.error("Invalid username or password. Use the Forgot Password tab if needed.")
 
         with t2:
-            st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-bottom:12px;padding:10px 12px;background:{C["sand"]};border-radius:6px;border:1px solid {C["sand3"]};">Your username is how you sign in. Write it down—there is no way to look it up later. Choose something simple like your first name or initials.</div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-bottom:12px;padding:10px 12px;background:{C["sand"]};border-radius:6px;border:1px solid {C["sand3"]};">{L("Your username is how you sign in. Write it down—there is no way to look it up later. Choose something simple like your first name or initials.")}</div>', unsafe_allow_html=True)
             with st.form("_reg"):
                 c1,c2=st.columns(2)
                 fn=c1.text_input("Full Name"); pos=c2.text_input("Position / Title")
@@ -1301,7 +1557,7 @@ def auth_gate():
                 p1=c3.text_input("Password (min 6 characters)",type="password")
                 p2=c4.text_input("Confirm Password",type="password")
                 st.markdown("<div style='height:4px'></div>",unsafe_allow_html=True)
-                sq=st.selectbox("Security question (for password reset)",["— Select one —"]+SECURITY_QUESTIONS)
+                sq=st.selectbox(L("Security question (for password reset)"),[L("— Select one —")]+SECURITY_QUESTIONS)
                 sa=st.text_input("Your answer to the security question",help="Case-insensitive. Example: if the question is about your pet, type the pet's name.")
                 st.markdown("<div style='height:6px'></div>",unsafe_allow_html=True)
                 if st.form_submit_button("Create Account",use_container_width=True):
@@ -1750,15 +2006,13 @@ def build_site_stats_ns(df):
 
 
 def render_analysis_scope_selector(df, context_label=""):
-    """
-    Global page-level scope selector used across charts and tables.
-    Default is strict triplicate sessions only.
-    """
-    options = ["Strict triplicate sessions only", "All recorded plots"]
+    """Global page-level scope selector used across charts and tables."""
+    options = [L("Strict triplicate sessions only"), L("All recorded plots")]
+    default_opt = options[0] if st.session_state.get("analysis_scope_global", options[0]) == options[0] else options[1]
     choice = st.radio(
-        "Analysis scope",
+        L("Analysis scope"),
         options,
-        index=0 if st.session_state.get("analysis_scope_global", options[0]) == options[0] else 1,
+        index=0 if default_opt == options[0] else 1,
         horizontal=True,
         key="analysis_scope_global",
         label_visibility="collapsed",
@@ -1775,100 +2029,101 @@ def render_analysis_scope_selector(df, context_label=""):
     total_sessions = len(strict_triplicate_sessions(df))
     dropped_events = max(total_events - scoped_events, 0)
     dropped_items = max(total_items - scoped_items, 0)
-    kept_pct = round(100 * scoped_events / total_events, 1) if total_events > 0 else 0
-    scoped_label = "Strict triplicate sessions only" if strict_only else "All recorded plots"
 
-    if strict_only:
-        body = (
-            f"<strong>Current view:</strong> {scoped_label}. "
-            f"<br><br><strong>What this means:</strong> this page is only using survey days where the database shows <strong>one site, one date, and exactly three plot records</strong>. "
-            f"Those three plots make one matched sampling set. "
-            f"If a day has only one plot, two plots, or a larger team setup with four or more plots, it is left out of this stricter view."
-            f"<br><br><strong>Why this matters:</strong> this is the cleaner apples-to-apples view. It puts sites and dates on the same sampling pattern, so comparisons are easier to defend in a report, presentation, or paper. "
-            f"The trash counts are still real in both views. What changes here is which sampling days are included in the comparison."
-            f"<br><br><strong>What is included right now:</strong> {scoped_events:,} plot records from {total_sessions:,} exact triplicate sessions, covering {scoped_sites:,} sites and {scoped_items:,} counted items."
-            f"<br><strong>What is left out right now:</strong> {dropped_events:,} plot records and {dropped_items:,} counted items from days that did not follow that exact three-plot structure."
-            f"<br><strong>Best use of this view:</strong> comparing sites, discussing patterns over time, and showing figures that need a more consistent sampling frame."
-        )
+    if st.session_state.get("lang", "es") == "es":
+        if strict_only:
+            body = (
+                f"<strong>Vista actual:</strong> solo sesiones triplicadas estrictas. "
+                f"<br><br><strong>¿Qué es esto?</strong> aquí solo se usan días de muestreo donde el mismo sitio y la misma fecha tienen exactamente <strong>3 parcelas registradas</strong>. "
+                f"Esas 3 parcelas se toman como un mismo conjunto comparable."
+                f"<br><br><strong>¿Por qué importa?</strong> porque esta vista pone a los sitios bajo una estructura de muestreo más pareja. Eso ayuda mucho cuando se quiere comparar sitios, años o figuras para un reporte, una presentación o un paper."
+                f"<br><br><strong>¿La basura sigue siendo real?</strong> sí. Los conteos siguen siendo reales. Lo que cambia aquí no es la basura, sino qué días de muestreo se dejan dentro de la comparación."
+                f"<br><br><strong>Lo que sí entra ahora:</strong> {scoped_events:,} registros de parcelas, {total_sessions:,} sesiones triplicadas exactas, {scoped_sites:,} sitios y {scoped_items:,} artículos contados."
+                f"<br><strong>Lo que queda fuera ahora:</strong> {dropped_events:,} registros de parcelas y {dropped_items:,} artículos contados de días con 1 parcela, 2 parcelas o más de 3 parcelas."
+                f"<br><strong>Cuándo conviene usar esta vista:</strong> cuando quieres una comparación más limpia y más defendible."
+            )
+        else:
+            body = (
+                f"<strong>Vista actual:</strong> todas las parcelas registradas. "
+                f"<br><br><strong>¿Qué es esto?</strong> aquí se usa todo lo que está en la base de datos, incluyendo días con 1 parcela, 2 parcelas, triplicados exactos y días con más parcelas."
+                f"<br><br><strong>¿Por qué importa?</strong> porque esta vista enseña todo el archivo completo, pero mezcla distintos tipos de muestreo. Sirve para ver el panorama general, aunque no es la comparación más limpia entre sitios o fechas."
+                f"<br><br><strong>Lo que se muestra ahora:</strong> {total_events:,} registros de parcelas, {total_sites:,} sitios y {total_items:,} artículos contados."
+                f"<br><strong>Dentro de esta base completa hay:</strong> {total_sessions:,} sesiones triplicadas exactas."
+                f"<br><strong>Cuándo conviene usar esta vista:</strong> cuando quieres ver todo lo que se ha registrado, sin filtrar por estructura de muestreo."
+            )
+        helper = "<strong>Por qué algunas figuras todavía pueden parecerse:</strong> a veces los mismos tipos de basura siguen arriba en ambas vistas. Eso no significa que el cambio falló. Solo significa que el patrón general se mantuvo parecido aunque cambió qué filas entran al análisis."
     else:
-        body = (
-            f"<strong>Current view:</strong> {scoped_label}. "
-            f"<br><br><strong>What this means:</strong> this page is using the full database, including single plots, doubles, exact triplicates, and larger multi-plot team days."
-            f"<br><br><strong>Why this matters:</strong> this is the broadest descriptive view of everything that was counted in the field. It is useful when you want the full record, but it mixes different survey setups together, so it is not as clean for direct comparison."
-            f"<br><br><strong>What is shown right now:</strong> {total_events:,} plot records, {total_sites:,} sites, and {total_items:,} counted items."
-            f"<br><strong>Comparable triplicate subset inside this full database:</strong> {total_sessions:,} exact triplicate sessions, which would keep {scoped_events:,} plot records ({kept_pct}%)."
-            f"<br><strong>Best use of this view:</strong> seeing the full database, checking totals, and exploring everything that has been recorded, even when the sampling structure varies."
-        )
+        if strict_only:
+            body = (
+                f"<strong>Current view:</strong> strict triplicate sessions only. "
+                f"<br><br><strong>What is this?</strong> this page only keeps survey days where the same site and the same date have exactly <strong>3 plot records</strong>. Those 3 plots are treated as one comparable set."
+                f"<br><br><strong>Why is this important?</strong> because it puts sites on a more even sampling structure. That makes comparisons easier to defend in a report, presentation, or paper."
+                f"<br><br><strong>Are the trash counts still real?</strong> yes. The counts are still real. What changes here is which sampling days are included in the comparison."
+                f"<br><br><strong>Included right now:</strong> {scoped_events:,} plot records, {total_sessions:,} exact triplicate sessions, {scoped_sites:,} sites, and {scoped_items:,} counted items."
+                f"<br><strong>Left out right now:</strong> {dropped_events:,} plot records and {dropped_items:,} counted items from days with 1 plot, 2 plots, or more than 3 plots."
+            )
+        else:
+            body = (
+                f"<strong>Current view:</strong> all recorded plots. "
+                f"<br><br><strong>What is this?</strong> this page uses the full database, including single plots, doubles, exact triplicates, and larger multi-plot days."
+                f"<br><br><strong>Why is this important?</strong> because it shows the whole record, but it mixes different sampling setups together."
+                f"<br><br><strong>Shown right now:</strong> {total_events:,} plot records, {total_sites:,} sites, and {total_items:,} counted items."
+            )
+        helper = "<strong>Why some charts may still look similar:</strong> the same kinds of trash can still stay near the top in both views. That does not mean the toggle failed."
 
     st.markdown(
         f"""<div style="background:white;border:1px solid {C['sand3']};border-left:4px solid {C['water']};
-        border-radius:0 10px 10px 0;padding:18px 22px;margin:0 0 18px;font-size:13.5px;line-height:1.85;color:{C['text']};">
-        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C['muted']};margin-bottom:10px;">Analysis scope</div>
+        border-radius:0 10px 10px 0;padding:20px 24px;margin:0 0 18px;font-size:13.5px;line-height:1.9;color:{C['text']};">
+        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C['muted']};margin-bottom:10px;">{L('Analysis scope')}</div>
         {body}
         </div>""",
         unsafe_allow_html=True
     )
-
     st.markdown(
-        f"""<div style="margin:-4px 0 16px 2px;font-size:12.5px;line-height:1.78;color:{C['muted']};">
-        <strong>Why some charts may still look similar:</strong> the same kinds of trash can still stay near the top in both views. That does not mean the toggle failed. It only means the overall pattern stayed similar even though the rows, totals, and sampling days changed underneath.
-        </div>""",
+        f"""<div style="margin:-2px 0 18px 2px;font-size:12.5px;line-height:1.82;color:{C['muted']};">{helper}</div>""",
         unsafe_allow_html=True
     )
-
     if strict_only and scoped.empty:
-        st.warning("No exact triplicate sessions are available under the current filters or page scope.")
+        st.warning(L("No exact triplicate sessions are available under the current filters or page scope."))
     return scoped, strict_only
 
+
 def fig_note(what, why, read, extra=""):
-    """Render a styled interpretation box under a chart."""
-    extra_html = f'<p style="color:{C["muted"]};margin:4px 0;font-size:13px;"><strong>Additional context:</strong> {extra}</p>' if extra else ""
+    extra_html = f'<p style="color:{C["muted"]};margin:4px 0;font-size:13px;"><strong>{L("Additional context")}:</strong> {L(extra)}</p>' if extra else ""
     st.markdown(f"""<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["green"]};
     border-radius:0 8px 8px 0;padding:20px 24px;margin:16px 0 28px;box-shadow:0 2px 8px rgba(0,0,0,.04);">
-    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:{C["green"]};margin-bottom:10px;">How to read this figure</div>
-    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>What it shows:</strong> {what}</p>
-    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>Why it is useful:</strong> {why}</p>
-    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>How to interpret it:</strong> {read}</p>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;color:{C["green"]};margin-bottom:10px;">{L("How to read this figure")}</div>
+    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>{L("What it shows")}:</strong> {L(what)}</p>
+    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>{L("Why it matters")}:</strong> {L(why)}</p>
+    <p style="margin:4px 0;font-size:13.5px;color:{C["text"]};"><strong>{L("How to interpret it")}:</strong> {L(read)}</p>
     {extra_html}
     </div>""", unsafe_allow_html=True)
 
 def last_updated_insight(df, chart_type="general", site=None, category=None):
-    """Show a dynamic 'As of [month year]...' insight line under a chart."""
     if df is None or df.empty or "date" not in df.columns: return
     latest = df["date"].dropna().max()
     if pd.isna(latest): return
     as_of = latest.strftime("%B %Y")
     total = int(df["n"].sum()) if "n" in df.columns else 0
+    es = st.session_state.get("lang", "es") == "es"
 
     if chart_type == "monthly":
         recent = df[df["date"].dt.year == latest.year]
         yr_total = int(recent["n"].sum()) if "n" in recent.columns else 0
-        msg = f"As of <strong>{as_of}</strong>, a total of <strong>{yr_total:,}</strong> items have been recorded in {latest.year}, with the most recent survey data from {as_of}."
+        msg = f"Hasta <strong>{as_of}</strong>, se han registrado <strong>{yr_total:,}</strong> artículos en {latest.year}." if es else f"As of <strong>{as_of}</strong>, a total of <strong>{yr_total:,}</strong> items have been recorded in {latest.year}."
     elif chart_type == "site" and site:
         site_df = df[df["site_label"]==site] if "site_label" in df.columns else df
         site_total = int(site_df["n"].sum()) if "n" in site_df.columns else 0
         site_mean = site_df.groupby("event_id")["n"].sum().mean() if "event_id" in site_df.columns else 0
-        msg = f"As of <strong>{as_of}</strong>, <strong>{site}</strong> has recorded <strong>{site_total:,}</strong> total items across {site_df['event_id'].nunique() if 'event_id' in site_df.columns else '—'} survey events, with a mean of <strong>{site_mean:.1f}</strong> items per event."
+        msg = f"Hasta <strong>{as_of}</strong>, <strong>{site}</strong> registra <strong>{site_total:,}</strong> artículos totales y un promedio de <strong>{site_mean:.1f}</strong> por evento." if es else f"As of <strong>{as_of}</strong>, <strong>{site}</strong> has recorded <strong>{site_total:,}</strong> total items, with a mean of <strong>{site_mean:.1f}</strong> items per event."
     elif chart_type == "category" and category:
         cat_df = df[df["trash_group"]==category] if "trash_group" in df.columns else df
         cat_total = int(cat_df["n"].sum()) if "n" in cat_df.columns else 0
-        pct = 100*cat_total/max(total,1)
-        msg = f"As of <strong>{as_of}</strong>, <strong>{category}</strong> accounts for <strong>{cat_total:,}</strong> items—representing <strong>{pct:.1f}%</strong> of all recorded trash in the database."
-    elif chart_type == "annual":
-        yr_grp = df.dropna(subset=["year"]).groupby("year")["n"].sum()
-        if len(yr_grp)>=2:
-            yrs = sorted(yr_grp.index)
-            last_yr, prev_yr = yrs[-1], yrs[-2]
-            diff = int(yr_grp[last_yr] - yr_grp[prev_yr])
-            direction = "increase" if diff>0 else "decrease"
-            msg = f"As of <strong>{as_of}</strong>, {int(last_yr)} recorded <strong>{int(yr_grp[last_yr]):,}</strong> items—a <strong>{abs(diff):,}-item {direction}</strong> from {int(prev_yr)} ({int(yr_grp[prev_yr]):,} items)."
-        else:
-            msg = f"As of <strong>{as_of}</strong>, the database contains <strong>{total:,}</strong> total recorded items."
+        share = 100*cat_total/max(total,1)
+        msg = f"Hasta <strong>{as_of}</strong>, la categoría <strong>{L(category)}</strong> suma <strong>{cat_total:,}</strong> artículos, es decir <strong>{share:.1f}%</strong> del total mostrado." if es else f"As of <strong>{as_of}</strong>, the category <strong>{category}</strong> accounts for <strong>{cat_total:,}</strong> items, or <strong>{share:.1f}%</strong> of the total shown."
     else:
-        n_sites = df["site_label"].nunique() if "site_label" in df.columns else "—"
-        msg = f"As of <strong>{as_of}</strong>, the database contains <strong>{total:,}</strong> recorded items across <strong>{n_sites}</strong> survey locations. Most recent data: {as_of}."
-
-    st.markdown(f'<div style="font-size:12px;color:{C["muted"]};padding:7px 14px 7px 10px;background:{C["sand"]};border-radius:6px;border-right:3px solid {C["sage"]};margin:12px 0 24px;line-height:1.7;text-align:right;">{msg}</div>', unsafe_allow_html=True)
+        msg = f"Hasta <strong>{as_of}</strong>, la vista actual incluye <strong>{total:,}</strong> artículos contados." if es else f"As of <strong>{as_of}</strong>, the current view includes <strong>{total:,}</strong> counted items."
+    st.markdown(f'<div style="font-size:12.2px;color:{C["muted"]};line-height:1.8;margin:4px 0 18px;">{msg}</div>', unsafe_allow_html=True)
 
 def cat_color_legend():
     """Universal category color guide—shown above every category table/chart."""
@@ -1968,12 +2223,12 @@ def color_val(v,vmin,vmax):
     return "#d64541"
 
 def render_map(df,lat,lon,label_col,popup_cols,metric_col,seg_col=None,height=560):
-    if df is None or len(df)==0: st.info("No coordinate data available."); return
+    if df is None or len(df)==0: st.info(L("No coordinate data available.")); return
     d=df.copy()
     d[lat]=pd.to_numeric(d[lat],errors="coerce"); d[lon]=pd.to_numeric(d[lon],errors="coerce")
     d=d[d[lat].notna()&d[lon].notna()]
     d=d[(d[lat]>31.5)&(d[lat]<33.0)&(d[lon]>-112.0)&(d[lon]<-110.0)]
-    if len(d)==0: st.info("No valid GPS coordinates."); return
+    if len(d)==0: st.info(L("No valid GPS coordinates.")); return
     vals=pd.to_numeric(d[metric_col],errors="coerce") if metric_col in d.columns else pd.Series([0]*len(d))
     vmin,vmax=float(vals.min()),float(vals.max())
     recs=[]
@@ -2028,7 +2283,7 @@ if _qp_lang in ("en", "es"):
     try: st.query_params.pop("lang")
     except: pass
 elif "lang" not in st.session_state:
-    st.session_state["lang"] = "en"
+    st.session_state["lang"] = "es"
 
 inject_css()
 auth_gate()
@@ -2328,7 +2583,7 @@ if page == "Overview":
                     margin=dict(l=10,r=10,t=56,b=110))
                 show(fig,"ov_seg")
             else:
-                st.info("No river-segment data is available in the current scope for this figure.")
+                st.info(L("No river-segment data is available in the current scope for this figure."))
         card_close()
 
     section_title(T("why_title"))
@@ -2414,7 +2669,7 @@ elif page == "Map":
     scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Map")
     scope_et = make_et(scope_long)
 
-    map_mode=st.radio(T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else "Map view",[T("map_mode_seg"),T("map_mode_burden"),"Individual Events"],horizontal=True)
+    map_mode=st.radio(T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else L("Map view"),[T("map_mode_seg"),T("map_mode_burden"),L("Individual Events")],horizontal=True)
 
     site_agg=scope_long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),lat=("lat","mean"),lon=("lon","mean")).reset_index()
     site_agg["avg_per_event"]=(site_agg["total"]/site_agg["events"]).round(1)
@@ -2434,7 +2689,7 @@ elif page == "Map":
     else:
         ev_geo=scope_et[scope_et["lat"].notna()&scope_et["lon"].notna()] if "lat" in scope_et.columns else pd.DataFrame()
         if len(ev_geo)>0: render_map(ev_geo,"lat","lon","site_label",["event_id","site_label","date","total"],"total",seg_col="seg")
-        else: st.info("No individual event coordinates in database.")
+        else: st.info(L("No individual event coordinates in database."))
 
     st.markdown(
         f'<div style="font-size:12.5px;color:{C["muted"]};padding:8px 14px;background:{C["sand"]};'
@@ -2522,12 +2777,14 @@ elif page == "Trends":
         },
     }
 
-    st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:4px;">↓ Choose chart</div>', unsafe_allow_html=True)
-    sel_trend = st.selectbox("Select a figure to display", list(TREND_FIGS.keys()), key="trend_sel", label_visibility="collapsed")
+    st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:4px;">↓ {L("Choose chart")}</div>', unsafe_allow_html=True)
+    _trend_map = {L(k): k for k in TREND_FIGS.keys()}
+    sel_trend_disp = st.selectbox(L("Select a figure to display"), list(_trend_map.keys()), key="trend_sel", label_visibility="collapsed")
+    sel_trend = _trend_map[sel_trend_disp]
 
     # Description card
     fd = TREND_FIGS[sel_trend]
-    st.markdown(f'<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};border-radius:0 8px 8px 0;padding:14px 20px;margin:12px 0 20px;"><div style="font-weight:700;font-size:14px;color:{C["text"]};margin-bottom:4px;">{sel_trend}</div><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>What it shows:</strong> {fd["desc"]}</p><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>Why useful:</strong> {fd["why"]}</p></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};border-radius:0 8px 8px 0;padding:14px 20px;margin:12px 0 20px;"><div style="font-weight:700;font-size:14px;color:{C["text"]};margin-bottom:4px;">{L(sel_trend)}</div><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>{L("What it shows")}:</strong> {L(fd["desc"])}</p><p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>{L("Why useful")}:</strong> {L(fd["why"])}</p></div>', unsafe_allow_html=True)
 
     if sel_trend == "Monthly Item Count: Full Record":
         ts=df.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
@@ -2582,7 +2839,7 @@ elif page == "Trends":
                 "More interpretable than raw totals when survey frequency varies between months.",
                 "Points above the dotted line = heavier-than-average months.",
                 "Grand mean = average across all months in the full record.")
-        else: st.info("No event-level data available.")
+        else: st.info(L("No event-level data available."))
 
     elif sel_trend == "Items by River Segment (Quarterly)":
         if "seg" in df.columns:
@@ -2595,7 +2852,7 @@ elif page == "Trends":
                 "Reveals whether segments track together or diverge over time.",
                 "Each line = one segment. Rising = more trash in that reach. Crossing lines = relative burden shifting.",
                 "Only sites with assigned segment labels are included.")
-        else: st.info("No segment data available.")
+        else: st.info(L("No segment data available."))
 
     elif sel_trend == "Weight of Trash Collected Over Time":
         if not wt.empty and "weight_oz" in wt.columns:
@@ -2609,10 +2866,10 @@ elif page == "Trends":
                     "Provides a physical mass perspective complementing the item count view.",
                     "Taller bars = more weight collected that month.",
                     "Not all survey events have weight data. Months with no bar may have item counts but no weight record.")
-        else: st.info("No weight data in the database.")
+        else: st.info(L("No weight data in the database."))
 
     section_title("Annual Summary Table")
-    st.markdown('<div class="sec-sub">Total items, number of events, and average items per event by calendar year. Sorted most recent first.</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sec-sub">{L("Total items, number of events, and average items per event by calendar year. Sorted most recent first.")}</div>', unsafe_allow_html=True)
     ann=df.dropna(subset=["year"]).groupby("year").agg(
         total_items=("n","sum"),
         events=("event_id","nunique") if "event_id" in df.columns else ("n","count")
@@ -2626,7 +2883,7 @@ elif page == "Trends":
     tbl_note("'Avg Items per Event' = total items that year ÷ distinct survey events. Higher values indicate heavier events, more thorough counting, or both. Years with fewer events have less reliable averages.")
 
     section_title("Monthly Breakdown Table")
-    st.markdown('<div class="sec-sub">Total items by calendar month across all years combined.</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sec-sub">{L("Total items by calendar month across all years combined.")}</div>', unsafe_allow_html=True)
     mon=df.dropna(subset=["month_name"]).groupby("month_name",observed=False)["n"].agg(total="sum",records="count").reset_index()
     mon.columns=["Month","Total Items","# Records"]
     st.dataframe(mon, use_container_width=True, height=280)
@@ -2646,15 +2903,15 @@ elif page == "Categories":
 
     # Interactive category toggle—lets user remove categories like Data Table
     all_cats_available = sorted(df["trash_group"].dropna().unique().tolist())
-    with st.expander("Toggle Categories (include/exclude from all figures)", expanded=False):
+    with st.expander(L("Toggle Categories (include/exclude from all figures)"), expanded=False):
         sel_cats = st.multiselect(
-            "Categories to include in figures",
+            L("Categories to include in figures"),
             options=all_cats_available,
             default=all_cats_available,
             key="cat_toggle"
         )
         if sel_cats != all_cats_available:
-            st.caption(f"Showing {len(sel_cats)} of {len(all_cats_available)} categories.")
+            st.caption(f"Mostrando {len(sel_cats)} de {len(all_cats_available)} categorías." if st.session_state.get("lang","es")=="es" else f"Showing {len(sel_cats)} of {len(all_cats_available)} categories.")
     if sel_cats:
         df = df[df["trash_group"].isin(sel_cats)].copy()
     total_all=max(df["n"].sum(),1)
@@ -2683,8 +2940,10 @@ elif page == "Categories":
         "Category Group Summary Table":                         ("Data Tables",        "All 19 groups with total, rank, %, records, mean, and all environmental classifications.", "Use as the primary summary table in any report or presentation."),
     }
 
-    st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:4px;">↓ Choose chart</div>', unsafe_allow_html=True)
-    sel_cat = st.selectbox("Select a figure to display", list(CAT_FIGS.keys()), key="cat_fig_sel", label_visibility="collapsed")
+    st.markdown(f'<div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:4px;">↓ {L("Choose chart")}</div>', unsafe_allow_html=True)
+    _cat_map = {L(k): k for k in CAT_FIGS.keys()}
+    sel_cat_disp = st.selectbox(L("Select a figure to display"), list(_cat_map.keys()), key="cat_fig_sel", label_visibility="collapsed")
+    sel_cat = _cat_map[sel_cat_disp]
     grp_label, desc, why = CAT_FIGS[sel_cat]
 
     # Description card
@@ -2692,10 +2951,10 @@ elif page == "Categories":
         f'<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};'
         f'border-radius:0 8px 8px 0;padding:14px 20px;margin:12px 0 20px;">'
         f'<div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:{C["muted"]};'
-        f'font-family:DM Mono,monospace;margin-bottom:4px;">{grp_label}</div>'
-        f'<div style="font-weight:700;font-size:14px;color:{C["text"]};margin-bottom:4px;">{sel_cat}</div>'
-        f'<p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>What it shows:</strong> {desc}</p>'
-        f'<p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>Why it matters:</strong> {why}</p>'
+        f'font-family:DM Mono,monospace;margin-bottom:4px;">{L(grp_label)}</div>'
+        f'<div style="font-weight:700;font-size:14px;color:{C["text"]};margin-bottom:4px;">{L(sel_cat)}</div>'
+        f'<p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>{L("What it shows")}:</strong> {L(desc)}</p>'
+        f'<p style="margin:3px 0;font-size:13px;color:{C["muted"]};"><strong>{L("Why it matters")}:</strong> {L(why)}</p>'
         f'</div>',
         unsafe_allow_html=True
     )
@@ -2878,7 +3137,7 @@ elif page == "Categories":
                 "Amber = Beer, Red = Liquor. Rising lines indicate increasing alcohol-related litter.",
                 "Beer bottles (789 total) and Liquor glass (598) are heavy items that persist in the environment for decades.")
         else:
-            st.info("No date data available for this figure.")
+            st.info(L("No date data available for this figure."))
 
     elif sel_cat == "Recyclable vs Non-Recyclable: Item Counts":
         rec_df=df.copy()
@@ -3042,7 +3301,7 @@ elif page == "Categories":
                 "Lines diverging upward = that category is growing. Parallel lines = uniform change across categories.",
                 "A declining Food Packaging trend would signal intervention success. An increasing Clothing trend may reflect changing encampment patterns along the corridor.")
         else:
-            st.info("No date data available.")
+            st.info(L("No date data available."))
 
     elif sel_cat == "Year over Year Change by Category":
         if "year" in df.columns and df["year"].notna().any():
@@ -3084,7 +3343,7 @@ elif page == "Categories":
                 "Stacked bar: the height of the full bar = total items that year. The color slices show which categories contributed most."
             )
         else:
-            st.info("No year data available.")
+            st.info(L("No year data available."))
 
     elif sel_cat == "Category Composition: How Mix Changed by Year":
         if "year" in df.columns and df["year"].notna().any():
@@ -3103,7 +3362,7 @@ elif page == "Categories":
                 "A growing color slice = that category is increasing as a proportion of all litter.",
                 "This is more ecologically meaningful than raw totals for detecting genuine composition shifts independent of survey frequency.")
         else:
-            st.info("No year data available.")
+            st.info(L("No year data available."))
 
     elif sel_cat == "Category Mix by River Segment":
         if "seg" in df.columns:
@@ -3120,7 +3379,7 @@ elif page == "Categories":
                 "A segment with unusually high Clothing indicates encampments. High Construction suggests illegal dumping nearby.",
                 "Only sites with confirmed segment labels are included. Unlabeled sites appear under 'Other' which is excluded here.")
         else:
-            st.info("No segment data.")
+            st.info(L("No segment data."))
 
     elif sel_cat == "Segment Specialization: Top Categories per Reach":
         if "seg" in df.columns:
@@ -3148,7 +3407,7 @@ elif page == "Categories":
                 "Compare the relative share of each category across segments—a category dominant in one segment but minor in another points to local source patterns.",
                 "Use alongside the Map page to connect geographic patterns with specific land uses, outfalls, or encampment locations along each reach.")
         else:
-            st.info("No segment data.")
+            st.info(L("No segment data."))
 
     elif sel_cat == "Full Item-Level Statistics Table":
         cat_color_legend()
@@ -3370,12 +3629,12 @@ elif page == "Locations":
         card_close()
 
     with loc_tab4:
-        seg_filter2=st.selectbox("Filter by River Segment",["All"]+SEG_ORDER[:-1], key="loc_seg_filter2")
-        view_order=st.radio("Sort order",["North to South (GPS)","By Total Items","By Mean per Plot"],horizontal=True)
+        seg_filter2=st.selectbox(L("Filter by River Segment"),[L("All")]+SEG_ORDER[:-1], key="loc_seg_filter2")
+        view_order=st.radio(L("Sort order"),[L("North to South (GPS)"),L("By Total Items"),L("By Mean per Plot")],horizontal=True)
 
         if len(ss)>0:
             tbl_full = ss.merge(site_st[["site_label","total","plot_records","avg_per_event"]],on="site_label",how="left",suffixes=("","_ev"))
-            if seg_filter2!="All": tbl_full=tbl_full[tbl_full["seg"]==seg_filter2]
+            if seg_filter2!=L("All") and seg_filter2!="All": tbl_full=tbl_full[tbl_full["seg"]==seg_filter2]
             if view_order=="North to South (GPS)":
                 tbl_full=tbl_full.sort_values(["north_rank","site_label"])
             elif view_order=="By Total Items":
@@ -3393,7 +3652,7 @@ elif page == "Locations":
             st.dataframe(disp, use_container_width=True, height=600)
             tbl_note("N Triplicate Sessions = number of exact site-date triplicate sessions at this site. Mean ± SD are computed across triplicate session means. SE = SD÷√N. CV = SD÷Mean×100. Range = Max−Min across triplicate session means. Sites without GPS coordinates may not have a North to South rank.")
         else:
-            filtered_st=site_st if seg_filter2=="All" else site_st[site_st["seg"]==seg_filter2]
+            filtered_st=site_st if seg_filter2 in (L("All"),"All") else site_st[site_st["seg"]==seg_filter2]
             disp=filtered_st[["site_label","seg","total","plot_records","avg_per_event","mean","sd","mx","mn_v"]].copy()
             disp.columns=["Location","Segment","Total Items","# Plot Records","Avg/Plot","Mean","SD","Max","Min"]
             disp=disp.round(1).reset_index(drop=True); disp.index=range(1,len(disp)+1)
@@ -3416,15 +3675,15 @@ elif page == "Data Table":
 
     # Two view modes—long (default) and wide (Excel-like)
     dt_view = st.radio(
-        "Table format",
-        ["Wide format—one row per event, each item as a column (like Excel)",
-         "Long format—one row per item per event"],
+        L("Table format"),
+        [L("Wide format—one row per event, each item as a column (like Excel)"),
+         L("Long format—one row per item per event")],
         horizontal=True, key="dt_view_mode"
     )
 
     section_title(T("sec_raw"))
     if "Wide" in dt_view:
-        st.markdown('<div class="sec-sub">One row per survey event. Columns show each of the 56 recorded item types plus event metadata—exactly like the original Excel format. Zero = item was not found that visit.</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="sec-sub">{L("One row per survey event. Columns show each of the 56 recorded item types plus event metadata—exactly like the original Excel format. Zero = item was not found that visit.")}</div>', unsafe_allow_html=True)
 
         # Build pivot: one row per event, items as columns
         if "trash_item" in lf.columns and "n" in lf.columns and "event_id" in lf.columns:
@@ -4058,10 +4317,10 @@ elif page == "Export":
             st.caption(sz)
         with ec2:
             if df_exp is not None and len(df_exp)>0:
-                st.download_button("Download CSV",data=df_exp.to_csv(index=False).encode(),
+                st.download_button(L("Download CSV"),data=df_exp.to_csv(index=False).encode(),
                     file_name=fname,mime="text/csv",use_container_width=True,key=f"dl_{fname}")
         if df_exp is not None and len(df_exp)>0:
-            with st.expander("Preview first 30 rows"):
+            with st.expander(L("Preview first 30 rows")):
                 st.dataframe(df_exp.head(30), use_container_width=True, height=220)
         st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
@@ -4245,9 +4504,9 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
         <img src="{LOGO_W}" style="height:36px;opacity:.85;">
         <div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;
-          color:rgba(255,255,255,.85);line-height:1.2;">Sonoran Institute</div>
+          color:rgba(255,255,255,1);line-height:1.2;">Sonoran Institute</div>
           <div style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:2px;
-          text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:2px;">Santa Cruz River Program</div>
+          text-transform:uppercase;color:rgba(255,255,255,.95);margin-top:2px;">{L("Santa Cruz River Program")}</div>
         </div>
       </div>
       <div class="ftr-copy">
@@ -4273,11 +4532,11 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
     <div>
       <span class="ftr-section-lbl">{T("ftr_our_work")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
-        <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank" class="ftr-a ftr-copy">Santa Cruz River</a>
-        <a href="https://sonoraninstitute.org/card/colorado-river-delta-program/" target="_blank" class="ftr-a ftr-copy">Colorado River Delta</a>
-        <a href="https://sonoraninstitute.org/card/growingwatersmart/" target="_blank" class="ftr-a ftr-copy">Growing Water Smart</a>
-        <a href="https://sonoraninstitute.org/2022/one-basin/" target="_blank" class="ftr-a ftr-copy">One Basin</a>
-        <a href="https://sonoraninstitute.org/resources/" target="_blank" class="ftr-a ftr-copy">Resources</a>
+        <a href="https://sonoraninstitute.org/card/santacruz/" target="_blank" class="ftr-a ftr-copy">{L("Santa Cruz River")}</a>
+        <a href="https://sonoraninstitute.org/card/colorado-river-delta-program/" target="_blank" class="ftr-a ftr-copy">{L("Colorado River Delta")}</a>
+        <a href="https://sonoraninstitute.org/card/growingwatersmart/" target="_blank" class="ftr-a ftr-copy">{L("Growing Water Smart")}</a>
+        <a href="https://sonoraninstitute.org/2022/one-basin/" target="_blank" class="ftr-a ftr-copy">{L("One Basin")}</a>
+        <a href="https://sonoraninstitute.org/resources/" target="_blank" class="ftr-a ftr-copy">{L("Resources")}</a>
       </div>
     </div>
     <div>
@@ -4285,10 +4544,10 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
         <a href="https://sonoraninstitute.org/our-story/mission-vision/" target="_blank" class="ftr-a ftr-copy">{T("ftr_mission")}</a>
         <a href="https://sonoraninstitute.org/our-story/people/" target="_blank" class="ftr-a ftr-copy">{T("ftr_people")}</a>
-        <a href="https://sonoraninstitute.org/our-story/board/" target="_blank" class="ftr-a ftr-copy">Board</a>
-        <a href="https://sonoraninstitute.org/our-story/partners/" target="_blank" class="ftr-a ftr-copy">Partners</a>
-        <a href="https://sonoraninstitute.org/our-story/financials/" target="_blank" class="ftr-a ftr-copy">Financials</a>
-        <a href="https://sonoraninstitute.org/careers/" target="_blank" class="ftr-a ftr-copy">Careers</a>
+        <a href="https://sonoraninstitute.org/our-story/board/" target="_blank" class="ftr-a ftr-copy">{L("Board")}</a>
+        <a href="https://sonoraninstitute.org/our-story/partners/" target="_blank" class="ftr-a ftr-copy">{L("Partners")}</a>
+        <a href="https://sonoraninstitute.org/our-story/financials/" target="_blank" class="ftr-a ftr-copy">{L("Financials")}</a>
+        <a href="https://sonoraninstitute.org/careers/" target="_blank" class="ftr-a ftr-copy">{L("Careers")}</a>
       </div>
     </div>
     <div>
@@ -4301,9 +4560,9 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       </div>
       <span class="ftr-section-lbl" style="margin-top:16px;">{T("ftr_resources")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
-        <a href="https://sonoraninstitute.org/category/sonoran-post/" target="_blank" class="ftr-a ftr-copy">Sonoran Updates</a>
+        <a href="https://sonoraninstitute.org/category/sonoran-post/" target="_blank" class="ftr-a ftr-copy">{L("Sonoran Updates")}</a>
         <a href="https://sonoraninstitute.org/resilient-west/" target="_blank" class="ftr-a ftr-copy">Resilient West</a>
-        <a href="https://sonoraninstitute.org/careers/" target="_blank" class="ftr-a ftr-copy">Careers</a>
+        <a href="https://sonoraninstitute.org/careers/" target="_blank" class="ftr-a ftr-copy">{L("Careers")}</a>
         <a href="https://sonoraninstitute.org/contact/" target="_blank" class="ftr-a ftr-copy">{T("ftr_contact")}</a>
       </div>
     </div>
@@ -4318,14 +4577,14 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       </div>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
         <a href="https://sonoraninstitute.org/donations/riversocks/" target="_blank" class="ftr-a ftr-copy">#RiverSocks</a>
-        <a href="https://sonoraninstitute.org/2024/ar-mer/" target="_blank" class="ftr-a ftr-copy">Endangered Rivers Report</a>
-        <a href="http://santacruzriver.org/letter-of-support/" target="_blank" class="ftr-a ftr-copy">Urban Wildlife Refuge</a>
+        <a href="https://sonoraninstitute.org/2024/ar-mer/" target="_blank" class="ftr-a ftr-copy">{L("Endangered Rivers Report")}</a>
+        <a href="http://santacruzriver.org/letter-of-support/" target="_blank" class="ftr-a ftr-copy">{L("Urban Wildlife Refuge")}</a>
       </div>
       <span class="ftr-section-lbl" style="margin-top:16px;">{T("ftr_reports")}</span>
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
-        <a href="https://sonoraninstitute.org/files/a-living-river-2025.pdf" target="_blank" class="ftr-a ftr-copy">Downtown Tucson to Marana 2025</a>
-        <a href="https://sonoraninstitute.org/files/a-living-river-supplementary-2025.pdf" target="_blank" class="ftr-a ftr-copy">Supplementary Data 2025</a>
-        <a href="https://sonoraninstitute.org/files/un-rio-vivo-2025.pdf" target="_blank" class="ftr-a ftr-copy">Un Río Vivo—Español 2025</a>
+        <a href="https://sonoraninstitute.org/files/a-living-river-2025.pdf" target="_blank" class="ftr-a ftr-copy">{L("Downtown Tucson to Marana 2025")}</a>
+        <a href="https://sonoraninstitute.org/files/a-living-river-supplementary-2025.pdf" target="_blank" class="ftr-a ftr-copy">{L("Supplementary Data 2025")}</a>
+        <a href="https://sonoraninstitute.org/files/un-rio-vivo-2025.pdf" target="_blank" class="ftr-a ftr-copy">{L("Un Río Vivo—Español 2025")}</a>
       </div>
     </div>
   </div>
