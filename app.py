@@ -645,7 +645,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:none;margin-bottom:0;box-shadow:none;}}
-.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 72px;
+.hdr-in{{max-width:1360px;margin:0 auto;padding:14px 96px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -715,7 +715,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:20px 72px 80px 72px;background:{C["cream"]};}}
+.body{{max-width:1360px;margin:0 auto;padding:24px 96px 80px 96px;background:{C["cream"]};}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -845,7 +845,7 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
       padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1480px;margin:0 auto;padding:0 72px;}}
+.ftr-in{{max-width:1360px;margin:0 auto;padding:0 96px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
 .ftr-a:hover{{color:{C["mint"]};}}
@@ -972,7 +972,7 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     <div style="
         background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 55%,{C["sage"]} 100%);
         border-radius:0;
-        padding:28px 56px 28px;
+        padding:32px 80px 32px;
         margin:0;
         position:relative;
         overflow:hidden;
@@ -1848,8 +1848,8 @@ div[role="radiogroup"] {{
     flex-wrap:nowrap !important;
     gap:0 !important;
     background:transparent !important;
-    padding:0 56px !important;justify-content:flex-start !important;
-    max-width:1480px !important;
+    padding:0 96px !important;justify-content:flex-start !important;
+    max-width:1360px !important;
     margin:0 auto !important;
     border:none !important;
     width:100% !important;
