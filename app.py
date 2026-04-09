@@ -857,6 +857,104 @@ TEXT_ES.update({
     "One row per survey event. Columns show each of the 56 recorded item types plus event metadata—exactly like the original Excel format. Zero = item was not found that visit.": "Una fila por evento de muestreo. Las columnas muestran cada uno de los 56 tipos de artículos registrados más los metadatos del evento, igual que en el formato original de Excel. Cero significa que ese artículo no apareció en esa visita."
 })
 
+TEXT_ES.update({
+    "All 19 Categories: Total Items Ranked": "Las 19 categorías, artículos totales ordenados",
+    "All 56 Items: Total Count Ranked": "Los 56 artículos, conteo total ordenado",
+    "Category Share: Proportional Breakdown": "Proporción por categoría",
+    "Top 10 Heaviest vs Bottom 9 Lightest Categories": "10 categorías más pesadas frente a 9 más ligeras",
+    "Average Items per Survey Event by Category": "Promedio de artículos por evento por categoría",
+    "Beverage Containers: Full Breakdown": "Envases de bebidas, desglose completo",
+    "Cups: Styrofoam vs Plastic vs Paper": "Vasos, unicel frente a plástico y papel",
+    "Food Packaging: All 11 Sub-Items": "Empaques de comida, los 11 subtipos",
+    "Alcohol Containers: Beer vs Liquor Over Time": "Envases de alcohol, cerveza frente a licor a lo largo del tiempo",
+    "Bulk and Large Debris: Appliances, Construction, Auto": "Residuos grandes y voluminosos, electrodomésticos, construcción y auto",
+    "Category Risk Profile: Composite View": "Perfil de riesgo por categoría",
+    "Category Trends Over Time: Top 6 (Quarterly)": "Tendencias por categoría a lo largo del tiempo, las 6 principales",
+    "Year over Year Change by Category": "Cambio por categoría de un año a otro",
+    "Category Composition: How Mix Changed by Year": "Composición por categoría, cómo cambió la mezcla por año",
+    "Category Mix by River Segment": "Mezcla de categorías por tramo del río",
+    "Segment Specialization: Top Categories per Reach": "Especialización por tramo, categorías principales por sección",
+    "Full Item-Level Statistics Table": "Tabla completa de estadísticas por artículo",
+    "Category Group Summary Table": "Tabla resumen por grupo de categoría",
+    "Totals & Overview": "Totales y resumen",
+    "Food & Beverage": "Alimentos y bebidas",
+    "Environmental Risk": "Riesgo ambiental",
+    "Trends by Category": "Tendencias por categoría",
+    "Geographic": "Geográfico",
+    "Data Tables": "Tablas de datos",
+    "Every trash category ranked by cumulative item count. Colors encode environmental classification.": "Cada categoría de basura ordenada por conteo acumulado de artículos. Los colores muestran la clasificación ambiental.",
+    "The most important summary figure—use it to explain which categories drive the problem to any audience.": "Es la figura resumen más importante. Sirve para explicar qué categorías impulsan el problema a cualquier audiencia.",
+    "Every recorded item type ranked by total count from most to least common across all survey events.": "Cada tipo de artículo registrado, ordenado por conteo total desde el más común hasta el menos común en todos los eventos de muestreo.",
+    "Pinpoints specific items for prevention campaigns, source identification, and partnership messaging.": "Ayuda a identificar artículos específicos para campañas de prevención, búsqueda de fuentes y mensajes con aliados.",
+    "Donut chart showing each category as a percentage of all recorded items.": "Gráfica de dona que muestra cada categoría como porcentaje de todos los artículos registrados.",
+    "Easy to present in reports—shows visually that Food Packaging dominates the composition.": "Es fácil de presentar en reportes y muestra visualmente que los empaques de comida dominan la composición.",
+    "All categories split into Recyclable vs Non-Recyclable per City of Tucson recycling guidelines.": "Todas las categorías separadas entre reciclable y no reciclable según las reglas de reciclaje de la Ciudad de Tucson.",
+    "Categories classified by whether they float and enter waterways during rain or flooding events.": "Categorías clasificadas según si flotan y entran al agua durante lluvias o inundaciones.",
+    "Items with direct public health risk: syringes, drug packaging, cigarettes, lighters, and toiletries.": "Artículos con riesgo directo para la salud pública, como jeringas, envolturas de drogas, cigarros, encendedores y artículos de higiene.",
+    "Large items requiring equipment: appliances, furniture, tires, car parts, construction debris.": "Artículos grandes que requieren equipo para retirarse, como electrodomésticos, muebles, llantas, autopartes y residuos de construcción.",
+    "Top: Heatmap shows each category's item count per year. Darker green = more items. Bottom: Stacked bar shows total burden per year with category breakdown.": "Arriba, el mapa de calor muestra el conteo de artículos por categoría y por año. Verde más oscuro significa más artículos. Abajo, la barra apilada muestra la carga total por año con el desglose por categoría.",
+    "100% stacked bars—each bar totals 100%, showing category SHARE each year.": "Barras apiladas al 100%. Cada barra suma 100% y muestra la proporción de cada categoría en cada año.",
+    "Stacked bars showing category composition across the four named river reaches.": "Barras apiladas que muestran la composición por categoría en los cuatro tramos nombrados del río.",
+    "Top categories for each river segment shown in individual tabs.": "Las categorías principales de cada tramo del río se muestran en pestañas separadas.",
+    "Average items per plot is a fairer metric than total count because it adjusts for how many strict triplicate sessions a site has.": "El promedio de artículos por parcela es una medida más justa que el conteo total porque ajusta por cuántas sesiones triplicadas estrictas tiene cada sitio.",
+    "Recyclable vs Non-Recyclable by Category": "Reciclable frente a no reciclable por categoría",
+    "Floatable vs Non-Floatable by Category": "Flotable frente a no flotable por categoría",
+    "Health Hazard Categories: Totals": "Categorías de riesgo para la salud, totales",
+    "Health Hazard Items: Sub-Types": "Artículos de riesgo para la salud, subtipos",
+    "Health Hazard Items Over Time": "Artículos de riesgo para la salud a lo largo del tiempo",
+    "Bulk Debris: Category Totals": "Residuos voluminosos, totales por categoría",
+    "Bulk Debris: All Sub-Types": "Residuos voluminosos, todos los subtipos",
+    "Annual Item Totals by Category (Heatmap)": "Totales anuales de artículos por categoría, mapa de calor",
+    "Annual Category Totals: Stacked Bar": "Totales anuales por categoría, barra apilada",
+    "Category Composition by Year: Proportional": "Composición por categoría por año, proporcional",
+    "Category Composition by River Segment": "Composición por categoría por tramo del río",
+    "Total Items": "Artículos totales",
+    "Share of Total (%)": "Proporción del total (%)",
+    "Segment": "Tramo",
+    "Quarter": "Trimestre",
+    "Items": "Artículos",
+    "Total": "Total",
+    "Classification based on <strong>City of Tucson recycling guidelines</strong>.": "Clasificación basada en las <strong>reglas de reciclaje de la Ciudad de Tucson</strong>.",
+    "Floatable items travel downstream during rain events and reach waterways.": "Los artículos flotables viajan río abajo durante las lluvias y llegan al agua.",
+    "" + L("Based on Sonoran Institute field classification.") + "": "Basado en la clasificación de campo del Sonoran Institute.",
+    "" + L("Blue = Recyclable") + "": "Azul = reciclable",
+    "" + L("Red = Non-Recyclable") + "": "Rojo = no reciclable",
+    "" + L("Blue = Floatable") + "": "Azul = flotable",
+    "" + L("Gray = Non-Floatable") + "": "Gris = no flotable",
+    "Yes": "Sí",
+    "No": "No",
+    "Non-Recyclable": "No reciclable",
+    "Non-Floatable": "No flotable"
+})
+
+SPANISH_MONTHS = {
+    1: "enero", 2: "febrero", 3: "marzo", 4: "abril", 5: "mayo", 6: "junio",
+    7: "julio", 8: "agosto", 9: "septiembre", 10: "octubre", 11: "noviembre", 12: "diciembre"
+}
+
+def fmt_month_year_local(val):
+    if val is None or val == "":
+        return ""
+    try:
+        ts = pd.Timestamp(val)
+        if st.session_state.get("lang", "en") == "es":
+            return f"{SPANISH_MONTHS.get(ts.month, ts.strftime('%B'))} {ts.year}"
+        return ts.strftime("%B %Y")
+    except Exception:
+        return str(val)
+
+
+def fmt_full_date_local(val):
+    if val is None or val == "":
+        return ""
+    try:
+        ts = pd.Timestamp(val)
+        if st.session_state.get("lang", "en") == "es":
+            return f"{SPANISH_MONTHS.get(ts.month, ts.strftime('%B'))} {ts.day:02d}, {ts.year}"
+        return ts.strftime("%B %d, %Y")
+    except Exception:
+        return str(val)
+
 
 TEXT_ES.update({
     "River Segments": "Tramos del río",
@@ -1268,10 +1366,11 @@ def show(fig, key=None):
     fig.update_layout(hoverlabel=dict(bgcolor="white",bordercolor="#d8ceba",font=dict(family="DM Sans, sans-serif",size=12.5,color="#18180f")))
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
     try:
-        _ldate = st.session_state.get("_db_latest_date","")
-        _today = date.today().strftime("%B %d, %Y")
-        if _ldate:
-            _badge = f"{T('data_current')} <strong>{_ldate}</strong> &nbsp;·&nbsp; {T('dashboard_refreshed')} {_today}"
+        _ldate = st.session_state.get("_db_latest_date", "")
+        _today = fmt_full_date_local(date.today())
+        _ldate_disp = fmt_month_year_local(_ldate) if _ldate else ""
+        if _ldate_disp:
+            _badge = f"{T('data_current')} <strong>{_ldate_disp}</strong> &nbsp;·&nbsp; {T('dashboard_refreshed')} {_today}"
         else:
             _badge = f"{T('dashboard_refreshed')} {_today}"
         st.markdown(
@@ -1334,13 +1433,15 @@ def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
       </div>
     </div>""", unsafe_allow_html=True)
 def card_open(title, subtitle=""):
-    sub = f'<div class="sec-sub" style="margin:0;line-height:1.7;color:{C["muted"]};max-width:920px;">{subtitle}</div>' if subtitle else ""
+    title = L(title)
+    subtitle = L(subtitle)
+    sub = f'<div class="sec-sub" style="margin:8px 0 0 0;line-height:1.85;color:{C["muted"]};max-width:980px;font-size:13px;">{subtitle}</div>' if subtitle else ""
     st.markdown(
         f"""
         <div style="background:white;border:1px solid {C['sand3']};border-radius:14px;
-                    padding:24px 34px 18px;margin:0 0 12px 0;
+                    padding:28px 38px 22px;margin:0 0 14px 0;
                     box-shadow:0 2px 10px rgba(0,0,0,.04);">
-            <div class="sec-hd" style="margin:0 0 8px 0;font-size:1.55rem;line-height:1.15;color:{C['text']};">{title}</div>
+            <div class="sec-hd" style="margin:0 0 10px 0;font-size:1.6rem;line-height:1.12;color:{C['text']};">{title}</div>
             {sub}
         </div>
         """,
@@ -1351,14 +1452,14 @@ def card_close():
     return
 
 def tbl_note(text):
-    st.markdown(f'<div class="tbl-note">{text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="tbl-note">{L(text)}</div>', unsafe_allow_html=True)
 
 def section_title(text):
-    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:36px 0 18px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:36px 0 18px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{L(text)}</div>', unsafe_allow_html=True)
 
 def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
     """Full-bleed hero banner—same size and aesthetic as About page."""
-    # Always use the main river image as background
+    eyebrow, title, subtitle = L(eyebrow), L(title), L(subtitle)
     bg_img = img_url or "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg"
     st.markdown(f"""
     <div style="
@@ -1794,9 +1895,9 @@ def load_data():
 
     # Add environmental classification columns
     tc["recyclable"]=tc["trash_group"].map(lambda g:
-        "Recyclable" if g in RECYCLABLE_GROUPS else "Non-Recyclable")
+        L("Recyclable") if g in RECYCLABLE_GROUPS else L("Non-Recyclable"))
     tc["floatable"]=tc["trash_group"].map(lambda g:
-        "Floatable" if g in FLOATABLE_GROUPS else "Non-Floatable")
+        L("Floatable") if g in FLOATABLE_GROUPS else L("Non-Floatable"))
     tc["beverage"]=tc["trash_group"].isin(BEVERAGE_GROUPS)
     tc["health_hazard"]=tc["trash_group"].isin(HEALTH_HAZARD_GROUPS)
     tc["bulk_debris"]=tc["trash_group"].isin(BULK_DEBRIS_GROUPS)
@@ -2154,7 +2255,7 @@ def last_updated_insight(df, chart_type="general", site=None, category=None):
     if df is None or df.empty or "date" not in df.columns: return
     latest = df["date"].dropna().max()
     if pd.isna(latest): return
-    as_of = latest.strftime("%B %Y")
+    as_of = fmt_month_year_local(latest)
     total = int(df["n"].sum()) if "n" in df.columns else 0
     es = st.session_state.get("lang", "es") == "es"
 
@@ -2183,19 +2284,19 @@ def cat_color_legend():
         f'background:white;border:1px solid {C["sand3"]};border-radius:8px;' +
         f'padding:10px 16px;margin:10px 0 16px;font-size:12px;">' +
         f'<span style="font-weight:700;font-size:11px;font-family:DM Mono,monospace;' +
-        f'text-transform:uppercase;letter-spacing:1px;color:{C["muted"]};margin-right:4px;">Category Colors:</span>' +
+        f'text-transform:uppercase;letter-spacing:1px;color:{C["muted"]};margin-right:4px;">{L("Category Colors:")}</span>' +
         f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
         f'<span style="width:11px;height:11px;border-radius:50%;background:{C["water"]};display:inline-block;"></span>' +
-        f'<span style="color:{C["text"]};">Recyclable</span> <span style="color:{C["muted"]};font-size:10px;">(City of Tucson standard)</span></span>' +
+        f'<span style="color:{C["text"]};">{L("Recyclable")}</span> <span style="color:{C["muted"]};font-size:10px;">({L("City of Tucson standard")})</span></span>' +
         f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
         f'<span style="width:11px;height:11px;border-radius:50%;background:{C["brick"]};display:inline-block;"></span>' +
-        f'<span style="color:{C["text"]};">Health Hazard</span> <span style="color:{C["muted"]};font-size:10px;">(Rx, Drugs, Nicotine, Toiletries)</span></span>' +
+        f'<span style="color:{C["text"]};">{L("Health Hazard")}</span> <span style="color:{C["muted"]};font-size:10px;">({L("Rx, Drugs, Nicotine, Toiletries")})</span></span>' +
         f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
         f'<span style="width:11px;height:11px;border-radius:50%;background:{C["amber"]};display:inline-block;"></span>' +
-        f'<span style="color:{C["text"]};">Floatable</span> <span style="color:{C["muted"]};font-size:10px;">(river health / ADEQ risk)</span></span>' +
+        f'<span style="color:{C["text"]};">{L("Floatable")}</span> <span style="color:{C["muted"]};font-size:10px;">({L("river health / ADEQ risk")})</span></span>' +
         f'<span style="display:inline-flex;align-items:center;gap:5px;">' +
         f'<span style="width:11px;height:11px;border-radius:50%;background:{C["green"]};display:inline-block;"></span>' +
-        f'<span style="color:{C["text"]};">Other Non-Recyclable</span></span>' +
+        f'<span style="color:{C["text"]};">{L("Other Non-Recyclable")}</span></span>' +
         '</div>',
         unsafe_allow_html=True
     )
@@ -2551,7 +2652,7 @@ except Exception:
 try:
     _latest = long["date"].dropna().max() if "date" in long.columns else None
     if _latest is not None and not pd.isna(_latest):
-        st.session_state["_db_latest_date"] = pd.Timestamp(_latest).strftime("%B %Y")
+        st.session_state["_db_latest_date"] = pd.Timestamp(_latest)
     else:
         st.session_state["_db_latest_date"] = ""
 except Exception:
@@ -3232,7 +3333,7 @@ elif page == "Categories":
     elif sel_cat == "Recyclable vs Non-Recyclable: Item Counts":
         rec_df=df.copy()
         rec_df["recyclable"]=rec_df["trash_group"].map(lambda g:
-            "Recyclable" if g in RECYCLABLE_GROUPS else "Non-Recyclable")
+            L("Recyclable") if g in RECYCLABLE_GROUPS else L("Non-Recyclable"))
         r_tot=rec_df.groupby("recyclable")["n"].sum().reset_index()
         r_tot["pct"]=(100*r_tot["n"]/max(r_tot["n"].sum(),1)).round(1)
         r_grp=rec_df.groupby(["recyclable","trash_group"])["n"].sum().reset_index()
@@ -3252,9 +3353,9 @@ elif page == "Categories":
             fb(fig,"Total Items","",h=max(540,30*len(r_grp_s)),title="Recyclable vs Non-Recyclable by Category"); show(fig,"rec_bar")
         st.markdown(
             f'<div style="font-size:12px;padding:8px 14px;background:{C["sand"]};border-radius:6px;margin:8px 0;color:{C["muted"]};">'
-            f'Classification based on <strong>City of Tucson recycling guidelines</strong>. '
-            f'<span style="color:{C["water"]};font-weight:700;">Blue = Recyclable</span> (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Paper Litter) &nbsp;|&nbsp; '
-            f'<span style="color:{C["brick"]};font-weight:700;">Red = Non-Recyclable</span>'
+            f'" + L("Classification based on <strong>City of Tucson recycling guidelines</strong>.") + " '
+            f'<span style="color:{C["water"]};font-weight:700;">" + L("Blue = Recyclable") + "</span> (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Paper Litter) &nbsp;|&nbsp; '
+            f'<span style="color:{C["brick"]};font-weight:700;">" + L("Red = Non-Recyclable") + "</span>'
             f'</div>',
             unsafe_allow_html=True
         )
@@ -3266,7 +3367,7 @@ elif page == "Categories":
     elif sel_cat == "Floatable vs Non-Floatable: River Health Risk":
         fl_df=df.copy()
         fl_df["floatable"]=fl_df["trash_group"].map(lambda g:
-            "Floatable" if g in FLOATABLE_GROUPS else "Non-Floatable")
+            L("Floatable") if g in FLOATABLE_GROUPS else L("Non-Floatable"))
         f_tot=fl_df.groupby("floatable")["n"].sum().reset_index()
         f_tot["pct"]=(100*f_tot["n"]/max(f_tot["n"].sum(),1)).round(1)
         f_grp=fl_df.groupby(["floatable","trash_group"])["n"].sum().reset_index()
@@ -3286,10 +3387,10 @@ elif page == "Categories":
             fb(fig,"Total Items","",h=max(540,30*len(f_grp_s)),title="Floatable vs Non-Floatable by Category"); show(fig,"flt_bar")
         st.markdown(
             f'<div style="font-size:12px;padding:8px 14px;background:{C["sand"]};border-radius:6px;margin:8px 0;color:{C["muted"]};">'
-            f'Floatable items travel downstream during rain events and reach waterways. '
-            f'<span style="color:#2471a3;font-weight:700;">Blue = Floatable</span> &nbsp;|&nbsp; '
-            f'<span style="color:#7f8c8d;font-weight:700;">Gray = Non-Floatable</span> &nbsp;|&nbsp; '
-            f'Based on Sonoran Institute field classification.'
+            f'" + L("Floatable items travel downstream during rain events and reach waterways.") + " '
+            f'<span style="color:#2471a3;font-weight:700;">" + L("Blue = Floatable") + "</span> &nbsp;|&nbsp; '
+            f'<span style="color:#7f8c8d;font-weight:700;">" + L("Gray = Non-Floatable") + "</span> &nbsp;|&nbsp; '
+            f'" + L("Based on Sonoran Institute field classification.") + "'
             f'</div>',
             unsafe_allow_html=True
         )
@@ -3357,9 +3458,9 @@ elif page == "Categories":
             if g not in df["trash_group"].unique(): continue
             total=df[df["trash_group"]==g]["n"].sum()
             risk_data.append({"Category":g,"Total Items":int(total),
-                "Recyclable": "Yes" if g in RECYCLABLE_GROUPS else "No",
-                "Floatable":  "Yes" if g in FLOATABLE_GROUPS else "No",
-                "Health Hazard": "Yes" if g in HEALTH_HAZARD_GROUPS else "No",
+                "Recyclable": L("Yes") if g in RECYCLABLE_GROUPS else L("No"),
+                "Floatable":  L("Yes") if g in FLOATABLE_GROUPS else L("No"),
+                "Health Hazard": L("Yes") if g in HEALTH_HAZARD_GROUPS else L("No"),
                 "Bulk Debris": "Yes" if g in BULK_DEBRIS_GROUPS else "No"})
         risk_df=pd.DataFrame(risk_data)
         risk_melt=risk_df.melt(id_vars=["Category","Total Items"],
@@ -3503,9 +3604,9 @@ elif page == "Categories":
         cat_color_legend()
         item_tbl=df.groupby(["trash_group","trash_item"])["n"].agg(Total="sum",Records="count",Mean="mean").reset_index()
         item_tbl["% of All Items"]=(100*item_tbl["Total"]/total_all).round(2)
-        item_tbl["Recyclable"]=item_tbl["trash_group"].map(lambda g: "Yes" if g in RECYCLABLE_GROUPS else "No")
-        item_tbl["Floatable"]=item_tbl["trash_group"].map(lambda g: "Yes" if g in FLOATABLE_GROUPS else "No")
-        item_tbl["Health Hazard"]=item_tbl["trash_group"].map(lambda g: "Yes" if g in HEALTH_HAZARD_GROUPS else "No")
+        item_tbl["Recyclable"]=item_tbl["trash_group"].map(lambda g: L("Yes") if g in RECYCLABLE_GROUPS else L("No"))
+        item_tbl["Floatable"]=item_tbl["trash_group"].map(lambda g: L("Yes") if g in FLOATABLE_GROUPS else L("No"))
+        item_tbl["Health Hazard"]=item_tbl["trash_group"].map(lambda g: L("Yes") if g in HEALTH_HAZARD_GROUPS else L("No"))
         item_tbl=item_tbl[item_tbl["Total"]>0].sort_values("Total",ascending=False).round(2).reset_index(drop=True)
         item_tbl.index=range(1,len(item_tbl)+1)
         item_tbl.columns=["Category","Item","Total Count","# Records","Mean per Record","% of All Items","Recyclable","Floatable","Health Hazard"]
@@ -3517,9 +3618,9 @@ elif page == "Categories":
         grp_tbl=df.groupby("trash_group")["n"].agg(Total="sum",Records="count",Mean="mean").reset_index()
         grp_tbl["% of Total"]=(100*grp_tbl["Total"]/total_all).round(1)
         grp_tbl["Rank"]=grp_tbl["Total"].rank(ascending=False).astype(int)
-        grp_tbl["Recyclable"]=grp_tbl["trash_group"].map(lambda g: "Yes" if g in RECYCLABLE_GROUPS else "No")
-        grp_tbl["Floatable"]=grp_tbl["trash_group"].map(lambda g: "Yes" if g in FLOATABLE_GROUPS else "No")
-        grp_tbl["Health Hazard"]=grp_tbl["trash_group"].map(lambda g: "Yes" if g in HEALTH_HAZARD_GROUPS else "No")
+        grp_tbl["Recyclable"]=grp_tbl["trash_group"].map(lambda g: L("Yes") if g in RECYCLABLE_GROUPS else L("No"))
+        grp_tbl["Floatable"]=grp_tbl["trash_group"].map(lambda g: L("Yes") if g in FLOATABLE_GROUPS else L("No"))
+        grp_tbl["Health Hazard"]=grp_tbl["trash_group"].map(lambda g: L("Yes") if g in HEALTH_HAZARD_GROUPS else L("No"))
         grp_tbl=grp_tbl[grp_tbl["Total"]>0].sort_values("Total",ascending=False).round(2).reset_index(drop=True)
         grp_tbl.index=range(1,len(grp_tbl)+1)
         grp_tbl.columns=["Category","Total Items","# Records","Mean per Record","% of Total","Rank","Recyclable","Floatable","Health Hazard"]
