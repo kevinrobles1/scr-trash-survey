@@ -1,6 +1,6 @@
 # ══════════════════════════════════════════════════════════════════
 # Santa Cruz River Trash Survey Dashboard  v5.0
-# Sonoran Institute — River Restoration Program
+# Sonoran Institute—River Restoration Program
 # ══════════════════════════════════════════════════════════════════
 import json, html, re, hashlib, secrets
 from datetime import datetime, date
@@ -37,15 +37,10 @@ SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito","Other"]
 SEG_COLORS = {"North Reach":"#2980b9","Central Reach":"#27ae60","South Reach":"#e67e22","Rillito":"#8e44ad","Other":"#7f8c8d"}
 SEG_LIGHT  = {"North Reach":"#d6eaf8","Central Reach":"#d5f5e3","South Reach":"#fdebd0","Rillito":"#e8daef","Other":"#f0f0f0"}
 
-# Phantom items accidentally migrated as trash — excluded at load time
+# Phantom items accidentally migrated as trash—excluded at load time
 PHANTOM_ITEMS = {"Event Id","Date","Surveyed M2","Complete?",
     "Total Items","Total Items/M2","Total Items/m2"}
 PHANTOM_GROUPS = {"Ungrouped"}
-
-# Display/data cleanup fixes verified against the source workbook
-SITE_LABEL_FIXES = {
-    "NE Side of SCR at Tuboc Bridge": "NE Side of SCR at Tubac Bridge",
-}
 
 # Every group:item pair exactly as stored in Supabase (title-cased by migration)
 TRASH_GROUPS = {
@@ -80,16 +75,16 @@ TRASH_GROUPS = {
 RECYCLABLE_GROUPS  = {"Beer","Liquor","Soda","Water","Sports Drinks","Juice","Paper Litter"}
 NON_RECYCLABLE_GROUPS = {"Plastic Bags","Cups","Food Packaging","Nicotine","Toiletries",
     "Rx, Drugs","Toys, Games","Clothing","Auto","Construction","Appliances","Misc"}
-# Items that enter waterways during rain events — river health relevance
+# Items that enter waterways during rain events—river health relevance
 FLOATABLE_GROUPS   = {"Plastic Bags","Cups","Soda","Water","Sports Drinks","Juice",
     "Food Packaging","Paper Litter"}
 NON_FLOATABLE_GROUPS = {"Beer","Liquor","Nicotine","Toiletries","Rx, Drugs","Toys, Games",
     "Clothing","Auto","Construction","Appliances","Misc"}
 # Direct public health risk
 HEALTH_HAZARD_GROUPS = {"Rx, Drugs","Nicotine","Toiletries"}
-# Single-use beverage containers — policy relevance
+# Single-use beverage containers—policy relevance
 BEVERAGE_GROUPS    = {"Beer","Liquor","Soda","Water","Sports Drinks","Juice","Cups"}
-# Bulk/large debris — removal requires equipment
+# Bulk/large debris—removal requires equipment
 BULK_DEBRIS_GROUPS = {"Appliances","Construction","Auto"}
 # Display order for charts (most to least by real totals)
 GROUP_ORDER = ["Food Packaging","Clothing","Plastic Bags","Cups","Misc","Water","Nicotine",
@@ -114,7 +109,7 @@ TR = {
         # Auth
         "vol_tab": "Volunteer Entry",
         "vol_welcome": "Welcome, Volunteer!",
-        "vol_welcome_sub": "You don't need an account to submit trash counts. Fill in your information below and click <strong>Start</strong> to access the data entry form. You will only be able to submit counts — you cannot view, edit, or delete existing data.",
+        "vol_welcome_sub": "You don't need an account to submit trash counts. Fill in your information below and click <strong>Start</strong> to access the data entry form. You will only be able to submit counts—you cannot view, edit, or delete existing data.",
         "vol_lang_prompt": "Which language would you like to use today?",
         "vol_fullname": "Your Full Name *",
         "vol_org": "Organization / Group",
@@ -141,7 +136,7 @@ TR = {
         "recorder_lbl": "Recorder",
         "recorder_other": "Recorder full name (fill in if not listed above)",
         "recorder_other_ph": "e.g. Maria Garcia",
-        "recorder_other_help": "Only needed when 'Other — type below' is selected.",
+        "recorder_other_help": "Only needed when 'Other—type below' is selected.",
         "location_existing": "Survey Location (existing)",
         "location_new": "Or enter a new location name",
         "counts_title": "Trash Item Counts",
@@ -193,23 +188,23 @@ TR = {
         "about_p1":"The Santa Cruz River is one of the most ecologically significant waterways in the American Southwest. For more than <strong>12,000 years</strong> it has sustained human communities.",
         "about_p2":"After decades of overextraction and pollution, the river is experiencing a remarkable recovery. Today approximately <strong>35 miles of perennial flow</strong> support the return of native fish including the endangered Gila topminnow.",
         "about_p3":"<strong>Trash is a direct threat to this recovery.</strong> Litter degrades water quality, entangles wildlife, fragments into microplastics, and undermines the investment in restoration.",
-        "about_p4":"The Sonoran Institute trash survey program exists to <strong>quantify this threat with scientific precision</strong> — creating the longitudinal data record needed to report to regulatory agencies and secure restoration funding.",
+        "about_p4":"The Sonoran Institute trash survey program exists to <strong>quantify this threat with scientific precision</strong>—creating the longitudinal data record needed to report to regulatory agencies and secure restoration funding.",
         "about_db_p1":"The trash survey protocol uses <strong>plot-based sampling</strong>: fixed, measured areas surveyed at consistent locations. Each field visit counts and categorizes every piece of litter found using a standardized <strong>56-item, 19-category protocol</strong>.",
         "about_db_p2":"Data collection began in September 2020, creating a <strong>longitudinal record</strong> that captures seasonal patterns, post-monsoon debris, encampment-related waste, and how specific reaches respond to cleanup interventions.",
         "about_db_p3":"This dashboard is the first cloud-hosted, real-time interface for this dataset. Previously, all data lived in a single local Excel workbook. The move to Supabase means the entire team can access, enter, and analyze records from any device.",
         "about_db_p4":"The <strong>19 survey categories</strong> cover the full range of urban litter: food packaging (~33%), clothing (encampment indicator), beverage containers (recyclable fraction), pharmaceutical materials (public health concern), and large debris including appliances and construction waste.",
         "why_title":"Why This Data Matters and What It Can Achieve",
-        "why_sub":"The Santa Cruz River runs through the heart of Tucson — one of the few desert rivers in the Southwest with restored perennial flow. Litter that accumulates on its banks washes directly into that flow during monsoon season, carrying plastic, chemicals, and debris into a recovering ecosystem.",
+        "why_sub":"The Santa Cruz River runs through the heart of Tucson—one of the few desert rivers in the Southwest with restored perennial flow. Litter that accumulates on its banks washes directly into that flow during monsoon season, carrying plastic, chemicals, and debris into a recovering ecosystem.",
         "impact_reg_title":"Regulatory Compliance",
         "impact_reg":"ADEQ stormwater permits and EPA Section 319 require proof that litter is being actively managed. This dataset provides that with standardized methods, consistent locations, and four years of records.",
         "impact_grant_title":"Grant Funding",
-        "impact_grant":"This database shows which river reaches carry the most trash, which categories dominate, and whether prior cleanups made a difference — the exact framing funders need.",
+        "impact_grant":"This database shows which river reaches carry the most trash, which categories dominate, and whether prior cleanups made a difference—the exact framing funders need.",
         "impact_health_title":"Public Health",
         "impact_health":"Syringes found during surveys are a safety risk for everyone who walks the river corridor. Documented counts support requests for social service intervention and field crew safety protocols.",
         "impact_cleanup_title":"Targeted Cleanup",
         "impact_cleanup":"Some sites are consistently heavily littered. Others spike after storms or encampments. Longitudinal data is the only way to tell them apart and allocate cleanup resources effectively.",
         "impact_policy_title":"Policy & Advocacy",
-        "impact_policy":"About 63% of items float, meaning monsoon storms carry them into the river. About 16% are recyclable under Tucson standards but end up as litter — concrete numbers for bottle deposit and stormwater policy arguments.",
+        "impact_policy":"About 63% of items float, meaning monsoon storms carry them into the river. About 16% are recyclable under Tucson standards but end up as litter—concrete numbers for bottle deposit and stormwater policy arguments.",
         "impact_refuge_title":"Urban Wildlife Refuge",
         "impact_refuge":"Sonoran Institute and The Wilderness Society are working to establish a Santa Cruz River Urban National Wildlife Refuge. A four-year litter monitoring record supports that case with the U.S. Fish and Wildlife Service.",
         "col_category":"Category","col_total":"Total Items","col_records":"# Records",
@@ -226,15 +221,15 @@ TR = {
         "dashboard_refreshed":"Dashboard refreshed",
         "data_current":"Data current as of",
         "items":"items",
-        # About — hero
+        # About—hero
         "about_hero_eyebrow":"Sonoran Institute · Tucson, Arizona",
         "about_hero_title":"Santa Cruz River Trash Survey Program",
-        "about_hero_sub":"A longitudinal monitoring program tracking litter and debris along the Santa Cruz River corridor in Tucson, Arizona, building the scientific record needed to protect a living desert river.",
+        "about_hero_sub":"A longitudinal monitoring program tracking litter and debris along the Santa Cruz River corridor in Tucson, Arizona—building the scientific record needed to protect a living desert river.",
         "about_scroll":"Scroll right to see more \u2192",
         "about_photo_caption":"Santa Cruz River corridor, Tucson, AZ \u00b7 \u00a9Bill Hatcher / Sonoran Institute",
         "about_field_caption":"Field survey crew, Santa Cruz River corridor, 2019",
         "stat_items_lbl":"Items Recorded","stat_items_note":"across all survey events",
-        "stat_events_lbl":"Survey Events","stat_events_note":"individual field visits",
+        "stat_events_lbl":"Plot Records","stat_events_note":"individual surveyed plots",
         "stat_locs_lbl":"Unique Locations","stat_locs_note":"along the corridor",
         "stat_period_lbl":"Survey Period","stat_period_note":"longitudinal record",
         "reason_reg_title":"Regulatory Reporting",
@@ -248,11 +243,11 @@ TR = {
         "reason_policy_title":"Policy Advocacy",
         "reason_policy":"The recyclable fraction (~16%) and floatable fraction (~63%) are direct arguments for bottle bills, extended producer responsibility legislation, and stormwater ordinances.",
         "reason_refuge_title":"Urban Wildlife Refuge Designation",
-        "reason_refuge":"Demonstrating active protection — not just restoration — is essential to securing the Urban National Wildlife Refuge designation Sonoran Institute is pursuing with USFWS.",
-        "about_quote":"The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years — and can flow again with your support.",
+        "reason_refuge":"Demonstrating active protection—not just restoration—is essential to securing the Urban National Wildlife Refuge designation Sonoran Institute is pursuing with USFWS.",
+        "about_quote":"The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years—and can flow again with your support.",
         "about_quote_attr":"\u2014 Sonoran Institute",
         "team_role_luke":"Program Director",
-        "team_desc_luke":"Directs the Santa Cruz River Restoration Program, Sonoran Institute",
+        "team_desc_luke":"Luke directs the Santa Cruz River Restoration Program, Sonoran Institute",
         "team_role_kevin":"Database Specialist \u00b7 RISE Intern",
         "team_desc_kevin":"Dashboard development, data migration, and analysis infrastructure",
         "team_name_field":"Field Survey Team",
@@ -274,11 +269,11 @@ TR = {
         "of_all_data":"Of All Data",
         # KPI strip
         "kpi_items":"Total Items Recorded","kpi_items_note":"across all survey events",
-        "kpi_events":"Survey Events","kpi_events_note":"individual field visits",
+        "kpi_events":"Plot Records","kpi_events_note":"individual surveyed plots",
         "kpi_locs":"Unique Locations","kpi_locs_note":"registered site names",
         "kpi_cats":"Trash Categories","kpi_cats_note":"of 19 groups · 56 items",
         "kpi_period":"Survey Period","kpi_period_note":"date range",
-        # Page banners — all pages
+        # Page banners—all pages
         "loc_ey":"Site Analysis",
         "loc_title":"Where the Trash Is and How Much",
         "loc_sub":"Trash burden across the 136 recorded survey locations, ordered North to South.",
@@ -296,7 +291,7 @@ TR = {
         "cat_sub":"Deep dive into the 19 category groups and 56 individual item types recorded across all surveys.",
         "ov_ey":"Sonoran Institute · Tucson, Arizona",
         "ov_title":"Santa Cruz River Trash Survey",
-        "ov_sub":"Longitudinal survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across multiple sites and reaches — program led by Luke Cole, Sonoran Institute.",
+        "ov_sub":"Longitudinal survey data collected along the Santa Cruz River corridor, Tucson, AZ. Plot-based surveys across multiple sites and reaches—program led by Luke Cole, Sonoran Institute.",
         "map_ey":"Survey Site Map",
         "map_title":"Where We Survey",
         "map_sub":"GPS locations of all recorded survey sites along the Santa Cruz River corridor and its tributaries.",
@@ -341,7 +336,7 @@ TR = {
         "recorder_lbl": "Registrador/a",
         "recorder_other": "Nombre completo del registrador (si no está en la lista)",
         "recorder_other_ph": "p.ej. María García",
-        "recorder_other_help": "Solo necesario si seleccionaste 'Otro — escribir abajo'.",
+        "recorder_other_help": "Solo necesario si seleccionaste 'Otro—escribir abajo'.",
         "location_existing": "Ubicación del Levantamiento (existente)",
         "location_new": "O ingresa un nuevo nombre de ubicación",
         "counts_title": "Conteo de Artículos de Basura",
@@ -354,7 +349,7 @@ TR = {
         "site_required": "Se requiere la ubicación del levantamiento.",
         "zero_warning": "No se ingresaron artículos. ¿Estás seguro/a de que deseas enviar un evento con conteo cero?",
         # Review
-        "review_title": "Revisa Tu Entrada — Verifica Todo Antes de Enviar",
+        "review_title": "Revisa Tu Entrada—Verifica Todo Antes de Enviar",
         "review_event_id": "ID del Evento",
         "review_date": "Fecha del Levantamiento",
         "review_location": "Ubicación",
@@ -386,20 +381,20 @@ TR = {
         "map_mode_seg":"Por Segmento del Río",
         "map_mode_burden":"Por Carga de Basura",
         # About page text
-        "why_river_title":"Por Qué Este Río — y Por Qué Estos Datos",
+        "why_river_title":"Por Qué Este Río—y Por Qué Estos Datos",
         "about_db_title":"Acerca de Esta Base de Datos",
         "about_why_title":"Por Qué Importan los Datos Longitudinales de Basura",
         "about_team_title":"Equipo del Programa",
-        "about_p1":"El Río Santa Cruz es una de las vías fluviales más ecológicamente significativas del suroeste americano. Por más de <strong>12,000 años</strong> ha sostenido comunidades humanas — desde la Nación Tohono O'odham, que ha administrado estas tierras desde tiempos inmemoriales, hasta el millón de residentes de Tucson hoy.",
-        "about_p2":"Después de décadas de sobreexplotación y contaminación, el río está experimentando una recuperación notable. Hoy, aproximadamente <strong>38 millas de flujo perenne</strong> sostienen el regreso de peces nativos incluyendo el amenazado Gila topminnow, bosques de álamo-sauce, aves migratorias y reptiles. El Proyecto Heritage de 2019 creó un tramo fluvial a través del centro de Tucson por primera vez en una generación.",
+        "about_p1":"El Río Santa Cruz es una de las vías fluviales más ecológicamente significativas del suroeste americano. Por más de <strong>12,000 años</strong> ha sostenido comunidades humanas—desde la Nación Tohono O'odham, que ha administrado estas tierras desde tiempos inmemoriales, hasta el millón de residentes de Tucson hoy.",
+        "about_p2":"Después de décadas de sobreexplotación y contaminación, el río está experimentando una recuperación notable. Hoy, aproximadamente <strong>35 millas de flujo perenne</strong> sostienen el regreso de peces nativos incluyendo el amenazado Gila topminnow, bosques de álamo-sauce, aves migratorias y reptiles. El Proyecto Heritage de 2019 creó un tramo fluvial a través del centro de Tucson por primera vez en una generación.",
         "about_p3":"<strong>La basura es una amenaza directa para esta recuperación.</strong> Los desechos degradan la calidad del agua, enredan la fauna silvestre, se fragmentan en microplásticos y socavan la inversión en restauración. Durante los eventos de monzón, los artículos flotantes viajan aguas abajo hacia el propio río.",
-        "about_p4":"El programa de encuestas de basura del Sonoran Institute existe para <strong>cuantificar esta amenaza con precisión científica</strong> — creando el registro de datos longitudinales necesario para reportar a agencias reguladoras, asegurar fondos de restauración, diseñar programas de limpieza dirigidos y demostrar progreso medible con el tiempo.",
+        "about_p4":"El programa de encuestas de basura del Sonoran Institute existe para <strong>cuantificar esta amenaza con precisión científica</strong>—creando el registro de datos longitudinales necesario para reportar a agencias reguladoras, asegurar fondos de restauración, diseñar programas de limpieza dirigidos y demostrar progreso medible con el tiempo.",
         "about_db_p1":"El protocolo de encuesta de basura utiliza <strong>muestreo basado en parcelas</strong>: áreas medidas y fijas encuestadas en ubicaciones consistentes. Cada visita de campo cuenta y categoriza cada pieza de basura encontrada usando un protocolo estandarizado de <strong>56 artículos y 19 categorías</strong>.",
         "about_db_p2":"La recolección de datos comenzó en septiembre de 2020, creando un <strong>registro longitudinal</strong> que captura patrones estacionales, desechos post-monzón, basura relacionada con campamentos y cómo los tramos específicos responden a las intervenciones de limpieza.",
         "about_db_p3":"Este panel es la primera interfaz en tiempo real alojada en la nube para este conjunto de datos. Anteriormente, todos los datos vivían en un único libro de Excel local. El traslado a Supabase significa que todo el equipo del Sonoran Institute puede ahora acceder, ingresar y analizar registros desde cualquier dispositivo.",
         "about_db_p4":"Las <strong>19 categorías de encuesta</strong> cubren la gama completa de basura urbana: empaques de alimentos (aproximadamente un tercio de todos los artículos), ropa y tela (un indicador de campamentos), envases de bebidas (la fracción reciclable que termina como basura), materiales farmacéuticos y de drogas (una preocupación directa de salud pública), y desechos grandes como electrodomésticos y materiales de construcción.",
         # Overview impact panel
-        "why_title":"Por Qué Importan Estos Datos — y Qué Pueden Lograr",
+        "why_title":"Por Qué Importan Estos Datos—y Qué Pueden Lograr",
         "why_sub":"El Río Santa Cruz es una de las vías fluviales más significativas y amenazadas del suroeste americano. Lo que sucede con la basura en sus orillas determina lo que sucede con su agua, su fauna y las comunidades que dependen de él.",
         "impact_reg_title":"Cumplimiento Regulatorio",
         "impact_reg":"Los permisos de aguas pluviales de ADEQ y la Sección 319 de la EPA requieren pruebas documentadas de gestión activa de basura. Esta base de datos es esa evidencia, con metodología estandarizada y registros de múltiples años que satisfacen los requisitos de las agencias.",
@@ -423,41 +418,41 @@ TR = {
         "sec_cat_summary":"Tabla Resumen por Categoría",
         "sec_cat_summary_sub":"Total de artículos, número de registros individuales y promedio por registro para cada categoría de basura.",
         "sec_raw":"Registros de Encuesta",
-        "sec_filt_cat":"Resumen Filtrado — Desglose por Categoría",
-        "sec_filt_loc":"Resumen Filtrado — Desglose por Ubicación",
+        "sec_filt_cat":"Resumen Filtrado—Desglose por Categoría",
+        "sec_filt_loc":"Resumen Filtrado—Desglose por Ubicación",
         "last_updated":"Datos actualizados hasta",
         "dashboard_refreshed":"Panel actualizado el",
         "data_current":"Datos vigentes a",
         "items":"artículos",
-        # About — hero
+        # About—hero
         "about_hero_eyebrow":"Sonoran Institute · Tucson, Arizona",
         "about_hero_title":"Programa de Monitoreo de Basura del Río Santa Cruz",
-        "about_hero_sub":"Un programa de monitoreo longitudinal que rastrea basura y desechos a lo largo del corredor del Río Santa Cruz en Tucson, Arizona — construyendo el registro científico necesario para proteger un río vivo del desierto.",
+        "about_hero_sub":"Un programa de monitoreo longitudinal que rastrea basura y desechos a lo largo del corredor del Río Santa Cruz en Tucson, Arizona—construyendo el registro científico necesario para proteger un río vivo del desierto.",
         "about_scroll":"Desliza para ver más fotos →",
         "about_photo_caption":"Corredor del Río Santa Cruz, Tucson, AZ · ©Bill Hatcher / Sonoran Institute",
         "about_field_caption":"Equipo de encuesta de campo, corredor del Río Santa Cruz, 2019",
-        # About — db stats
+        # About—db stats
         "stat_items_lbl":"Artículos Registrados","stat_items_note":"en todos los eventos de encuesta",
-        "stat_events_lbl":"Eventos de Encuesta","stat_events_note":"visitas de campo individuales",
+        "stat_events_lbl":"Registros de Parcela","stat_events_note":"parcelas muestreadas individuales",
         "stat_locs_lbl":"Ubicaciones Únicas","stat_locs_note":"a lo largo del corredor",
         "stat_period_lbl":"Período de Encuesta","stat_period_note":"registro longitudinal",
-        # About — why data matters
+        # About—why data matters
         "reason_reg_title":"Informes Regulatorios",
         "reason_reg":"El cumplimiento del permiso de aguas pluviales de ADEQ y los informes de la Sección 319 de la EPA requieren evidencia documentada de la gestión de basura. Esta base de datos la proporciona con metodología verificable y registros de múltiples años.",
         "reason_grant_title":"Financiamiento de Subvenciones",
-        "reason_grant":"Las subvenciones federales y de fundaciones para la restauración de ríos requieren datos de referencia y capacidad de monitoreo demostrada. Este conjunto de datos establece ambos — mostrando dónde el problema es mayor y si las intervenciones producen cambios medibles.",
+        "reason_grant":"Las subvenciones federales y de fundaciones para la restauración de ríos requieren datos de referencia y capacidad de monitoreo demostrada. Este conjunto de datos establece ambos—mostrando dónde el problema es mayor y si las intervenciones producen cambios medibles.",
         "reason_cleanup_title":"Diseño de Limpieza Dirigida",
-        "reason_cleanup":"No todos los sitios son iguales. Los datos identifican puntos críticos crónicos frente a sitios de vertido episódico — que requieren respuestas diferentes que no se pueden diseñar sin datos longitudinales sistemáticos.",
+        "reason_cleanup":"No todos los sitios son iguales. Los datos identifican puntos críticos crónicos frente a sitios de vertido episódico—que requieren respuestas diferentes que no se pueden diseñar sin datos longitudinales sistemáticos.",
         "reason_health_title":"Documentación de Salud Pública",
         "reason_health":"Los conteos de jeringas y parafernalia de drogas crean un registro documentado de riesgos para la salud pública, apoyando solicitudes de intervenciones dirigidas y recursos de seguridad para el equipo de campo.",
         "reason_policy_title":"Defensa de Políticas",
         "reason_policy":"La fracción reciclable (~16%) y la fracción flotante (~63%) son directamente relevantes para las conversaciones sobre responsabilidad extendida del productor, leyes de depósito de botellas y ordenanzas de aguas pluviales.",
         "reason_refuge_title":"Designación de Refugio de Vida Silvestre Urbana",
-        "reason_refuge":"Demostrar protección activa — no solo restauración — es esencial para asegurar la designación de Refugio Nacional de Vida Silvestre Urbana que el Sonoran Institute persigue con The Wilderness Society y el USFWS.",
-        # About — quote
-        "about_quote":"El Río Santa Cruz ha proporcionado agua vital para los humanos durante más de 12,000 años — y puede fluir de nuevo con tu apoyo.",
+        "reason_refuge":"Demostrar protección activa—no solo restauración—es esencial para asegurar la designación de Refugio Nacional de Vida Silvestre Urbana que el Sonoran Institute persigue con The Wilderness Society y el USFWS.",
+        # About—quote
+        "about_quote":"El Río Santa Cruz ha proporcionado agua vital para los humanos durante más de 12,000 años—y puede fluir de nuevo con tu apoyo.",
         "about_quote_attr":"— Sonoran Institute",
-        # About — team
+        # About—team
         "team_role_luke":"Director del Programa",
         "team_desc_luke":"Programa de Restauración del Río Santa Cruz, Sonoran Institute",
         "team_role_kevin":"Especialista en Bases de Datos · Becario RISE",
@@ -501,24 +496,24 @@ TR = {
         # About
         "about_ey":"Sonoran Institute · Tucson, Arizona",
         "about_title":"Programa de Monitoreo de Basura del Río Santa Cruz",
-        "about_sub":"Un programa de monitoreo longitudinal que rastrea basura y desechos a lo largo del corredor del Río Santa Cruz en Tucson, Arizona — construyendo el registro científico necesario para proteger un río vivo del desierto.",
-        "about_sec1":"Por Qué Este Río — y Por Qué Estos Datos",
+        "about_sub":"Un programa de monitoreo longitudinal que rastrea basura y desechos a lo largo del corredor del Río Santa Cruz en Tucson, Arizona—construyendo el registro científico necesario para proteger un río vivo del desierto.",
+        "about_sec1":"Por Qué Este Río—y Por Qué Estos Datos",
         "about_sec2":"Acerca de Esta Base de Datos",
         "about_sec3":"Por Qué Importan los Datos Longitudinales de Basura",
         "about_sec4":"Equipo del Programa",
-        "about_p1":"El Río Santa Cruz es una de las vías fluviales más ecológicamente significativas del suroeste americano. Por más de <strong>12,000 años</strong> ha sostenido comunidades humanas — desde la Nación Tohono O'odham, que ha administrado estas tierras desde tiempos inmemoriales, hasta el millón de residentes de Tucson hoy.",
-        "about_p2":"Después de décadas de sobreexplotación y contaminación, el río está experimentando una recuperación notable. Hoy, aproximadamente <strong>38 millas de flujo perenne</strong> sostienen el regreso de peces nativos incluyendo el amenazado Gila topminnow, bosques de álamo-sauce, aves migratorias y reptiles.",
+        "about_p1":"El Río Santa Cruz es una de las vías fluviales más ecológicamente significativas del suroeste americano. Por más de <strong>12,000 años</strong> ha sostenido comunidades humanas—desde la Nación Tohono O'odham, que ha administrado estas tierras desde tiempos inmemoriales, hasta el millón de residentes de Tucson hoy.",
+        "about_p2":"Después de décadas de sobreexplotación y contaminación, el río está experimentando una recuperación notable. Hoy, aproximadamente <strong>35 millas de flujo perenne</strong> sostienen el regreso de peces nativos incluyendo el amenazado Gila topminnow, bosques de álamo-sauce, aves migratorias y reptiles.",
         "about_p3":"<strong>La basura es una amenaza directa para esta recuperación.</strong> Los desechos degradan la calidad del agua, enredan la fauna silvestre, se fragmentan en microplásticos y socavan la inversión en restauración.",
-        "about_p4":"El programa de encuestas de basura del Sonoran Institute existe para <strong>cuantificar esta amenaza con precisión científica</strong> — creando el registro de datos longitudinales necesario para reportar a agencias reguladoras, asegurar fondos de restauración y diseñar programas de limpieza dirigidos.",
+        "about_p4":"El programa de encuestas de basura del Sonoran Institute existe para <strong>cuantificar esta amenaza con precisión científica</strong>—creando el registro de datos longitudinales necesario para reportar a agencias reguladoras, asegurar fondos de restauración y diseñar programas de limpieza dirigidos.",
         # Overview
         "ov_ey":"Sonoran Institute · Tucson, Arizona",
         "ov_title":"Monitoreo de Basura del Río Santa Cruz",
-        "ov_sub":"Datos de encuestas longitudinales recolectados a lo largo del corredor del Río Santa Cruz, Tucson, AZ. Encuestas basadas en parcelas en múltiples sitios y tramos — programa dirigido por Luke Cole, Sonoran Institute.",
+        "ov_sub":"Datos de encuestas longitudinales recolectados a lo largo del corredor del Río Santa Cruz, Tucson, AZ. Encuestas basadas en parcelas en múltiples sitios y tramos—programa dirigido por Luke Cole, Sonoran Institute.",
         "ov_filter":"Filtrar Datos",
         "kpi_items":"Total de Artículos Registrados",
         "kpi_items_note":"en todos los eventos de encuesta",
-        "kpi_events":"Eventos de Encuesta",
-        "kpi_events_note":"visitas de campo individuales",
+        "kpi_events":"Registros de Parcela",
+        "kpi_events_note":"parcelas muestreadas individuales",
         "kpi_locs":"Ubicaciones Únicas",
         "kpi_locs_note":"nombres de sitio registrados",
         "kpi_cats":"Categorías de Basura",
@@ -535,7 +530,7 @@ TR = {
         "chart_seg_sub":"Gráfico de barras apiladas que muestra la contribución de cada categoría dentro de cada segmento del río.",
         "cat_summary":"Tabla Resumen por Categoría",
         "cat_summary_sub":"Total de artículos, número de registros individuales y conteo promedio por registro para cada categoría de basura.",
-        "why_title":"Por Qué Importan Estos Datos — y Qué Pueden Lograr",
+        "why_title":"Por Qué Importan Estos Datos—y Qué Pueden Lograr",
         "why_sub":"El Río Santa Cruz es una de las vías fluviales más significativas y amenazadas del suroeste americano. Lo que sucede con la basura en sus orillas determina lo que sucede con su agua, su fauna y las comunidades que dependen de él.",
         # Map
         "map_ey":"Mapa de Sitios de Encuesta",
@@ -556,14 +551,14 @@ TR = {
         "cat_select":"Selecciona una figura para mostrar",
         # Locations
         "loc_ey":"Análisis por Sitio",
-        "loc_title":"Dónde Está la Basura — y Cuánta",
+        "loc_title":"Dónde Está la Basura—y Cuánta",
         "loc_sub":"Carga de basura en las 136 ubicaciones de encuesta registradas. Los sitios están ordenados de Norte a Sur.",
         # Data Table
         "dt_ey":"Base de Datos Completa",
         "dt_title":"Explorar el Registro Completo de Encuestas",
         "dt_sub":"Cada conteo registrado de cada evento de encuesta. Filtra por segmento, ubicación, categoría o fecha.",
-        "dt_wide":"Formato Amplio — una fila por evento, cada artículo como columna (como Excel)",
-        "dt_long":"Formato Largo — una fila por artículo por evento",
+        "dt_wide":"Formato Amplio—una fila por evento, cada artículo como columna (como Excel)",
+        "dt_long":"Formato Largo—una fila por artículo por evento",
         # Data Entry
         "de_ey":"Entrada de Datos de Campo",
         "de_title":"Entrada y Gestión de Datos de Encuesta",
@@ -587,7 +582,7 @@ TR = {
         "sign_out":"Cerrar Sesión",
         "refresh_data":"Actualizar Datos",
         "live_db":"Base de Datos en Vivo",
-        "summer_note":"<strong>Sobre las brechas en el registro mensual:</strong> Las barras grises o los meses faltantes — especialmente junio, julio y agosto — <strong>no significan que no había basura</strong> en el río. Significan que no se realizó ninguna encuesta ese mes. La cobertura de encuestas generalmente disminuye en verano debido a la reducida disponibilidad de voluntarios estudiantiles, el calor extremo y la menor capacidad del programa.",
+        "summer_note":"<strong>Sobre las brechas en el registro mensual:</strong> Las barras grises o los meses faltantes—especialmente junio, julio y agosto—<strong>no significan que no había basura</strong> en el río. Significan que no se realizó ninguna encuesta ese mes. La cobertura de encuestas generalmente disminuye en verano debido a la reducida disponibilidad de voluntarios estudiantiles, el calor extremo y la menor capacidad del programa.",
     }
 }
 
@@ -596,30 +591,6 @@ def T(key, lang=None):
     if lang is None:
         lang = st.session_state.get("lang","en")
     return TR.get(lang,TR["en"]).get(key, TR["en"].get(key,key))
-
-def _clean_text(v):
-    if pd.isna(v): return ""
-    v = str(v).replace("\xa0", " ").strip()
-    v = re.sub(r"\s+", " ", v)
-    return v
-
-def _clean_event_label(v):
-    v = _clean_text(v)
-    # Known workbook typo where the event prefix is duplicated once
-    v = re.sub(r"(?i)^SI Clean Up SI Clean Up\s+", "SI Clean Up ", v)
-    return v
-
-def _extract_point_and_replicate(event_label):
-    """
-    Parse explicit triplicate labels from the workbook, e.g.
-    EG Rnd. 1.1, EG rnd - A031.2, EG Rnd X20.3
-    Returns (point_id, replicate_no).
-    """
-    txt = _clean_event_label(event_label)
-    m = re.search(r"([A-Za-z0-9]+)\.([123])$", txt)
-    if not m:
-        return (None, np.nan)
-    return (m.group(1).upper(), int(m.group(2)))
 
 C = dict(
     forest="#7a8f35", green="#93a445", sage="#a8b85a", mint="#ffffff",
@@ -674,7 +645,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:none;margin-bottom:0;box-shadow:none;}}
-.hdr-in{{max-width:1440px;margin:0 auto;padding:14px 64px;
+.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 72px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -694,18 +665,18 @@ footer{{display:none!important;}}
           animation:pulse 2s infinite;display:inline-block;}}
 @keyframes pulse{{0%,100%{{opacity:1;}}50%{{opacity:.4;}}}}
 
-/* ── NAV — uses components.html iframe for perfect rendering ── */
+/* ── NAV—uses components.html iframe for perfect rendering ── */
 .nav-outer{{background:{C["forest"]};position:sticky;top:0;z-index:200;
             border-bottom:1px solid rgba(255,255,255,.08);
             box-shadow:0 3px 14px rgba(0,0,0,.35);}}
 
-/* Hide the actual Streamlit radio group — nav is rendered via iframe */
+/* Hide the actual Streamlit radio group—nav is rendered via iframe */
 .nav-radio-hide div[role="radiogroup"]{{
     position:absolute!important;opacity:0!important;
     pointer-events:none!important;height:0!important;overflow:hidden!important;
 }}
 
-/* ── KILL ALL GAPS — NUCLEAR ── */
+/* ── KILL ALL GAPS—NUCLEAR ── */
 .stApp,.stApp>div,.stApp>div>div {{overflow-x:hidden;background:{C["cream"]};}}
 section[data-testid="stMain"] {{padding-top:0!important;margin-top:0!important;}}
 section[data-testid="stMain"]>div:first-child {{padding-top:0!important;margin-top:0!important;}}
@@ -732,7 +703,7 @@ div[class*="appview-container"]>section>div {{
 /* The inter-element gap Streamlit adds between markdown blocks */
 .element-container {{margin-top:0!important;margin-bottom:0!important;padding:0!important;}}
 [data-testid="stMarkdownContainer"] {{margin:0!important;padding:0!important;}}
-/* Override Streamlit's stMainBlockContainer top padding — this is the cream gap source */
+/* Override Streamlit's stMainBlockContainer top padding—this is the cream gap source */
 [data-testid="stMainBlockContainer"],
 .stMainBlockContainer,
 [data-testid="stAppViewBlockContainer"] {{
@@ -744,7 +715,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1440px;margin:0 auto;padding:20px 64px 80px 64px;background:{C["cream"]};}}
+.body{{max-width:1480px;margin:0 auto;padding:20px 72px 80px 72px;background:{C["cream"]};}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -874,7 +845,7 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
       padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1440px;margin:0 auto;padding:0 64px;}}
+.ftr-in{{max-width:1480px;margin:0 auto;padding:0 72px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
 .ftr-a:hover{{color:{C["mint"]};}}
@@ -954,7 +925,7 @@ def fb(fig, xt=None, yt=None, h=400, leg=True, title=None):
 
 def show(fig, key=None):
     _clean_hover(fig)
-    _nm={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","site_label":"Location","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation","cv_pct":"CV (%)","mean":"Mean Items per Event","site_display":"Survey Site","share":"Share (%)","recyclable":"Classification","floatable":"Classification","year":"Year","date":"Date"}
+    _nm={"n":"Total Items","seg":"River Segment","trash_group":"Category","trash_item":"Item","site_label":"Location","year_str":"Year","month_name":"Month","total":"Total Items","avg":"Average Items","weight_oz":"Weight (oz)","events":"Number of Events","sd":"Standard Deviation","cv_pct":"CV (%)","mean":"Mean Items per Plot","site_display":"Survey Site","share":"Share (%)","recyclable":"Classification","floatable":"Classification","year":"Year","date":"Date"}
     for a in ["xaxis","yaxis"]:
         try:
             ax=fig.layout[a]
@@ -966,7 +937,7 @@ def show(fig, key=None):
     except: pass
     fig.update_layout(hoverlabel=dict(bgcolor="white",bordercolor="#d8ceba",font=dict(family="DM Sans, sans-serif",size=12.5,color="#18180f")))
     st.plotly_chart(fig, config=PC, use_container_width=True, key=key)
-    # Automatic "Data current as of..." badge — uses real database latest date
+    # Automatic "Data current as of..." badge—uses real database latest date
     try:
         _ldate = st.session_state.get("_db_latest_date","")
         _today = date.today().strftime("%B %d, %Y")
@@ -994,7 +965,7 @@ def section_title(text):
     st.markdown(f'<div style="font-family:Cormorant Garamond,serif;font-size:1.3rem;font-weight:700;color:{C["green"]};margin:36px 0 18px;padding-bottom:10px;border-bottom:2px solid {C["sand3"]};">{text}</div>', unsafe_allow_html=True)
 
 def page_banner(eyebrow, title, subtitle, img_url=None, img_alt=""):
-    """Full-bleed hero banner — same size and aesthetic as About page."""
+    """Full-bleed hero banner—same size and aesthetic as About page."""
     # Always use the main river image as background
     bg_img = img_url or "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg"
     st.markdown(f"""
@@ -1062,9 +1033,9 @@ def register(username, password, full_name, position, sec_q="", sec_a=""):
     except Exception as e:
         err = str(e)
         if "unique" in err.lower() or "duplicate" in err.lower():
-            return False,"That username is already taken — please choose a different one."
+            return False,"That username is already taken—please choose a different one."
 
-    # First insert failed for non-duplicate reason — try without security columns
+    # First insert failed for non-duplicate reason—try without security columns
     # (handles case where schema hasn't been updated yet in Supabase)
     try:
         get_sb().table("users").insert({
@@ -1080,7 +1051,7 @@ def register(username, password, full_name, position, sec_q="", sec_a=""):
     except Exception as e2:
         err2 = str(e2)
         if "unique" in err2.lower() or "duplicate" in err2.lower():
-            return False,"That username is already taken — please choose a different one."
+            return False,"That username is already taken—please choose a different one."
         return False, f"Could not create account. Please contact Kevin Robles. (Error: {err2})"
 
 def get_security_question(username):
@@ -1091,7 +1062,7 @@ def get_security_question(username):
             return r.data[0]["security_question"]
         return None
     except Exception:
-        # Security columns may not exist yet — that's OK, just return None
+        # Security columns may not exist yet—that's OK, just return None
         return None
 
 def verify_security_answer(username, answer):
@@ -1107,7 +1078,7 @@ def verify_security_answer(username, answer):
     except Exception: return False
 
 def get_username_by_fullname(full_name, sec_answer):
-    """Look up username by full name + security answer — lets users recover forgotten usernames."""
+    """Look up username by full name + security answer—lets users recover forgotten usernames."""
     try:
         # Try with security columns first
         r = get_sb().table("users").select("username,full_name,security_answer_hash,security_answer_salt").execute()
@@ -1121,7 +1092,7 @@ def get_username_by_fullname(full_name, sec_answer):
                         return row["username"]
         return None
     except Exception:
-        # Security columns may not exist yet — fall back to name-only lookup
+        # Security columns may not exist yet—fall back to name-only lookup
         try:
             r = get_sb().table("users").select("username,full_name").execute()
             if not r.data: return None
@@ -1139,7 +1110,7 @@ def reset_password(username, new_password):
         get_sb().table("users").update({
             "password_hash":_hash(new_password,salt),"salt":salt
         }).eq("username",username.strip()).execute()
-        return True,"Password updated — sign in with your new password."
+        return True,"Password updated—sign in with your new password."
     except Exception as e: return False,str(e)
 
 def login(username, password):
@@ -1214,7 +1185,7 @@ def auth_gate():
           <h1>Santa Cruz River<br><em>Trash Survey</em></h1>
           <div class="desc">Longitudinal monitoring of litter and debris along the Santa Cruz River corridor and tributaries. Plot-based surveys across multiple sites and reaches.</div>
           <div class="stats">
-            <div class="st"><div class="sv">395+</div><div class="sl">Events Logged</div></div>
+            <div class="st"><div class="sv">395+</div><div class="sl">Plot Records</div></div>
           </div>
         </div>
         <div class="foot">Program Director: Luke Cole<br>sonoraninstitute.org</div>
@@ -1236,11 +1207,11 @@ def auth_gate():
                     else: st.error("Invalid username or password. Use the Forgot Password tab if needed.")
 
         with t2:
-            st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-bottom:12px;padding:10px 12px;background:{C["sand"]};border-radius:6px;border:1px solid {C["sand3"]};">Your username is how you sign in. Write it down — there is no way to look it up later. Choose something simple like your first name or initials.</div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="font-size:12px;color:{C["muted"]};margin-bottom:12px;padding:10px 12px;background:{C["sand"]};border-radius:6px;border:1px solid {C["sand3"]};">Your username is how you sign in. Write it down—there is no way to look it up later. Choose something simple like your first name or initials.</div>', unsafe_allow_html=True)
             with st.form("_reg"):
                 c1,c2=st.columns(2)
                 fn=c1.text_input("Full Name"); pos=c2.text_input("Position / Title")
-                nu=st.text_input("Username (min 3 characters — write this down)")
+                nu=st.text_input("Username (min 3 characters—write this down)")
                 c3,c4=st.columns(2)
                 p1=c3.text_input("Password (min 6 characters)",type="password")
                 p2=c4.text_input("Confirm Password",type="password")
@@ -1364,7 +1335,7 @@ def auth_gate():
                         st.rerun()
 
 
-        # Language toggle — bottom of login panel
+        # Language toggle—bottom of login panel
         st.markdown(f'<div style="margin-top:20px;padding-top:16px;border-top:1px solid {C["sand3"]};font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:8px;">Language / Idioma</div>', unsafe_allow_html=True)
         _ll1, _ll2 = st.columns(2)
         with _ll1:
@@ -1385,7 +1356,7 @@ def auth_gate():
 @st.cache_data(ttl=300, show_spinner=False)
 def load_data():
     sb=get_sb()
-    # ── PAGINATED FETCH — Supabase caps at 1,000 rows per call ──────
+    # ── PAGINATED FETCH—Supabase caps at 1,000 rows per call ──────
     # We must paginate to get ALL rows. .limit() alone is unreliable
     # across supabase-py versions. Pagination always works.
     def fetch_all(table, cols):
@@ -1404,43 +1375,6 @@ def load_data():
     if tc.empty: tc=pd.DataFrame(columns=["event_id","trash_group","trash_item","count_value"])
     if se.empty: se=pd.DataFrame()
     if wt.empty: wt=pd.DataFrame(columns=["event_id","date_recorded","total_weight_oz"])
-
-    # Workbook-informed cleanup/backfill for site metadata
-    if not se.empty:
-        if "site_label" not in se.columns:
-            for alt in ["location_description", "location", "site_name"]:
-                if alt in se.columns:
-                    se["site_label"] = se[alt]
-                    break
-        if "site_label" in se.columns:
-            se["site_label"] = se["site_label"].apply(_clean_text).replace(SITE_LABEL_FIXES)
-
-        event_col = next((c for c in ["event", "event_name", "event_label"] if c in se.columns), None)
-        if event_col is not None:
-            se[event_col] = se[event_col].apply(_clean_event_label)
-            parsed = se[event_col].apply(_extract_point_and_replicate)
-            parsed_point = parsed.apply(lambda x: x[0])
-            parsed_rep = parsed.apply(lambda x: x[1])
-
-            if "point_id" not in se.columns:
-                se["point_id"] = parsed_point
-            else:
-                se["point_id"] = se["point_id"].where(
-                    se["point_id"].notna() & (se["point_id"].astype(str).str.strip() != ""),
-                    parsed_point
-                )
-
-            if "replicate_no" not in se.columns:
-                se["replicate_no"] = parsed_rep
-            else:
-                se["replicate_no"] = pd.to_numeric(se["replicate_no"], errors="coerce")
-                se["replicate_no"] = se["replicate_no"].where(se["replicate_no"].notna(), parsed_rep)
-
-        if "replicate_no" in se.columns:
-            se["replicate_no"] = pd.to_numeric(se["replicate_no"], errors="coerce")
-        if "point_id" in se.columns:
-            se["point_id"] = se["point_id"].astype(str).str.strip()
-            se.loc[se["point_id"].isin(["", "nan", "None"]), "point_id"] = np.nan
 
     # ── Load custom categories (added by staff via Data Entry) ──
     try:
@@ -1482,18 +1416,27 @@ def load_data():
 
     long["date"]=pd.to_datetime(long.get("date_site",pd.NaT),errors="coerce")
     long["site_label"]=long.get("site_label",pd.Series("Unknown",index=long.index)).fillna("Unknown")
-    long["site_label"]=long["site_label"].apply(_clean_text).replace(SITE_LABEL_FIXES)
-    if "point_id" in long.columns:
-        long["point_id"] = long["point_id"].astype(str).str.strip()
-        long.loc[long["point_id"].isin(["", "nan", "None"]), "point_id"] = np.nan
-    if "replicate_no" in long.columns:
-        long["replicate_no"] = pd.to_numeric(long["replicate_no"], errors="coerce")
+    long["site_label"] = (
+        long["site_label"]
+        .astype(str)
+        .str.strip()
+        .str.replace(r"\s+", " ", regex=True)
+        .replace({
+            "NE Side of SCR at Tuboc Bridge": "NE Side of SCR at Tubac Bridge",
+            "Tuboc Bridge": "Tubac Bridge",
+            "Riverview and Navajo": "Navajo and Riverview",
+            "Navajo and Riverview ": "Navajo and Riverview",
+            "Santa Cruze River Park": "Santa Cruz River Park",
+            "South of grant Bridge west of Freeway": "South of Grant Bridge west of Freeway",
+            "drexel": "Drexel",
+        })
+    )
     long["lat"]=pd.to_numeric(long.get("lat",np.nan),errors="coerce") if "lat" in long.columns else np.nan
     long["lon"]=pd.to_numeric(long.get("lon",np.nan),errors="coerce") if "lon" in long.columns else np.nan
 
-    # ── COORDINATE CORRECTIONS — verified against Excel Site sheet ──
+    # ── COORDINATE CORRECTIONS—verified against Excel Site sheet ──
     # These are confirmed data-entry errors found in the source data.
-    # Zero coords (events 20,187,188,189): no GPS recorded — null out
+    # Zero coords (events 20,187,188,189): no GPS recorded—null out
     zero_mask = (long["lat"]==0.0) | (long["lon"]==0.0)
     long.loc[zero_mask, "lat"] = np.nan
     long.loc[zero_mask, "lon"] = np.nan
@@ -1510,7 +1453,7 @@ def load_data():
         # Event 334 (Near Verdugo Park): lat 32.110259 → 32.210259 (off by 0.1 degree)
         m334 = long["event_id"].astype(str) == "334"
         long.loc[m334 & (long["lat"] < 32.15), "lat"] = 32.210259
-        # Event 15 (Santa Cruz): lon -110.080527 → -110.980527 (missing digit — all SCR sites ~-110.98x)
+        # Event 15 (Santa Cruz): lon -110.080527 → -110.980527 (missing digit—all SCR sites ~-110.98x)
         m15 = long["event_id"].astype(str) == "15"
         long.loc[m15 & (long["lon"] > -110.5), "lon"] = -110.980527
     # ────────────────────────────────────────────────────────────────
@@ -1548,68 +1491,68 @@ def make_et(df):
 # ──────────────────────────────────────────────────────────────────
 # SITE TRIPLICATE STATISTICS (North → South)
 # ──────────────────────────────────────────────────────────────────
+def keep_exact_triplicate_sessions(df):
+    """
+    Keep only exact triplicate sessions for site-level statistics.
+    A session is one site on one date with exactly 3 distinct plot records.
+    """
+    if df.empty or "site_label" not in df.columns or "event_id" not in df.columns or "date" not in df.columns:
+        return pd.DataFrame()
+    df2 = df.copy()
+    df2["date"] = pd.to_datetime(df2["date"], errors="coerce")
+    df2["site_label"] = df2["site_label"].astype(str).str.strip()
+    df2 = df2[df2["date"].notna()].copy()
+    sess = df2.groupby(["site_label","date"], dropna=False)["event_id"].nunique().reset_index(name="n_session_plots")
+    keep = sess[sess["n_session_plots"] == 3][["site_label","date"]].copy()
+    if keep.empty:
+        return df2.iloc[0:0].copy()
+    return df2.merge(keep.assign(_keep=True), on=["site_label","date"], how="inner").drop(columns="_keep")
+
+
 def build_site_stats_ns(df):
     """
     Build per-site summary ordered North to South by latitude.
 
-    Minimal but important correction:
-    when explicit point_id / replicate_no fields are present, adjoining
-    triplicate plots are first collapsed to one point-level estimate by
-    averaging the replicate plot totals. This keeps triplicates from being
-    treated as independent visits.
+    STRICT RULE:
+    Only exact triplicate sessions are used. Each kept session must have
+    exactly 3 plots at the same site on the same date. The three plot totals
+    are averaged into one session mean before site-level statistics are
+    calculated. Raw totals remain real counted items, but inferential site
+    statistics on this page use only the strict triplicate subset.
     """
-    if df.empty or "site_label" not in df.columns: return pd.DataFrame()
-    df2 = df.copy()
+    if df.empty or "site_label" not in df.columns:
+        return pd.DataFrame()
+
+    df2 = keep_exact_triplicate_sessions(df)
+    if df2.empty:
+        return pd.DataFrame()
+
     df2["n"] = pd.to_numeric(df2["n"], errors="coerce").fillna(0)
 
-    base_group = [c for c in ["site_label","seg","event_id","point_id","replicate_no"] if c in df2.columns]
-    ev_site = df2.groupby(base_group, dropna=False)["n"].sum().reset_index(name="plot_total")
+    ev_site = df2.groupby(["site_label","date","event_id","seg"], dropna=False)["n"].sum().reset_index(name="plot_total")
 
-    if "point_id" not in ev_site.columns:
-        ev_site["point_id"] = np.nan
-    if "replicate_no" not in ev_site.columns:
-        ev_site["replicate_no"] = np.nan
+    sessions = ev_site.groupby(["site_label","seg","date"], dropna=False).agg(
+        n_session_plots=("event_id","nunique"),
+        session_mean=("plot_total","mean"),
+        session_raw_total=("plot_total","sum")
+    ).reset_index()
+    sessions = sessions[sessions["n_session_plots"] == 3].copy()
 
-    ev_site["point_id"] = ev_site["point_id"].astype(str).str.strip()
-    ev_site.loc[ev_site["point_id"].isin(["", "nan", "None"]), "point_id"] = np.nan
-    ev_site["replicate_no"] = pd.to_numeric(ev_site["replicate_no"], errors="coerce")
-
-    has_trip = ev_site["point_id"].notna() & ev_site["replicate_no"].isin([1,2,3])
-
-    def _mode_or_first(s):
-        s = s.dropna().astype(str).str.strip()
-        s = s[s != ""]
-        if s.empty:
-            return np.nan
-        m = s.mode()
-        return m.iloc[0] if len(m) else s.iloc[0]
-
-    trip_units = pd.DataFrame(columns=["site_label","seg","analysis_unit","unit_total","n_reps"])
-    if has_trip.any():
-        trip_units = ev_site[has_trip].groupby("point_id", dropna=False).agg(
-            site_label=("site_label", _mode_or_first),
-            seg=("seg", _mode_or_first),
-            unit_total=("plot_total", "mean"),
-            n_reps=("plot_total", "count")
-        ).reset_index().rename(columns={"point_id":"analysis_unit"})
-
-    single_units = ev_site[~has_trip].groupby(["site_label","seg","event_id"], dropna=False).agg(
-        unit_total=("plot_total", "mean"),
-        n_reps=("plot_total", "count")
-    ).reset_index().rename(columns={"event_id":"analysis_unit"})
-
-    unit_site = pd.concat([single_units, trip_units], ignore_index=True, sort=False)
-
-    ss = unit_site.groupby(["site_label","seg"],dropna=False)["unit_total"].agg(
-        n_plots="count", mean="mean", median="median",
-        sd="std", total="sum", min_v="min", max_v="max"
+    ss = sessions.groupby(["site_label","seg"], dropna=False).agg(
+        n_plots=("session_mean","count"),
+        mean=("session_mean","mean"),
+        median=("session_mean","median"),
+        sd=("session_mean","std"),
+        total=("session_raw_total","sum"),
+        min_v=("session_mean","min"),
+        max_v=("session_mean","max")
     ).reset_index()
     ss["sd"] = ss["sd"].fillna(0)
     ss["se"] = ss["sd"] / np.sqrt(ss["n_plots"].replace(0, np.nan))
     ss["cv"] = np.where(ss["mean"] > 0, ss["sd"] / ss["mean"], np.nan)
     ss["range"] = ss["max_v"] - ss["min_v"]
 
-    coords = df2.groupby("site_label",dropna=False).agg(lat=("lat","mean"),lon=("lon","mean")).reset_index()
+    coords = df2.groupby("site_label", dropna=False).agg(lat=("lat","mean"), lon=("lon","mean")).reset_index()
     ss = ss.merge(coords, on="site_label", how="left")
 
     ss["lat_num"] = pd.to_numeric(ss["lat"], errors="coerce")
@@ -1619,8 +1562,10 @@ def build_site_stats_ns(df):
     ss_without["north_rank"] = np.nan
     ss = pd.concat([ss_with, ss_without], ignore_index=True)
 
-    ss["site_display"] = ss.apply(lambda r:
-        f"{int(r['north_rank'])}. {r['site_label']}" if pd.notna(r["north_rank"]) else r["site_label"], axis=1)
+    ss["site_display"] = ss.apply(
+        lambda r: f"{int(r['north_rank'])}. {r['site_label']}" if pd.notna(r["north_rank"]) else r["site_label"],
+        axis=1
+    )
     ss = ss.sort_values(["north_rank","site_label"]).reset_index(drop=True)
     return ss
 
@@ -1657,7 +1602,7 @@ def last_updated_insight(df, chart_type="general", site=None, category=None):
         cat_df = df[df["trash_group"]==category] if "trash_group" in df.columns else df
         cat_total = int(cat_df["n"].sum()) if "n" in cat_df.columns else 0
         pct = 100*cat_total/max(total,1)
-        msg = f"As of <strong>{as_of}</strong>, <strong>{category}</strong> accounts for <strong>{cat_total:,}</strong> items — representing <strong>{pct:.1f}%</strong> of all recorded trash in the database."
+        msg = f"As of <strong>{as_of}</strong>, <strong>{category}</strong> accounts for <strong>{cat_total:,}</strong> items—representing <strong>{pct:.1f}%</strong> of all recorded trash in the database."
     elif chart_type == "annual":
         yr_grp = df.dropna(subset=["year"]).groupby("year")["n"].sum()
         if len(yr_grp)>=2:
@@ -1665,7 +1610,7 @@ def last_updated_insight(df, chart_type="general", site=None, category=None):
             last_yr, prev_yr = yrs[-1], yrs[-2]
             diff = int(yr_grp[last_yr] - yr_grp[prev_yr])
             direction = "increase" if diff>0 else "decrease"
-            msg = f"As of <strong>{as_of}</strong>, {int(last_yr)} recorded <strong>{int(yr_grp[last_yr]):,}</strong> items — a <strong>{abs(diff):,}-item {direction}</strong> from {int(prev_yr)} ({int(yr_grp[prev_yr]):,} items)."
+            msg = f"As of <strong>{as_of}</strong>, {int(last_yr)} recorded <strong>{int(yr_grp[last_yr]):,}</strong> items—a <strong>{abs(diff):,}-item {direction}</strong> from {int(prev_yr)} ({int(yr_grp[prev_yr]):,} items)."
         else:
             msg = f"As of <strong>{as_of}</strong>, the database contains <strong>{total:,}</strong> total recorded items."
     else:
@@ -1675,7 +1620,7 @@ def last_updated_insight(df, chart_type="general", site=None, category=None):
     st.markdown(f'<div style="font-size:12px;color:{C["muted"]};padding:7px 14px 7px 10px;background:{C["sand"]};border-radius:6px;border-right:3px solid {C["sage"]};margin:12px 0 24px;line-height:1.7;text-align:right;">{msg}</div>', unsafe_allow_html=True)
 
 def cat_color_legend():
-    """Universal category color guide — shown above every category table/chart."""
+    """Universal category color guide—shown above every category table/chart."""
     st.markdown(
         f'<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;' +
         f'background:white;border:1px solid {C["sand3"]};border-radius:8px;' +
@@ -1818,8 +1763,8 @@ if(bounds.length>1) map.fitBounds(bounds,{{padding:[40,40],maxZoom:14}});
 # ──────────────────────────────────────────────────────────────────
 # APP START
 # ──────────────────────────────────────────────────────────────────
-# ── Language init — must happen before anything renders ──
-# Handle query params — lang switch and sign out
+# ── Language init—must happen before anything renders ──
+# Handle query params—lang switch and sign out
 _qp_lang = st.query_params.get("lang", None)
 _qp_so   = st.query_params.get("signout", None)
 if _qp_so == "1":
@@ -1838,7 +1783,7 @@ inject_css()
 auth_gate()
 prof=st.session_state.get("prof") or {}
 
-# HEADER — sign out sits inside header HTML, triggers hidden Streamlit button
+# HEADER—sign out sits inside header HTML, triggers hidden Streamlit button
 _lang = st.session_state.get("lang","en")
 _en_col  = "rgba(255,255,255,.9)"  if _lang=="en" else "rgba(255,255,255,.35)"
 _es_col  = "rgba(255,255,255,.9)"  if _lang=="es" else "rgba(255,255,255,.35)"
@@ -1877,10 +1822,10 @@ st.markdown(f"""<div class="hdr"><div class="hdr-in">
 </div></div>""", unsafe_allow_html=True)
 
 
-# ── NAV BAR — native Streamlit radio, CSS-styled as a nav bar ──────
+# ── NAV BAR—native Streamlit radio, CSS-styled as a nav bar ──────
 if "page" not in st.session_state: st.session_state["page"] = PAGES[0]
 
-# The radio IS the nav — CSS removes dots and makes it look like tabs
+# The radio IS the nav—CSS removes dots and makes it look like tabs
 st.markdown(f"""<style>
 /* ── Nav wrapper ── */
 div[data-testid="stHorizontalBlock"]:has(div[role="radiogroup"]) {{
@@ -2010,7 +1955,7 @@ try:
 except Exception:
     pass
 
-# Cache the latest survey date globally — used by the "Data current as of" badge on every chart
+# Cache the latest survey date globally—used by the "Data current as of" badge on every chart
 try:
     _latest = long["date"].dropna().max() if "date" in long.columns else None
     if _latest is not None and not pd.isna(_latest):
@@ -2046,7 +1991,7 @@ if page == "Overview":
     c1,c2 = st.columns([3,2])
     with c1:
         card_open("Monthly Items Recorded Over Time",
-                  "Green bars = survey conducted · Gray = no survey that month (trash still present — see note below) · Gold dashed line = 3-month rolling average")
+                  "Green bars = survey conducted · Gray = no survey that month (trash still present—see note below) · Gold dashed line = 3-month rolling average")
         ts=lf.dropna(subset=["date"]).groupby(pd.Grouper(key="date",freq="MS"))["n"].sum().reset_index()
         if len(ts)>0:
             full=pd.date_range(ts["date"].min(),ts["date"].max(),freq="MS")
@@ -2057,7 +2002,7 @@ if page == "Overview":
             fig.add_scatter(x=ts["date"],y=ts["roll"],name="3-Month Rolling Avg",line=dict(color=C["amber"],width=2.5,dash="dot"),mode="lines")
             fb(fig,"Month","Total Items",h=300,title="Monthly Items Recorded"); show(fig,"ov_ts")
         last_updated_insight(lf, chart_type="monthly")
-        st.markdown(T("summer_note") if T("summer_note") != "summer_note" else '<div style="background:white;border:1px solid #e8a62044;border-left:4px solid #e8a620;border-radius:0 8px 8px 0;padding:12px 16px;margin:8px 0 16px;font-size:13px;line-height:1.75;color:#18180f;"><strong>About gaps in the monthly record:</strong> Gray bars or missing months — especially June, July, and August — <strong>do not mean there was no trash</strong> on the river. They mean no survey was conducted that month. Survey coverage typically decreases in summer due to reduced student volunteer availability, high heat, and lower program capacity. Trash accumulates year-round regardless of whether surveys are conducted. Do not interpret survey gaps as evidence of cleaner river conditions.</div>', unsafe_allow_html=True)
+        st.markdown(T("summer_note") if T("summer_note") != "summer_note" else '<div style="background:white;border:1px solid #e8a62044;border-left:4px solid #e8a620;border-radius:0 8px 8px 0;padding:12px 16px;margin:8px 0 16px;font-size:13px;line-height:1.75;color:#18180f;"><strong>About gaps in the monthly record:</strong> Gray bars or missing months—especially June, July, and August—<strong>do not mean there was no trash</strong> on the river. They mean no survey was conducted that month. Survey coverage typically decreases in summer due to reduced student volunteer availability, high heat, and lower program capacity. Trash accumulates year-round regardless of whether surveys are conducted. Do not interpret survey gaps as evidence of cleaner river conditions.</div>', unsafe_allow_html=True)
         card_close()
     with c2:
         card_open("Share by Trash Category",
@@ -2142,7 +2087,7 @@ if page == "Overview":
         unsafe_allow_html=True
     )
 
-    # 6 impact cards rendered with st.columns — works in Streamlit reliably
+    # 6 impact cards rendered with st.columns—works in Streamlit reliably
     _cards = [
         (C["forest"],  T("impact_reg_title"),    T("impact_reg")),
         (C["green"],   T("impact_grant_title"),  T("impact_grant")),
@@ -2306,7 +2251,7 @@ elif page == "Trends":
         },
         "Average Items Per Survey Event Over Time": {
             "desc": "Monthly mean of total items per field visit. Dotted line = grand mean across the full record.",
-            "why": "Adjusts for varying survey frequency — fairer than raw totals when the number of events per month changes.",
+            "why": "Adjusts for varying survey frequency—fairer than raw totals when the number of events per month changes.",
         },
         "Items by River Segment (Quarterly)": {
             "desc": "Quarterly item totals for each named river segment. Each color = one segment.",
@@ -2336,10 +2281,10 @@ elif page == "Trends":
         fb(fig,"Month","Total Items",h=460,title="Monthly Item Count: Full Survey Record"); show(fig,"tr_ts")
         last_updated_insight(df, chart_type="monthly")
         fig_note("Total recorded trash items by calendar month across all sites and categories.",
-            "Best figure for seeing the broad timeline — peaks, gaps, and overall direction.",
+            "Best figure for seeing the broad timeline—peaks, gaps, and overall direction.",
             "Green bars = survey conducted. Gray = no survey that month. Gold line = 3-month rolling average.",
-            "Gray bars do not mean zero trash — they mean no survey. Rolling average treats gaps as zero.")
-        st.markdown(T("summer_note") if T("summer_note") != "summer_note" else '<div style="background:white;border:1px solid #e8a62044;border-left:4px solid #e8a620;border-radius:0 8px 8px 0;padding:12px 16px;margin:8px 0 16px;font-size:13px;line-height:1.75;color:#18180f;"><strong>About gaps in the monthly record:</strong> Gray bars or missing months — especially June, July, and August — <strong>do not mean there was no trash</strong> on the river. They mean no survey was conducted that month. Survey coverage typically decreases in summer due to reduced student volunteer availability, high heat, and lower program capacity. Trash accumulates year-round regardless of whether surveys are conducted. Do not interpret survey gaps as evidence of cleaner river conditions.</div>', unsafe_allow_html=True)
+            "Gray bars do not mean zero trash—they mean no survey. Rolling average treats gaps as zero.")
+        st.markdown(T("summer_note") if T("summer_note") != "summer_note" else '<div style="background:white;border:1px solid #e8a62044;border-left:4px solid #e8a620;border-radius:0 8px 8px 0;padding:12px 16px;margin:8px 0 16px;font-size:13px;line-height:1.75;color:#18180f;"><strong>About gaps in the monthly record:</strong> Gray bars or missing months—especially June, July, and August—<strong>do not mean there was no trash</strong> on the river. They mean no survey was conducted that month. Survey coverage typically decreases in summer due to reduced student volunteer availability, high heat, and lower program capacity. Trash accumulates year-round regardless of whether surveys are conducted. Do not interpret survey gaps as evidence of cleaner river conditions.</div>', unsafe_allow_html=True)
 
     elif sel_trend == "Annual Totals by Year":
         yr=df.dropna(subset=["year"]).groupby("year")["n"].sum().reset_index(); yr["year"]=yr["year"].astype(str)
@@ -2350,7 +2295,7 @@ elif page == "Trends":
         fig_note("Total items across all events within each calendar year.",
             "Useful for year-over-year reporting.",
             "Taller bars = more total recorded items in that year.",
-            "Annual totals reflect both trash burden and survey effort — years with more events may show higher counts.")
+            "Annual totals reflect both trash burden and survey effort—years with more events may show higher counts.")
 
     elif sel_trend == "Month by Month Comparison Across Years":
         md=df.dropna(subset=["year","month"]).groupby(["year","month","month_name"],observed=False)["n"].sum().reset_index()
@@ -2439,7 +2384,7 @@ elif page == "Categories":
 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
 
-    # Interactive category toggle — lets user remove categories like Data Table
+    # Interactive category toggle—lets user remove categories like Data Table
     all_cats_available = sorted(df["trash_group"].dropna().unique().tolist())
     with st.expander("Toggle Categories (include/exclude from all figures)", expanded=False):
         sel_cats = st.multiselect(
@@ -2455,23 +2400,23 @@ elif page == "Categories":
     total_all=max(df["n"].sum(),1)
 
     CAT_FIGS = {
-        "All 19 Categories: Total Items Ranked":               ("Totals & Overview",  "Every trash category ranked by cumulative item count. Colors encode environmental classification.", "The most important summary figure — use it to explain which categories drive the problem to any audience."),
+        "All 19 Categories: Total Items Ranked":               ("Totals & Overview",  "Every trash category ranked by cumulative item count. Colors encode environmental classification.", "The most important summary figure—use it to explain which categories drive the problem to any audience."),
         "All 56 Items: Total Count Ranked":         ("Totals & Overview",  "Every recorded item type ranked by total count from most to least common across all survey events.", "Pinpoints specific items for prevention campaigns, source identification, and partnership messaging."),
-        "Category Share: Proportional Breakdown":              ("Totals & Overview",  "Donut chart showing each category as a percentage of all recorded items.", "Easy to present in reports — shows visually that Food Packaging dominates the composition."),
-        "Top 10 Heaviest vs Bottom 9 Lightest Categories":      ("Totals & Overview",  "Side-by-side comparison of the 10 heaviest and 9 lightest categories.", "Shows the skewed distribution — a small number of categories account for the vast majority of items."),
+        "Category Share: Proportional Breakdown":              ("Totals & Overview",  "Donut chart showing each category as a percentage of all recorded items.", "Easy to present in reports—shows visually that Food Packaging dominates the composition."),
+        "Top 10 Heaviest vs Bottom 9 Lightest Categories":      ("Totals & Overview",  "Side-by-side comparison of the 10 heaviest and 9 lightest categories.", "Shows the skewed distribution—a small number of categories account for the vast majority of items."),
         "Average Items per Survey Event by Category":           ("Totals & Overview",  "Mean items per event for each category, adjusting for number of surveys conducted.", "More meaningful than raw totals when comparing categories with different recording frequencies."),
         "Beverage Containers: Full Breakdown":                 ("Food & Beverage",    "All beverage categories (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Cups) with sub-item detail.", "Beverage containers are a major single-use plastics source. Understanding their composition supports policy work."),
         "Cups: Styrofoam vs Plastic vs Paper":                 ("Food & Beverage",    "Breakdown of Cups into Styrofoam (Polar Pop), Styrofoam (Qt), Styrofoam (Other), Plastic, and Paper.", "Styrofoam cups are non-recyclable, non-biodegradable, and fragment into microplastics in waterways."),
         "Food Packaging: All 11 Sub-Items":                    ("Food & Beverage",    "The largest category broken into 11 sub-types including wrappers, straws, 6-pack rings, plates, utensils.", "Food Packaging is the single largest category (10,694 items). Understanding its composition is critical."),
-        "Alcohol Containers: Beer vs Liquor Over Time":        ("Food & Beverage",    "Quarterly time series comparing Beer and Liquor item counts across the survey record.", "Alcohol containers are associated with encampments and chronic littering — useful for community context."),
-        "Recyclable vs Non-Recyclable: Item Counts":           ("Environmental Risk", "All categories split into Recyclable vs Non-Recyclable per City of Tucson recycling guidelines.", "~16% of items are technically recyclable but none are being recycled — a clear intervention target."),
-        "Floatable vs Non-Floatable: River Health Risk":       ("Environmental Risk", "Categories classified by whether they float and enter waterways during rain or flooding events.", "~63% of items are floatable — directly relevant to ADEQ stormwater permits and EPA Section 319 reporting."),
+        "Alcohol Containers: Beer vs Liquor Over Time":        ("Food & Beverage",    "Quarterly time series comparing Beer and Liquor item counts across the survey record.", "Alcohol containers are associated with encampments and chronic littering—useful for community context."),
+        "Recyclable vs Non-Recyclable: Item Counts":           ("Environmental Risk", "All categories split into Recyclable vs Non-Recyclable per City of Tucson recycling guidelines.", "~16% of items are technically recyclable but none are being recycled—a clear intervention target."),
+        "Floatable vs Non-Floatable: River Health Risk":       ("Environmental Risk", "Categories classified by whether they float and enter waterways during rain or flooding events.", "~63% of items are floatable—directly relevant to ADEQ stormwater permits and EPA Section 319 reporting."),
         "Health Hazard Items: Rx, Drugs, Nicotine, Toiletries":("Environmental Risk", "Items with direct public health risk: syringes, drug packaging, cigarettes, lighters, and toiletries.", "Syringes create needle-stick hazard for field staff. These require special handling protocols."),
         "Bulk and Large Debris: Appliances, Construction, Auto": ("Environmental Risk", "Large items requiring equipment: appliances, furniture, tires, car parts, construction debris.", "By item count modest, but by weight and removal cost they far exceed smaller categories."),
-        "Category Risk Profile: Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk — the priority removal targets."),
+        "Category Risk Profile: Composite View":               ("Environmental Risk", "Scatter plot showing each category's total volume crossed with its risk dimensions.", "Identifies categories that are both high-volume AND high-risk—the priority removal targets."),
         "Category Trends Over Time: Top 6 (Quarterly)":         ("Trends by Category", "Quarterly time series for the 6 highest-volume categories.", "Shows whether category composition is stable or shifting over the program period."),
-        "Year over Year Change by Category":                    ("Trends by Category", "Heatmap + stacked bar showing each category's annual item total. Heatmap is the correct chart type — 19 categories × 5 years would be 95 bars if grouped.", "Reveals which categories are increasing, decreasing, or stable year over year. Darker cells = more items."),
-        "Category Composition: How Mix Changed by Year":       ("Trends by Category", "100% stacked bars showing each category's share per year — removes total survey size effect.", "More ecologically meaningful than raw totals for detecting true composition shifts."),
+        "Year over Year Change by Category":                    ("Trends by Category", "Heatmap + stacked bar showing each category's annual item total. Heatmap is the correct chart type—19 categories × 5 years would be 95 bars if grouped.", "Reveals which categories are increasing, decreasing, or stable year over year. Darker cells = more items."),
+        "Category Composition: How Mix Changed by Year":       ("Trends by Category", "100% stacked bars showing each category's share per year—removes total survey size effect.", "More ecologically meaningful than raw totals for detecting true composition shifts."),
         "Category Mix by River Segment":                        ("Geographic",         "Stacked bars showing category composition across North, Central, South, and Rillito reaches.", "Different segments may have different dominant categories due to adjacent land use patterns."),
         "Segment Specialization: Top Categories per Reach":    ("Geographic",         "One tab per segment showing the top 10 categories and their share of that segment's total.", "Identifies segment-specific waste profiles for targeted cleanup planning."),
         "Full Item-Level Statistics Table":                     ("Data Tables",        "Every item with total, % of all items, records, mean, recyclable, floatable flags.", "The authoritative reference table for reporting, grant writing, and agency submissions."),
@@ -2524,7 +2469,7 @@ elif page == "Categories":
         cat_color_legend()
         fig_note(
             "Cumulative total of every recorded item in each of the 19 category groups across all survey events.",
-            "Food Packaging dominates because it has 11 sub-types — but Clothing at #2 is a strong signal of encampment activity. Plastic Bags is technically its own group.",
+            "Food Packaging dominates because it has 11 sub-types—but Clothing at #2 is a strong signal of encampment activity. Plastic Bags is technically its own group.",
             "Longer bars = more total items. Color encodes environmental risk classification.",
             "Raw totals are not adjusted for number of sub-items per category. A category with 11 items will naturally accumulate more than one with 1 item, all else being equal."
         )
@@ -2546,7 +2491,7 @@ elif page == "Categories":
             "Every item type in the 56-item survey protocol, ranked from rarest to most common.",
             "Food Wrappers lead at 5,471 items. Syringes and drug paraphernalia appear low in count but are high in health significance.",
             "Hover for category and percentage. Items near the bottom may still matter for ecological or health risk beyond their count.",
-            "Items recorded as zero across all events are excluded. A long tail of low-count items is scientifically important — presence/absence matters for biodiversity and pollution assessments."
+            "Items recorded as zero across all events are excluded. A long tail of low-count items is scientifically important—presence/absence matters for biodiversity and pollution assessments."
         )
 
     elif sel_cat == "Category Share: Proportional Breakdown":
@@ -2561,10 +2506,10 @@ elif page == "Categories":
         show(fig,"cat_pie2")
         last_updated_insight(df,"general")
         cat_color_legend()
-        fig_note("Proportional breakdown — each slice shows one category as a percentage of the total.",
+        fig_note("Proportional breakdown—each slice shows one category as a percentage of the total.",
             "Food Packaging at ~33% means 1 in 3 items found is food-related packaging.",
-            "Hover for exact percentages. Small slices are not unimportant — Rx/Drugs at under 1% still carries major health risk.",
-            "Always pair with the ranked bar chart — proportions hide absolute scale.")
+            "Hover for exact percentages. Small slices are not unimportant—Rx/Drugs at under 1% still carries major health risk.",
+            "Always pair with the ranked bar chart—proportions hide absolute scale.")
 
     elif sel_cat == "Top 10 Heaviest vs Bottom 9 Lightest Categories":
         ct3=df.groupby("trash_group")["n"].sum().reset_index().sort_values("n",ascending=False)
@@ -2582,8 +2527,8 @@ elif page == "Categories":
             fb(fig,"Total Items","",h=380,leg=False,title="Bottom 9 Categories"); show(fig,"cat_bot9")
         cat_color_legend()
         fig_note("The top 10 categories account for over 95% of all recorded items.",
-            "Shows the skewed distribution — a few categories drive the problem while many others are present but minor.",
-            "Left = heaviest. Right = lightest. Even the lightest categories — Rx/Drugs (189) and Auto (167) — have outsized ecological or safety impact.",
+            "Shows the skewed distribution—a few categories drive the problem while many others are present but minor.",
+            "Left = heaviest. Right = lightest. Even the lightest categories—Rx/Drugs (189) and Auto (167)—have outsized ecological or safety impact.",
             "The top 3 alone (Food Packaging + Clothing + Plastic Bags) represent approximately 53% of all items.")
 
     elif sel_cat == "Average Items per Survey Event by Category":
@@ -2597,9 +2542,9 @@ elif page == "Categories":
             title="Average Items per Survey Event: All Categories"); show(fig,"cat_avg2")
         cat_color_legend()
         fig_note("Mean total items per survey event for each category.",
-            "Adjusts for recording frequency — a category recorded across 100 events is compared fairly to one recorded across 20.",
+            "Adjusts for recording frequency—a category recorded across 100 events is compared fairly to one recorded across 20.",
             "Higher = more items found per visit. Red = health hazard categories.",
-            "Food Packaging will top this chart too — its high average is partly structural (11 sub-items) but also reflects genuine prevalence.")
+            "Food Packaging will top this chart too—its high average is partly structural (11 sub-items) but also reflects genuine prevalence.")
 
     elif sel_cat == "Beverage Containers: Full Breakdown":
         bev=df[df["trash_group"].isin(BEVERAGE_GROUPS)].copy()
@@ -2620,8 +2565,8 @@ elif page == "Categories":
         cat_color_legend()
         fig_note("All beverage container categories and their sub-type breakdown.",
             "Beverage containers represent single-use plastics and recyclables that ended up in the river corridor.",
-            "Water bottles (1,635) are the most common single beverage item — many from encampments. Beer bottles lead alcohol.",
-            "The presence of large quantities of Styrofoam cups is environmentally significant — Styrofoam does not biodegrade and fragments into microplastics.")
+            "Water bottles (1,635) are the most common single beverage item—many from encampments. Beer bottles lead alcohol.",
+            "The presence of large quantities of Styrofoam cups is environmentally significant—Styrofoam does not biodegrade and fragments into microplastics.")
 
     elif sel_cat == "Cups: Styrofoam vs Plastic vs Paper":
         cups=df[df["trash_group"]=="Cups"].groupby("trash_item")["n"].sum().reset_index().sort_values("n",ascending=False)
@@ -2640,9 +2585,9 @@ elif page == "Categories":
             show(fig,"cups_pie")
         cat_color_legend()
         fig_note("The Cups category broken into 5 sub-types.",
-            "Styrofoam cups are particularly problematic — they fragment into microplastics, clog drainage, and are excluded from recycling.",
-            "Polar Pop cups are the large convenience store cups associated with Circle K — useful for source attribution and retailer partnership conversations.",
-            "Styrofoam (Other) is the most common sub-type — these are generic foam cups from a wide range of food service sources.")
+            "Styrofoam cups are particularly problematic—they fragment into microplastics, clog drainage, and are excluded from recycling.",
+            "Polar Pop cups are the large convenience store cups associated with Circle K—useful for source attribution and retailer partnership conversations.",
+            "Styrofoam (Other) is the most common sub-type—these are generic foam cups from a wide range of food service sources.")
 
     elif sel_cat == "Food Packaging: All 11 Sub-Items":
         fp=df[df["trash_group"]=="Food Packaging"].groupby("trash_item")["n"].sum().reset_index().sort_values("n",ascending=True)
@@ -2655,10 +2600,10 @@ elif page == "Categories":
             title="Food Packaging: All 11 Sub-Types"); show(fig,"fp_items")
         last_updated_insight(df,"category","Food Packaging")
         cat_color_legend()
-        fig_note("Food Packaging is the single largest category at 10,694 items — spanning 11 distinct sub-types.",
+        fig_note("Food Packaging is the single largest category at 10,694 items—spanning 11 distinct sub-types.",
             "Food Wrappers alone account for 51% of all Food Packaging (5,471 items). Straws are #3 at 860.",
             "6-pack rings and straws pose direct entanglement risk to birds and reptiles in the riparian corridor.",
-            "Non-cup styrofoam (805) is especially harmful — it breaks into small beads that are indistinguishable from food particles to wildlife.")
+            "Non-cup styrofoam (805) is especially harmful—it breaks into small beads that are indistinguishable from food particles to wildlife.")
 
     elif sel_cat == "Alcohol Containers: Beer vs Liquor Over Time":
         alc=df[df["trash_group"].isin(["Beer","Liquor"])].copy()
@@ -2705,7 +2650,7 @@ elif page == "Categories":
             unsafe_allow_html=True
         )
         fig_note("All 19 categories classified by City of Tucson recycling eligibility.",
-            "Approximately 16% of items by count are technically recyclable — but none are being recycled because they end up in the river corridor.",
+            "Approximately 16% of items by count are technically recyclable—but none are being recycled because they end up in the river corridor.",
             "Blue = recyclable (Beer, Liquor, Soda, Water, Sports Drinks, Juice, Paper Litter). These represent a missed diversion opportunity.",
             "A beverage container deposit program (bottle bill) would directly target the recyclable fraction. This data can directly support such policy advocacy.")
 
@@ -2740,7 +2685,7 @@ elif page == "Categories":
             unsafe_allow_html=True
         )
         fig_note("Items classified by ability to float and travel downstream during storm events.",
-            "Approximately 63% of all recorded items are floatable — meaning the majority of Santa Cruz River litter is at risk of entering the water column during monsoon events.",
+            "Approximately 63% of all recorded items are floatable—meaning the majority of Santa Cruz River litter is at risk of entering the water column during monsoon events.",
             "Blue = enters waterways during rain. Food Packaging, Plastic Bags, Cups, and all beverage bottles are floatable.",
             "This analysis directly supports ADEQ stormwater permit compliance, EPA Section 319 nonpoint source pollution reporting, and conservation grant applications.")
 
@@ -2771,7 +2716,7 @@ elif page == "Categories":
         fig_note("Three categories with direct public health risk: Rx/Drugs, Nicotine, and Toiletries.",
             "Syringes (101 recorded) and drug paraphernalia (88) create needle-stick hazard for field staff and community volunteers. Nicotine (1,255) is the most numerically prevalent hazard.",
             "All three require special handling protocols and personal protective equipment during removal events.",
-            "These numbers should be treated as minimums — syringes are likely underreported due to safety concerns and incomplete detection during surveys.")
+            "These numbers should be treated as minimums—syringes are likely underreported due to safety concerns and incomplete detection during surveys.")
 
     elif sel_cat == "Bulk and Large Debris: Appliances, Construction, Auto":
         bk=df[df["trash_group"].isin(BULK_DEBRIS_GROUPS)].copy()
@@ -2793,7 +2738,7 @@ elif page == "Categories":
             fb(fig,"Total","Item",h=400,title="Bulk Debris: All Sub-Types"); show(fig,"bk_items")
         cat_color_legend()
         fig_note("Appliances (550), Construction (1,147), and Auto (167) are large items requiring equipment to remove.",
-            "Construction debris — particularly Small Items (1,104) — indicates illegal dumping of building waste along the corridor.",
+            "Construction debris—particularly Small Items (1,104)—indicates illegal dumping of building waste along the corridor.",
             "By item count these seem modest, but by weight and volunteer-hours required for removal they represent a disproportionate burden.",
             "Tires (48) create standing water that breeds mosquitoes. Shopping carts signal commercial area drainage. These require coordinated heavy equipment removal.")
 
@@ -2822,7 +2767,7 @@ elif page == "Categories":
         fig_note("Each dot = a category flagged with a risk dimension. Larger and further right = more items.",
             "Shows which categories combine high volume with high environmental or health risk.",
             "Food Packaging is Floatable. Rx/Drugs is a Health Hazard. Construction is Bulk Debris. Beer is Recyclable.",
-            "Categories that are BOTH high-volume AND high-risk are priority targets — e.g. Plastic Bags (3,649 items, Floatable, Non-Recyclable).")
+            "Categories that are BOTH high-volume AND high-risk are priority targets—e.g. Plastic Bags (3,649 items, Floatable, Non-Recyclable).")
 
     elif sel_cat == "Category Trends Over Time: Top 6 (Quarterly)":
         top6=df.groupby("trash_group")["n"].sum().nlargest(6).index.tolist()
@@ -2845,7 +2790,7 @@ elif page == "Categories":
             yoy["year_str"]=yoy["year"].astype(int).astype(str)
             ord_cats=[g for g in GROUP_ORDER if g in yoy["trash_group"].unique()]
 
-            # A: Heatmap — correct chart type for category × year matrix
+            # A: Heatmap—correct chart type for category × year matrix
             # Grouped bar with 19 cats × 5 years = 95 bars, completely unreadable
             pivot=yoy.pivot(index="trash_group",columns="year_str",values="n").fillna(0)
             pivot=pivot.reindex([g for g in reversed(GROUP_ORDER) if g in pivot.index])
@@ -2874,7 +2819,7 @@ elif page == "Categories":
             cat_color_legend()
             fig_note(
                 "Top: Heatmap shows each category's item count per year. Darker green = more items. Bottom: Stacked bar shows total burden per year with category breakdown.",
-                "Heatmap is the correct chart type here — 19 categories × 5 years would produce 95 bars in a grouped bar chart, making it unreadable.",
+                "Heatmap is the correct chart type here—19 categories × 5 years would produce 95 bars in a grouped bar chart, making it unreadable.",
                 "Heatmap: scan horizontally across a category to see if it is growing. Scan vertically down a year to compare categories within that year.",
                 "Stacked bar: the height of the full bar = total items that year. The color slices show which categories contributed most."
             )
@@ -2893,7 +2838,7 @@ elif page == "Categories":
                 color_discrete_sequence=PAL,category_orders={"trash_group":ord_cats})
             fb(fig,"Year","Share of Total (%)",h=500,title="Category Composition by Year: Proportional"); show(fig,"comp_yr")
             cat_color_legend()
-            fig_note("100% stacked bars — each bar totals 100%, showing category SHARE each year.",
+            fig_note("100% stacked bars—each bar totals 100%, showing category SHARE each year.",
                 "Removes the effect of varying survey effort and shows whether the MIX of items is changing.",
                 "A growing color slice = that category is increasing as a proportion of all litter.",
                 "This is more ecologically meaningful than raw totals for detecting genuine composition shifts independent of survey frequency.")
@@ -2939,8 +2884,8 @@ elif page == "Categories":
                         title=f"{seg}: All Categories ({seg_tot_n:,} total items)"); show(fig,f"seg_spec_{i}")
             cat_color_legend()
             fig_note("Top categories for each river segment shown in individual tabs.",
-                "Identifies segment-specific waste profiles — useful for targeted cleanup events and reporting to local jurisdictions.",
-                "Compare the relative share of each category across segments — a category dominant in one segment but minor in another points to local source patterns.",
+                "Identifies segment-specific waste profiles—useful for targeted cleanup events and reporting to local jurisdictions.",
+                "Compare the relative share of each category across segments—a category dominant in one segment but minor in another points to local source patterns.",
                 "Use alongside the Map page to connect geographic patterns with specific land uses, outfalls, or encampment locations along each reach.")
         else:
             st.info("No segment data.")
@@ -2976,40 +2921,46 @@ elif page == "Categories":
 
 
 elif page == "Locations":
-    page_banner("Site-Level Analysis", "Where the Trash Is and How Much", "Trash burden across all 136 recorded survey locations. Sites are ordered North to South along the river corridor. Statistics reflect variability across repeated survey visits.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
+    page_banner("Site-Level Analysis", "Where the Trash Is and How Much", "Trash burden across recorded survey locations. Sites are ordered North to South along the river corridor. This page uses only exact triplicate sessions, three plots at the same site on the same date, for site-level statistics.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
     st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
     <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
-    <p style="margin:0 0 8px;"><strong>Mean (average items per event):</strong> The typical number of trash items found during a single survey visit at that site. A site with a mean of 80 means the team usually finds about 80 items each time they visit. This is the most useful number for comparing sites.</p>
-    <p style="margin:0 0 8px;"><strong>SD (standard deviation):</strong> How much the count varies from visit to visit. A low SD means the site is consistently trashy or consistently clean. A high SD means some visits found a lot and others found very little — suggesting the trash comes in waves, or that conditions change between surveys.</p>
-    <p style="margin:0 0 8px;"><strong>SE (standard error):</strong> How reliable the mean estimate is. Smaller SE = more confident the mean is accurate. A site visited 20 times has a more reliable mean than one visited twice. Use SE to know whether to trust the average.</p>
-    <p style="margin:0 0 8px;"><strong>CV (coefficient of variation %):</strong> A normalized measure of variability — SD divided by the mean, expressed as a percentage. It lets you fairly compare variability across sites with different trash levels. Under 30% = fairly consistent site. Over 100% = highly unpredictable, meaning conditions vary dramatically between surveys.</p>
-    <p style="margin:0 0 8px;"><strong>Triplicate handling:</strong> For the explicit triplicate study block in this database, the three adjoining 10m × 10m plots are first averaged into one point estimate before site statistics are calculated. This keeps those three plots from being treated like three independent visits.</p><p style="margin:0;"><strong>Why this matters for trash:</strong> A site with a high mean AND a low CV is a chronic hotspot. A site with a high CV may need a different response, such as source investigation instead of routine cleanup.</p>
+    <p style="margin:0 0 8px;"><strong>Strict triplicate rule:</strong> This page only uses site-date sessions with exactly <strong>3 surveyed plots</strong>. Single plots, doubles, and larger multi-team days are excluded here so the site statistics stay conservative and defensible.</p>
+    <p style="margin:0 0 8px;"><strong>Mean:</strong> For each site-date session, the three plot totals are averaged first. The site mean is then the average of those triplicate session means. This is the most useful number for comparing typical plot-level trash burden across sites.</p>
+    <p style="margin:0 0 8px;"><strong>SD and SE:</strong> SD shows how much those triplicate session means vary over time. SE shows how precisely the site mean is estimated across independent triplicate sessions.</p>
+    <p style="margin:0 0 8px;"><strong>CV:</strong> CV is SD divided by the mean. It helps compare variability across sites with different trash levels.</p>
+    <p style="margin:0;"><strong>Why this matters:</strong> The raw trash counts in the database are real counted items. The main correction here is statistical. Three adjacent plots from the same site-date should not be treated as three independent visits.</p>
     </div>''', unsafe_allow_html=True)
 
     with st.expander(T("filter_data"), expanded=False):
         lf=render_filters(long, kp="loc", cats=False)
-    stat_strip(long,lf)
 
-    df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
-    # Build N→S triplicate stats
-    ss=build_site_stats_ns(df)
-    # Also keep old simple stats for backward compat
-    site_st=df.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),
-        mean=("n","mean"),mx=("n","max"),mn_v=("n","min"),sd=("n","std")).reset_index()
-    site_st["avg_per_event"]=(site_st["total"]/site_st["events"]).round(1)
-    site_st["sd"]=site_st["sd"].fillna(0).round(1)
-    site_st=site_st.sort_values("total",ascending=False).reset_index(drop=True)
+    df_all=lf.copy()
+    df_all["n"]=pd.to_numeric(df_all["n"],errors="coerce").fillna(0)
+    df=keep_exact_triplicate_sessions(df_all)
+    stat_strip(long, df if len(df)>0 else df_all)
 
-    # KPI strip
+    ss=build_site_stats_ns(df_all)
+    site_st=df.groupby(["site_label","seg"]).agg(total=("n","sum"),plot_records=("event_id","nunique"),
+        mean=("n","mean"),mx=("n","max"),mn_v=("n","min"),sd=("n","std")).reset_index() if len(df)>0 else pd.DataFrame(columns=["site_label","seg","total","plot_records","mean","mx","mn_v","sd"])
+    if len(site_st)>0:
+        site_st["avg_per_event"]=(site_st["total"]/site_st["plot_records"]).round(1)
+        site_st["sd"]=site_st["sd"].fillna(0).round(1)
+        site_st=site_st.sort_values("total",ascending=False).reset_index(drop=True)
+
+    strict_sessions_n = df[["site_label","date"]].drop_duplicates().shape[0] if len(df)>0 else 0
+    if len(df)==0:
+        st.warning("No exact triplicate sessions match the current filters. This page now only reports site statistics from site-date sessions with exactly 3 plots.")
+
     grand_mean = ss["mean"].mean() if len(ss)>0 else 0
     grand_sd   = ss["sd"].mean() if len(ss)>0 else 0
+    max_site_total = int(site_st["total"].max()) if len(site_st)>0 else 0
     st.markdown(f"""<div class="stat-strip">
-    <div class="stat-item"><span class="stat-v">{len(ss) if len(ss)>0 else len(site_st)}</span><span class="stat-l">Total Locations</span></div>
-    <div class="stat-item"><span class="stat-v">{int(site_st["total"].max()):,}</span><span class="stat-l">Max Items at One Site</span></div>
-    <div class="stat-item"><span class="stat-v">{grand_mean:.1f}</span><span class="stat-l">Grand Mean / Event</span></div>
+    <div class="stat-item"><span class="stat-v">{len(ss) if len(ss)>0 else 0}</span><span class="stat-l">Triplicate Sites</span></div>
+    <div class="stat-item"><span class="stat-v">{max_site_total:,}</span><span class="stat-l">Max Raw Items at One Site</span></div>
+    <div class="stat-item"><span class="stat-v">{grand_mean:.1f}</span><span class="stat-l">Grand Mean / Plot</span></div>
     <div class="stat-item"><span class="stat-v">±{grand_sd:.1f}</span><span class="stat-l">Mean SD Across Sites</span></div>
-    <div class="stat-item"><span class="stat-v">{int(site_st["events"].sum()):,}</span><span class="stat-l">Total Events</span></div>
+    <div class="stat-item"><span class="stat-v">{strict_sessions_n:,}</span><span class="stat-l">Triplicate Sessions</span></div>
     </div>""", unsafe_allow_html=True)
 
     color_legend("River Segment Colors", mode="segments")
@@ -3020,8 +2971,9 @@ elif page == "Locations":
     ])
 
     with loc_tab1:
+        ns_show = pd.DataFrame()
         if len(ss)>0:
-            card_open("Average Items per Event: North to South",
+            card_open("Average Items per Plot: North to South",
                       "Each bar = one survey site. Height = mean items per event at that site. Sites are ordered geographically from northernmost (top) to southernmost (bottom). Color indicates river segment.")
             ns_show = ss[ss["lat_num"].notna()].sort_values("north_rank")
             if len(ns_show)>0:
@@ -3030,28 +2982,28 @@ elif page == "Locations":
                     error_x="se",
                     category_orders={"site_display": ns_show["site_display"].tolist()})
                 fig.update_yaxes(categoryorder="array", categoryarray=ns_show["site_display"].tolist(), autorange="reversed")
-                fb(fig,"Mean Items per Event","Site (North to South)",
+                fb(fig,"Mean Items per Plot","Site (North to South)",
                    h=max(560,26*len(ns_show)),
-                   title="Mean Items per Event: North to South"); show(fig,"ns_mean")
+                   title="Mean Items per Plot: North to South"); show(fig,"ns_mean")
                 last_updated_insight(df, chart_type="general")
             fig_note(
-                "Mean number of items recorded per survey event at each site, ordered north to south by GPS latitude.",
+                "Mean number of items recorded per 10 m × 10 m plot at each site, using only exact triplicate sessions, ordered north to south by GPS latitude.",
                 "Geographic ordering reveals whether trash burden is clustered in certain reaches of the corridor.",
-                "Longer bars = heavier sites. Error bars show ±1 standard error (SE). Sites at the top are the northernmost.",
-                "SE = SD ÷ √n. A small SE means the site's mean is reliably estimated. A large SE means high variability between events at that site."
+                "Longer bars = heavier sites. Error bars show ±1 standard error (SE). Sites at the top are the northernmost. Only exact triplicate sessions are included.",
+                "SE = SD ÷ √n. A small SE means the site mean is reliably estimated. A large SE means high variability between triplicate sessions at that site."
             )
 
         section_title("Site Statistics: North to South")
-        st.markdown('<div class="sec-sub">Full statistical summary for sites with GPS coordinates, ordered north to south. N = number of survey events. Mean ± SD are computed across events at each site.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec-sub">Full statistical summary for sites with GPS coordinates, ordered north to south. N = number of exact triplicate sessions. Mean ± SD are computed across triplicate session means at each site.</div>', unsafe_allow_html=True)
         if len(ns_show)>0:
             tbl = ns_show[["north_rank","site_display","seg","n_plots","mean","sd","se","cv","range","total","lat_num","lon"]].copy()
             tbl = tbl.rename(columns={"north_rank":"Rank (N→S)","site_display":"Site","seg":"Segment",
-                "n_plots":"N (events)","mean":"Mean","sd":"Std Dev","se":"Std Error",
+                "n_plots":"N (triplicate sessions)","mean":"Mean","sd":"Std Dev","se":"Std Error",
                 "cv":"CV (%)","range":"Range","total":"Total","lat_num":"Latitude","lon":"Longitude"})
             tbl["CV (%)"]=tbl["CV (%)"].apply(lambda x: f"{100*x:.1f}" if pd.notna(x) else "—")
             tbl = tbl.round(2)
             st.dataframe(tbl, use_container_width=True, height=500)
-            tbl_note("Mean = average items per event. SD = standard deviation (spread across events). SE = standard error (reliability of mean). CV = coefficient of variation (SD÷Mean×100) — higher % means more variable site. Range = max minus min across events. Rank 1 = northernmost site with coordinates.")
+            tbl_note("Mean = average items per plot after averaging the 3 plots in each kept site-date session. SD = spread across exact triplicate sessions. SE = reliability of the site mean across those sessions. CV = coefficient of variation (SD÷Mean×100), higher % means more variable site. Range = max minus min across triplicate session means. Rank 1 = northernmost site with coordinates.")
 
     with loc_tab2:
         if len(ss)>0:
@@ -3059,13 +3011,13 @@ elif page == "Locations":
             c1v,c2v = st.columns(2)
             with c1v:
                 card_open("Standard Deviation: North to South",
-                          "SD measures how much individual events vary at each site. A site with SD=0 had exactly the same count every visit. High SD = unpredictable or patchy litter.")
+                          "SD measures how much exact triplicate sessions vary at each site. A site with SD=0 had the same triplicate session mean every time. High SD = unpredictable or patchy litter.")
                 fig=px.bar(ns_show,x="sd",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
                 fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
                 fb(fig,"Standard Deviation","Site",h=max(500,24*len(ns_show)),title="Within-Site Variability: North to South"); show(fig,"ns_sd")
-                fig_note("Standard deviation of total items per event at each site.",
-                    "High SD indicates inconsistency — some visits found a lot of trash, others very little.",
-                    "Longer bars = more variable sites. A site can have a low mean but high SD if trash events are sporadic.",
+                fig_note("Standard deviation of triplicate session means at each site.",
+                    "High SD indicates inconsistency, some triplicate sessions found a lot of trash, others very little.",
+                    "Longer bars = more variable sites. A site can have a low mean but high SD if trash pulses are sporadic between triplicate sessions.",
                     "SD is not comparable across sites with very different means. Use CV for that.")
             with c2v:
                 card_open("Coefficient of Variation: North to South",
@@ -3082,13 +3034,13 @@ elif page == "Locations":
                         "A clean site with CV=150% is more unpredictable than a heavy site with CV=25%.")
 
             card_open("Range of Items: North to South",
-                      "Range = maximum items recorded minus minimum items recorded across all events at that site. Simple and easy to communicate in presentations.")
+                      "Range = maximum triplicate session mean minus minimum triplicate session mean at that site. Simple and easy to communicate in presentations.")
             fig=px.bar(ns_show,x="range",y="site_display",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
             fig.update_yaxes(categoryorder="array",categoryarray=ns_show["site_display"].tolist(),autorange="reversed")
             fb(fig,"Range (Max − Min)","Site",h=max(500,24*len(ns_show)),title="Range of Items: North to South"); show(fig,"ns_range")
-            fig_note("The difference between the heaviest and lightest events recorded at each site.",
+            fig_note("The difference between the heaviest and lightest triplicate session means recorded at each site.",
                 "Range is intuitive for non-technical audiences.",
-                "A range of 0 means the same count every visit. A large range means the site fluctuates dramatically.",
+                "A range of 0 means the same triplicate session mean every time. A large range means the site fluctuates dramatically.",
                 "Range is sensitive to extreme outlier events, unlike SD or CV.")
 
     with loc_tab3:
@@ -3107,45 +3059,47 @@ elif page == "Locations":
                 "Taller bars = more total trash. This is influenced by both the number of sites and their individual burden.",
                 "A segment with many lightly-visited sites can look heavy due to accumulated counts.")
         with c2s:
-            card_open("Survey Events by River Segment",
-                      "Number of distinct survey events within each segment — shows sampling effort distribution.")
-            seg_ev=df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg")["event_id"].nunique().reset_index(name="events")
+            card_open("Triplicate Sessions by River Segment",
+                      "Number of independent exact triplicate sessions within each segment, showing conservative sampling effort distribution.")
+            seg_ev=df[df["seg"].isin(SEG_ORDER[:-1])][["seg","site_label","date"]].drop_duplicates().groupby("seg").size().reset_index(name="events")
             fig=px.bar(seg_ev,x="seg",y="events",color="seg",color_discrete_map=SEG_COLORS)
-            fb(fig,"Segment","# Events",h=320,leg=False,title="Survey Events by River Segment"); show(fig,"loc_segev")
-            fig_note("Number of individual survey events per segment.",
+            fb(fig,"Segment","# Sessions",h=320,leg=False,title="Triplicate Sessions by River Segment"); show(fig,"loc_segev")
+            fig_note("Number of independent exact triplicate sessions per segment.",
                 "Unequal sampling effort means direct total comparisons should be interpreted with care.",
-                "Compare with total items chart — a segment with more events should be expected to have more items.",
-                "Normalizing by events (using mean) is more fair when event counts differ substantially.")
+                "Compare with total items chart, a segment with more triplicate sessions should be expected to have more items.",
+                "Normalizing by session means is more fair when sampling effort differs substantially.")
         color_legend("Segment Colors", mode="segments")
 
         section_title("Segment Summary Table")
         seg_summary = df[df["seg"].isin(SEG_ORDER[:-1])].groupby("seg").agg(
-            Total_Items=("n","sum"), Events=("event_id","nunique"),
-            Sites=("site_label","nunique"), Mean_per_event=("n","mean")
+            Total_Items=("n","sum"),
+            Plot_Records=("event_id","nunique"),
+            Sites=("site_label","nunique"),
+            Mean_per_plot=("n","mean")
         ).reset_index().rename(columns={"seg":"River Segment","Total_Items":"Total Items",
-            "Events":"# Events","Sites":"# Sites","Mean_per_event":"Mean per Event"})
+            "Plot_Records":"# Plot Records","Sites":"# Sites","Mean_per_plot":"Mean per Plot"})
         seg_summary = seg_summary.round(1)
         st.dataframe(seg_summary, use_container_width=True, height=240)
-        tbl_note("Mean per Event is computed across all individual item records, not event totals. Use 'Total Items ÷ # Events' for event-level mean.")
+        tbl_note("Mean per Plot is computed across the strict triplicate-only subset shown on this page. Raw totals remain real counted items from those kept plot records.")
 
-        section_title("Top 20 Sites by Average Items per Event")
+        section_title("Top 20 Sites by Average Items per Plot")
         top20_avg=site_st.nlargest(20,"avg_per_event").sort_values("avg_per_event")
-        card_open("Sites Ranked by Average Items per Event",
-                  "Per-event average is a fairer metric than total count — it adjusts for how many times a site was visited.")
+        card_open("Sites Ranked by Average Items per Plot",
+                  "Average items per plot is a fairer metric than total count because it adjusts for how many strict triplicate sessions a site has.")
         fig=px.bar(top20_avg,x="avg_per_event",y="site_label",orientation="h",color="seg",color_discrete_map=SEG_COLORS)
-        fb(fig,"Avg Items / Event",None,h=max(460,22*len(top20_avg)),title="Top 20 Sites: Avg Items per Event"); show(fig,"loc_avg")
-        fig_note("Average total items recorded per survey visit at each site.",
+        fb(fig,"Avg Items / Plot",None,h=max(460,22*len(top20_avg)),title="Top 20 Sites: Avg Items per Plot"); show(fig,"loc_avg")
+        fig_note("Average items per plot at each site, using only exact triplicate sessions.",
             "Avoids penalizing well-sampled sites that appear heavier only because they were visited more.",
-            "A site visited once with 300 items scores higher than one visited 10 times averaging 20 items.",
-            "Use alongside visit counts — a high average based on a single visit may not be reliable.")
+            "A site with heavier plot-level burden will rank higher even if another site simply has more total visits.",
+            "Use alongside triplicate session counts, a high average based on very few sessions may not be reliable.")
         card_close()
 
     with loc_tab4:
         seg_filter2=st.selectbox("Filter by River Segment",["All"]+SEG_ORDER[:-1], key="loc_seg_filter2")
-        view_order=st.radio("Sort order",["North to South (GPS)","By Total Items","By Mean per Event"],horizontal=True)
+        view_order=st.radio("Sort order",["North to South (GPS)","By Total Items","By Mean per Plot"],horizontal=True)
 
         if len(ss)>0:
-            tbl_full = ss.merge(site_st[["site_label","total","events","avg_per_event"]],on="site_label",how="left",suffixes=("","_ev"))
+            tbl_full = ss.merge(site_st[["site_label","total","plot_records","avg_per_event"]],on="site_label",how="left",suffixes=("","_ev"))
             if seg_filter2!="All": tbl_full=tbl_full[tbl_full["seg"]==seg_filter2]
             if view_order=="North to South (GPS)":
                 tbl_full=tbl_full.sort_values(["north_rank","site_label"])
@@ -3157,19 +3111,19 @@ elif page == "Locations":
             disp=tbl_full[["site_display","seg","n_plots","mean","sd","se","cv","range","total","lat_num","lon"]].copy()
             disp["cv_pct"]=(disp["cv"]*100).round(1)
             disp=disp.drop(columns=["cv"])
-            disp=disp.rename(columns={"site_display":"Site (N→S)","seg":"Segment","n_plots":"N Units",
+            disp=disp.rename(columns={"site_display":"Site (N→S)","seg":"Segment","n_plots":"N Triplicate Sessions",
                 "mean":"Mean","sd":"SD","se":"SE","cv_pct":"CV (%)","range":"Range",
                 "total":"Total","lat_num":"Latitude","lon":"Longitude"})
             disp=disp.round(2).reset_index(drop=True); disp.index=range(1,len(disp)+1)
             st.dataframe(disp, use_container_width=True, height=600)
-            tbl_note("N Units = number of independent analysis units at this site. Legacy surveys count as one unit per event. Explicit triplicate points are averaged first, then counted as one unit. Mean ± SD, SE, CV, and Range are computed across those units. Sites without GPS coordinates may not have a North→South rank.")
+            tbl_note("N Triplicate Sessions = number of exact site-date triplicate sessions at this site. Mean ± SD are computed across triplicate session means. SE = SD÷√N. CV = SD÷Mean×100. Range = Max−Min across triplicate session means. Sites without GPS coordinates may not have a North to South rank.")
         else:
             filtered_st=site_st if seg_filter2=="All" else site_st[site_st["seg"]==seg_filter2]
-            disp=filtered_st[["site_label","seg","total","events","avg_per_event","mean","sd","mx","mn_v"]].copy()
-            disp.columns=["Location","Segment","Total Items","# Events","Avg/Event","Mean","SD","Max","Min"]
+            disp=filtered_st[["site_label","seg","total","plot_records","avg_per_event","mean","sd","mx","mn_v"]].copy()
+            disp.columns=["Location","Segment","Total Items","# Plot Records","Avg/Plot","Mean","SD","Max","Min"]
             disp=disp.round(1).reset_index(drop=True); disp.index=range(1,len(disp)+1)
             st.dataframe(disp, use_container_width=True, height=600)
-            tbl_note("Mean and SD are computed across individual count records, not event totals.")
+            tbl_note("Mean and SD are computed from the strict triplicate-only subset used on this page.")
 
     st.markdown('</div>', unsafe_allow_html=True)
 
@@ -3184,17 +3138,17 @@ elif page == "Data Table":
         lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
     stat_strip(long,lf)
 
-    # Two view modes — long (default) and wide (Excel-like)
+    # Two view modes—long (default) and wide (Excel-like)
     dt_view = st.radio(
         "Table format",
-        ["Wide format — one row per event, each item as a column (like Excel)",
-         "Long format — one row per item per event"],
+        ["Wide format—one row per event, each item as a column (like Excel)",
+         "Long format—one row per item per event"],
         horizontal=True, key="dt_view_mode"
     )
 
     section_title(T("sec_raw"))
     if "Wide" in dt_view:
-        st.markdown('<div class="sec-sub">One row per survey event. Columns show each of the 56 recorded item types plus event metadata — exactly like the original Excel format. Zero = item was not found that visit.</div>', unsafe_allow_html=True)
+        st.markdown('<div class="sec-sub">One row per survey event. Columns show each of the 56 recorded item types plus event metadata—exactly like the original Excel format. Zero = item was not found that visit.</div>', unsafe_allow_html=True)
 
         # Build pivot: one row per event, items as columns
         if "trash_item" in lf.columns and "n" in lf.columns and "event_id" in lf.columns:
@@ -3206,16 +3160,16 @@ elif page == "Data Table":
             # Build group-prefixed item key to avoid duplicates
             # (e.g. "Bottles" appears in Beer, Liquor, Soda, Water, Sports Drinks, Juice)
             lf_wide = lf.copy()
-            lf_wide["item_col"] = lf_wide["trash_group"].fillna("") + " — " + lf_wide["trash_item"].fillna("")
+            lf_wide["item_col"] = lf_wide["trash_group"].fillna("") + "—" + lf_wide["trash_item"].fillna("")
 
             # Build ordered column list matching Excel group order
             item_order = []
             for grp, items in TRASH_GROUPS.items():
                 for item in items:
-                    col_name = f"{grp} — {item}"
+                    col_name = f"{grp}—{item}"
                     item_order.append(col_name)
 
-            # Pivot using the prefixed key — no duplicates possible
+            # Pivot using the prefixed key—no duplicates possible
             pivot = lf_wide.pivot_table(
                 index="event_id", columns="item_col", values="n", aggfunc="sum", fill_value=0
             ).reset_index()
@@ -3308,7 +3262,7 @@ elif page == "Data Entry":
         )
 
     if is_vol:
-        # Volunteers only see the entry form — no tabs, no manage section
+        # Volunteers only see the entry form—no tabs, no manage section
         entry_tab = st.container()
         manage_tab = None
     else:
@@ -3329,22 +3283,22 @@ elif page == "Data Entry":
                 event_id=ec1.text_input("Event ID",placeholder="e.g. 396")
                 survey_date=ec2.date_input("Survey Date",value=date.today())
                 area_m2=ec3.number_input("Plot Area (m²)",min_value=0.0,value=10.0,step=0.5)
-                recorder=ec4.selectbox("Recorder",[""] + TEAM + ["Other — type below"])
+                recorder=ec4.selectbox("Recorder",[""] + TEAM + ["Other—type below"])
                 ec5,ec6=st.columns([2,2])
                 existing=sorted(long["site_label"].dropna().astype(str).unique().tolist())
                 site_sel=ec5.selectbox("Survey Location (existing)",[""] + existing)
                 site_new=ec6.text_input("Or enter a new location name")
-                # Always render the name field — Streamlit forms don't re-render on selectbox change
+                # Always render the name field—Streamlit forms don't re-render on selectbox change
                 # Field is always visible; label makes clear it's only needed for 'Other'
                 rec_other = st.text_input(
                     'Full name (required if "Other" selected above)',
                     placeholder='Type your full name here',
-                    help='Only needed when "Other — type below" is selected in the Recorder field above.',
+                    help='Only needed when "Other—type below" is selected in the Recorder field above.',
                     key='rec_other_always'
                 )
                 st.markdown('</div>', unsafe_allow_html=True)
 
-                recorder_final = rec_other.strip() if (rec_other.strip() and recorder == 'Other — type below') else (recorder if recorder and recorder != 'Other — type below' else '')
+                recorder_final = rec_other.strip() if (rec_other.strip() and recorder == 'Other—type below') else (recorder if recorder and recorder != 'Other—type below' else '')
                 site_final = site_new.strip() if site_new.strip() else site_sel
                 site_final=site_new.strip() if site_new.strip() else site_sel
 
@@ -3486,7 +3440,7 @@ elif page == "Data Entry":
                 unsafe_allow_html=True
             )
 
-            # Items recorded — only non-zero
+            # Items recorded—only non-zero
             if snap["counts"]:
                 st.markdown(
                     f'<div style="font-size:10px;font-family:DM Mono,monospace;text-transform:uppercase;' +
@@ -3561,7 +3515,7 @@ elif page == "Data Entry":
                         st.session_state["entry_step"]=1
                         st.session_state["entry_snapshot"]=None
                         st.success(
-                            f"Saved — Event {snap['event_id']} · {snap['site_final']} · "
+                            f"Saved—Event {snap['event_id']} · {snap['site_final']} · "
                             f"{snap['survey_date'].strftime('%B %d, %Y')} · {snap['total']:,} items"
                         )
                         st.rerun()
@@ -3744,7 +3698,7 @@ elif page == "Data Entry":
             new_item_name = st.text_input(
                 "Item name *",
                 placeholder="e.g. Face masks, N95 respirators",
-                help="The specific item type. Be precise — this will appear on survey forms and in all charts."
+                help="The specific item type. Be precise—this will appear on survey forms and in all charts."
             )
             new_cat_note = st.text_area(
                 "Reason for adding (optional)",
@@ -3810,8 +3764,8 @@ elif page == "Export":
     site_exp=site_exp.sort_values("total",ascending=False)
 
     exports=[
-        ("Long Format — Every Record",long_exp,"scr_trash_long_format.csv",
-         "One row per item category per survey event. The most complete format — best for custom analysis in R, Python, or Excel pivot tables. Contains every count entry with its associated location, date, and segment.",
+        ("Long Format—Every Record",long_exp,"scr_trash_long_format.csv",
+         "One row per item category per survey event. The most complete format—best for custom analysis in R, Python, or Excel pivot tables. Contains every count entry with its associated location, date, and segment.",
          f"{len(long_exp):,} rows · {len(long_exp.columns)} columns"),
         ("Event Totals",et_exp,"scr_trash_event_totals.csv",
          "One row per survey event with total item count and density (items/m² where area data is available). Best for comparing events or plotting overall trends without needing item-level detail.",
@@ -4094,7 +4048,7 @@ st.markdown(f"""<div class="ftr"><div class="ftr-in">
       <div class="ftr-links-row" style="flex-direction:column;gap:5px;">
         <a href="https://sonoraninstitute.org/files/a-living-river-2025.pdf" target="_blank" class="ftr-a ftr-copy">Downtown Tucson to Marana 2025</a>
         <a href="https://sonoraninstitute.org/files/a-living-river-supplementary-2025.pdf" target="_blank" class="ftr-a ftr-copy">Supplementary Data 2025</a>
-        <a href="https://sonoraninstitute.org/files/un-rio-vivo-2025.pdf" target="_blank" class="ftr-a ftr-copy">Un Río Vivo — Español 2025</a>
+        <a href="https://sonoraninstitute.org/files/un-rio-vivo-2025.pdf" target="_blank" class="ftr-a ftr-copy">Un Río Vivo—Español 2025</a>
       </div>
     </div>
   </div>
