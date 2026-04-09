@@ -37,6 +37,66 @@ SEG_ORDER  = ["North Reach","Central Reach","South Reach","Rillito","Other"]
 SEG_COLORS = {"North Reach":"#2980b9","Central Reach":"#27ae60","South Reach":"#e67e22","Rillito":"#8e44ad","Other":"#7f8c8d"}
 SEG_LIGHT  = {"North Reach":"#d6eaf8","Central Reach":"#d5f5e3","South Reach":"#fdebd0","Rillito":"#e8daef","Other":"#f0f0f0"}
 
+def _norm_site_label(s):
+    s = "" if s is None else str(s).strip().lower()
+    s = s.replace("tuboc", "tubac")
+    s = s.replace("st. mary", "st mary").replace("st. mary's", "st mary")
+    s = s.replace("santa cruze", "santa cruz")
+    s = re.sub(r"[^a-z0-9]+", " ", s)
+    s = re.sub(r"\s+", " ", s).strip()
+    return s
+
+
+def assign_segment(site_label, lat=None, lon=None):
+    """Assign a river segment from site label first, then coordinates as fallback."""
+    s = _norm_site_label(site_label)
+
+    # Rillito / tributary sites
+    if any(k in s for k in ["rillito", "arcadia", "country club"]):
+        return "Rillito"
+
+    # North reach
+    if any(k in s for k in [
+        "camino del cerro", "cocerro", "co cerro", "silverbell", "silverlake",
+        "north of cocerro", "between an outfall and camino del cerro"
+    ]):
+        return "North Reach"
+
+    # Central reach
+    if any(k in s for k in [
+        "cushing", "congress", "trails end", "trail s end", "grant", "granada",
+        "carmen", "silverlake bridge", "navajo", "riverview", "verdugo",
+        "st mary and riverside", "riverside"
+    ]):
+        return "Central Reach"
+
+    # South reach
+    if any(k in s for k in [
+        "speedway", "st mary", "drexel", "irvington", "tubac", "tubac bridge",
+        "ina", "west freeway", "freeway", "outfall"
+    ]):
+        return "South Reach"
+
+    # Coordinate fallback for remaining Santa Cruz corridor sites
+    try:
+        lat_f = float(lat)
+        lon_f = float(lon)
+    except (TypeError, ValueError):
+        lat_f = np.nan
+        lon_f = np.nan
+
+    if pd.notna(lat_f) and pd.notna(lon_f):
+        # Keep only reasonable Southern Arizona coordinates
+        if 31.4 <= lat_f <= 32.6 and -111.3 <= lon_f <= -110.7:
+            if lat_f >= 32.285:
+                return "North Reach"
+            elif lat_f >= 32.235:
+                return "Central Reach"
+            else:
+                return "South Reach"
+
+    return "Other"
+
 # Phantom items accidentally migrated as trash—excluded at load time
 PHANTOM_ITEMS = {"Event Id","Date","Surveyed M2","Complete?",
     "Total Items","Total Items/M2","Total Items/m2"}
