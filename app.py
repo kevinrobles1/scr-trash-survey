@@ -1469,7 +1469,7 @@ def load_data():
         long.loc[m334 & (long["lat"] < 32.15), "lat"] = 32.210259
         # Event 15 (Santa Cruz): lon -110.080527 → -110.980527 (missing digit—all SCR sites ~-110.98x)
         m15 = long["event_id"].astype(str) == "15"
-        long.loc[m15 & (long["lon"] > -110.5), "lon"] = -110.980527
+        long.loc[m15 & (long["lon"] > -110.5), "lon"] = -111.080527
     # ────────────────────────────────────────────────────────────────
     long["seg"]=long["site_label"].map({s:seg for seg,sites in RIVER_SEGMENTS.items() for s in sites}).fillna("Other")
     long["trash_group"]=long["trash_group"].fillna("Misc")
@@ -1505,34 +1505,126 @@ def make_et(df):
 # ──────────────────────────────────────────────────────────────────
 # SITE TRIPLICATE STATISTICS (North → South)
 # ──────────────────────────────────────────────────────────────────
+def _norm_series_str(s):
+    return s.fillna("").astype(str).str.strip().str.replace(r"\s+", " ", regex=True)
+
+def _triplicate_plot_meta(df):
+    """
+    Build one row per plot/event so triplicate sessions can be identified
+    conservatively. Preferred session key is site + date + point_id when
+    point_id exists. Fallback is site + date only.
+    """
+    base_cols = [c for c in ["event_id", "site_label", "date", "point_id", "replicate_no", "seg", "lat", "lon"] if c in df.columns]
+    if df.empty or not {"event_id", "site_label", "date"}.issubset(df.columns):
+        return pd.DataFrame(columns=["event_id","site_label","date","point_id_norm","replicate_norm","seg","lat","lon","session_key","has_point_id"])
+    pm = df[base_cols].drop_duplicates("event_id").copy()
+    pm["date"] = pd.to_datetime(pm["date"], errors="coerce").dt.normalize()
+    pm = pm[pm["date"].notna()].copy()
+    pm["site_label"] = _norm_series_str(pm["site_label"])
+    pm["point_id_norm"] = _norm_series_str(pm["point_id"]) if "point_id" in pm.columns else ""
+    if "replicate_no" in pm.columns:
+        rep = pm["replicate_no"]
+        rep_num = pd.to_numeric(rep, errors="coerce")
+        pm["replicate_norm"] = np.where(rep_num.notna(), rep_num.astype("Int64").astype(str), _norm_series_str(rep))
+        pm["replicate_norm"] = pd.Series(pm["replicate_norm"], index=pm.index).replace({"<NA>":"", "nan":"", "None":""})
+    else:
+        pm["replicate_norm"] = ""
+    pm["has_point_id"] = pm["point_id_norm"].ne("")
+    day_str = pm["date"].dt.strftime("%Y-%m-%d")
+    pm["session_key"] = np.where(
+        pm["has_point_id"],
+        "PID::" + pm["site_label"] + "::" + day_str + "::" + pm["point_id_norm"],
+        "SD::" + pm["site_label"] + "::" + day_str
+    )
+    return pm
+
+def strict_triplicate_sessions(df):
+    """
+    Strict session table:
+    - exactly 3 distinct plot/event records
+    - one site
+    - one date
+    - if point_id exists, either 3 distinct replicate labels or replicate labels missing
+    This is intentionally conservative.
+    """
+    pm = _triplicate_plot_meta(df)
+    if pm.empty:
+        return pd.DataFrame(columns=["session_key","site_label","date","n_plots","n_rep","has_point_id"])
+    sess = pm.groupby("session_key", dropna=False).agg(
+        site_label=("site_label","first"),
+        date=("date","first"),
+        n_plots=("event_id","nunique"),
+        n_sites=("site_label","nunique"),
+        n_dates=("date","nunique"),
+        n_rep=("replicate_norm", lambda s: s[s.ne("")].nunique()),
+        has_point_id=("has_point_id","max"),
+    ).reset_index()
+    keep = sess[
+        (sess["n_plots"] == 3) &
+        (sess["n_sites"] == 1) &
+        (sess["n_dates"] == 1) &
+        ((~sess["has_point_id"]) | (sess["n_rep"].isin([0, 3])))
+    ].copy()
+    return keep
+
 def keep_exact_triplicate_sessions(df):
     """
-    Keep only exact triplicate sessions for site-level statistics.
-    A session is one site on one date with exactly 3 distinct plot records.
+    Keep only rows belonging to exact triplicate sessions.
     """
-    if df.empty or "site_label" not in df.columns or "event_id" not in df.columns or "date" not in df.columns:
+    if df.empty or "event_id" not in df.columns:
+        return df.iloc[0:0].copy()
+    keep = strict_triplicate_sessions(df)
+    if keep.empty:
+        return df.iloc[0:0].copy()
+    pm = _triplicate_plot_meta(df)
+    keep_ids = pm.loc[pm["session_key"].isin(keep["session_key"]), "event_id"].dropna().unique().tolist()
+    out = df[df["event_id"].isin(keep_ids)].copy()
+    return out
+
+def build_site_stats_raw(df):
+    """
+    Raw plot-level site statistics. Every event/plot is kept as recorded.
+    Use for descriptive viewing only.
+    """
+    if df.empty or "site_label" not in df.columns:
         return pd.DataFrame()
     df2 = df.copy()
-    df2["date"] = pd.to_datetime(df2["date"], errors="coerce")
-    df2["site_label"] = df2["site_label"].astype(str).str.strip()
-    df2 = df2[df2["date"].notna()].copy()
-    sess = df2.groupby(["site_label","date"], dropna=False)["event_id"].nunique().reset_index(name="n_session_plots")
-    keep = sess[sess["n_session_plots"] == 3][["site_label","date"]].copy()
-    if keep.empty:
-        return df2.iloc[0:0].copy()
-    return df2.merge(keep.assign(_keep=True), on=["site_label","date"], how="inner").drop(columns="_keep")
+    df2["n"] = pd.to_numeric(df2["n"], errors="coerce").fillna(0)
+    ev_totals = df2.groupby(["site_label","event_id","seg"], dropna=False)["n"].sum().reset_index(name="plot_total")
+    ss = ev_totals.groupby(["site_label","seg"], dropna=False).agg(
+        n_plots=("plot_total","count"),
+        mean=("plot_total","mean"),
+        median=("plot_total","median"),
+        sd=("plot_total","std"),
+        total=("plot_total","sum"),
+        min_v=("plot_total","min"),
+        max_v=("plot_total","max")
+    ).reset_index()
+    ss["sd"] = ss["sd"].fillna(0)
+    ss["se"] = ss["sd"] / np.sqrt(ss["n_plots"].replace(0, np.nan))
+    ss["cv"] = np.where(ss["mean"] > 0, ss["sd"] / ss["mean"], np.nan)
+    ss["range"] = ss["max_v"] - ss["min_v"]
 
+    coords = df2.groupby("site_label", dropna=False).agg(lat=("lat","mean"), lon=("lon","mean")).reset_index()
+    ss = ss.merge(coords, on="site_label", how="left")
+    ss["lat_num"] = pd.to_numeric(ss["lat"], errors="coerce")
+    ss_with = ss[ss["lat_num"].notna()].sort_values("lat_num", ascending=False).copy()
+    ss_with["north_rank"] = range(1, len(ss_with)+1)
+    ss_without = ss[ss["lat_num"].isna()].copy()
+    ss_without["north_rank"] = np.nan
+    ss = pd.concat([ss_with, ss_without], ignore_index=True)
+    ss["site_display"] = ss.apply(
+        lambda r: f"{int(r['north_rank'])}. {r['site_label']}" if pd.notna(r["north_rank"]) else r["site_label"],
+        axis=1
+    )
+    ss = ss.sort_values(["north_rank","site_label"]).reset_index(drop=True)
+    return ss
 
 def build_site_stats_ns(df):
     """
-    Build per-site summary ordered North to South by latitude.
-
-    STRICT RULE:
-    Only exact triplicate sessions are used. Each kept session must have
-    exactly 3 plots at the same site on the same date. The three plot totals
-    are averaged into one session mean before site-level statistics are
-    calculated. Raw totals remain real counted items, but inferential site
-    statistics on this page use only the strict triplicate subset.
+    Strict site summary ordered North to South.
+    Each exact triplicate session contributes one observation after the
+    three plot totals are averaged into a session mean.
     """
     if df.empty or "site_label" not in df.columns:
         return pd.DataFrame()
@@ -1542,10 +1634,12 @@ def build_site_stats_ns(df):
         return pd.DataFrame()
 
     df2["n"] = pd.to_numeric(df2["n"], errors="coerce").fillna(0)
+    pm = _triplicate_plot_meta(df2)[["event_id","session_key"]].copy()
 
-    ev_site = df2.groupby(["site_label","date","event_id","seg"], dropna=False)["n"].sum().reset_index(name="plot_total")
+    ev_totals = df2.groupby(["site_label","date","event_id","seg"], dropna=False)["n"].sum().reset_index(name="plot_total")
+    ev_totals = ev_totals.merge(pm, on="event_id", how="left")
 
-    sessions = ev_site.groupby(["site_label","seg","date"], dropna=False).agg(
+    sessions = ev_totals.groupby(["session_key","site_label","seg","date"], dropna=False).agg(
         n_session_plots=("event_id","nunique"),
         session_mean=("plot_total","mean"),
         session_raw_total=("plot_total","sum")
@@ -1582,6 +1676,60 @@ def build_site_stats_ns(df):
     )
     ss = ss.sort_values(["north_rank","site_label"]).reset_index(drop=True)
     return ss
+
+def render_analysis_scope_selector(df, context_label=""):
+    """
+    Global page-level scope selector used across charts and tables.
+    Default is strict triplicate sessions only.
+    """
+    options = ["Strict triplicate sessions only", "All recorded plots"]
+    choice = st.radio(
+        "Analysis scope",
+        options,
+        index=0 if st.session_state.get("analysis_scope_global", options[0]) == options[0] else 1,
+        horizontal=True,
+        key="analysis_scope_global",
+        label_visibility="collapsed",
+    )
+    strict_only = choice == options[0]
+    scoped = keep_exact_triplicate_sessions(df) if strict_only else df.copy()
+
+    total_events = int(df["event_id"].nunique()) if "event_id" in df.columns else 0
+    scoped_events = int(scoped["event_id"].nunique()) if "event_id" in scoped.columns else 0
+    total_sites = int(df["site_label"].nunique()) if "site_label" in df.columns else 0
+    scoped_sites = int(scoped["site_label"].nunique()) if "site_label" in scoped.columns else 0
+    total_sessions = len(strict_triplicate_sessions(df))
+    scoped_label = "Strict triplicate sessions only" if strict_only else "All recorded plots"
+
+    if strict_only:
+        body = (
+            f"<strong>Current view:</strong> {scoped_label}. "
+            f"This page is showing only exact triplicate sessions, groups with exactly 3 plots in one comparable session. "
+            f"<strong>Why this matters:</strong> single plots, doubles, and larger mixed team days can make the record harder to compare across sites and years. "
+            f"The raw counts are still real either way, but the strict triplicate view is the more defensible paper-style view. "
+            f"<br><br><strong>Kept in this view:</strong> {scoped_events:,} plot records across {total_sessions:,} exact triplicate sessions and {scoped_sites:,} sites."
+        )
+    else:
+        body = (
+            f"<strong>Current view:</strong> {scoped_label}. "
+            f"This page is showing every recorded plot. "
+            f"<strong>Why this matters:</strong> this is useful for full descriptive totals, but repeated same-day plots can make comparisons look more certain than they really are. "
+            f"Use the strict triplicate option when you want the more conservative reporting view. "
+            f"<br><br><strong>Shown in this view:</strong> {total_events:,} plot records across {total_sites:,} sites."
+        )
+
+    st.markdown(
+        f'''<div style="background:white;border:1px solid {C["sand3"]};border-left:4px solid {C["water"]};
+        border-radius:0 10px 10px 0;padding:16px 20px;margin:0 0 18px;font-size:13px;line-height:1.8;color:{C["text"]};">
+        <div style="font-family:DM Mono,monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:{C["muted"]};margin-bottom:8px;">Analysis scope</div>
+        {body}
+        </div>''',
+        unsafe_allow_html=True
+    )
+
+    if strict_only and scoped.empty:
+        st.warning("No exact triplicate sessions are available under the current filters or page scope.")
+    return scoped, strict_only
 
 def fig_note(what, why, read, extra=""):
     """Render a styled interpretation box under a chart."""
@@ -1986,9 +2134,10 @@ if page == "Overview":
     page_banner(T("ov_ey"), T("ov_title"), T("ov_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
+    scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Overview")
     with st.expander(T("filter_data"), expanded=False):
-        lf = render_filters(long, kp="ov")
-    stat_strip(long, lf)
+        lf = render_filters(scope_long, kp="ov")
+    stat_strip(scope_long, lf)
 
     total_n=int(lf["n"].sum()); n_ev=lf["event_id"].nunique(); n_si=lf["site_label"].nunique()
     n_gr=lf["trash_group"].nunique()  # After query fix: should be 19
@@ -2170,9 +2319,12 @@ elif page == "Map":
     page_banner(T("map_ey"), T("map_title"), T("map_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
+    scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Map")
+    scope_et = make_et(scope_long)
+
     map_mode=st.radio(T("map_mode_lbl") if T("map_mode_lbl")!="map_mode_lbl" else "Map view",[T("map_mode_seg"),T("map_mode_burden"),"Individual Events"],horizontal=True)
 
-    site_agg=long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),lat=("lat","mean"),lon=("lon","mean")).reset_index()
+    site_agg=scope_long.groupby(["site_label","seg"]).agg(total=("n","sum"),events=("event_id","nunique"),lat=("lat","mean"),lon=("lon","mean")).reset_index()
     site_agg["avg_per_event"]=(site_agg["total"]/site_agg["events"]).round(1)
     wc=site_agg[site_agg["lat"].notna()&site_agg["lon"].notna()]
 
@@ -2188,7 +2340,7 @@ elif page == "Map":
         render_map(wc,"lat","lon","site_label",["site_label","seg","total","events","avg_per_event"],"total")
         color_legend("Map Color = Trash Burden (Total Items)", mode="gradient")
     else:
-        ev_geo=et[et["lat"].notna()&et["lon"].notna()] if "lat" in et.columns else pd.DataFrame()
+        ev_geo=scope_et[scope_et["lat"].notna()&scope_et["lon"].notna()] if "lat" in scope_et.columns else pd.DataFrame()
         if len(ev_geo)>0: render_map(ev_geo,"lat","lon","site_label",["event_id","site_label","date","total"],"total",seg_col="seg")
         else: st.info("No individual event coordinates in database.")
 
@@ -2244,9 +2396,10 @@ elif page == "Trends":
     page_banner(T("tr_ey"), T("tr_title"), T("tr_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
+    scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Trends")
     with st.expander(T("filter_data"), expanded=False):
-        lf=render_filters(long, kp="tr", cats=False)
-    stat_strip(long,lf)
+        lf=render_filters(scope_long, kp="tr", cats=False)
+    stat_strip(scope_long,lf)
 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
 
@@ -2392,9 +2545,10 @@ elif page == "Categories":
     page_banner(T("cat_ey"), T("cat_title"), T("cat_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
+    scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Categories")
     with st.expander(T("filter_data"), expanded=False):
-        lf=render_filters(long, kp="cat")
-    stat_strip(long,lf)
+        lf=render_filters(scope_long, kp="cat")
+    stat_strip(scope_long,lf)
 
     df=lf.copy(); df["n"]=pd.to_numeric(df["n"],errors="coerce").fillna(0)
 
@@ -2935,26 +3089,38 @@ elif page == "Categories":
 
 
 elif page == "Locations":
-    page_banner("Site-Level Analysis", "Where the Trash Is and How Much", "Trash burden across recorded survey locations. Sites are ordered North to South along the river corridor. This page uses only exact triplicate sessions, three plots at the same site on the same date, for site-level statistics.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
+    page_banner("Site-Level Analysis", "Where the Trash Is and How Much", "Trash burden across recorded survey locations. Sites are ordered North to South along the river corridor.", "https://sonoraninstitute.org/files/BHatch_02042018_1116-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
-    st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
-    <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
-    <p style="margin:0 0 8px;"><strong>Strict triplicate rule:</strong> This page only uses site-date sessions with exactly <strong>3 surveyed plots</strong>. Single plots, doubles, and larger multi-team days are excluded here so the site statistics stay conservative and defensible.</p>
-    <p style="margin:0 0 8px;"><strong>Mean:</strong> For each site-date session, the three plot totals are averaged first. The site mean is then the average of those triplicate session means. This is the most useful number for comparing typical plot-level trash burden across sites.</p>
-    <p style="margin:0 0 8px;"><strong>SD and SE:</strong> SD shows how much those triplicate session means vary over time. SE shows how precisely the site mean is estimated across independent triplicate sessions.</p>
-    <p style="margin:0 0 8px;"><strong>CV:</strong> CV is SD divided by the mean. It helps compare variability across sites with different trash levels.</p>
-    <p style="margin:0;"><strong>Why this matters:</strong> The raw trash counts in the database are real counted items. The main correction here is statistical. Three adjacent plots from the same site-date should not be treated as three independent visits.</p>
-    </div>''', unsafe_allow_html=True)
+
+    scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Locations")
+
+    if scope_is_strict:
+        st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
+        <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
+        <p style="margin:0 0 8px;"><strong>Strict triplicate rule:</strong> This page is using only exact triplicate sessions, one comparable session = exactly <strong>3 surveyed plots</strong>. Single plots, doubles, and larger mixed team days are excluded from the current view.</p>
+        <p style="margin:0 0 8px;"><strong>Mean:</strong> For each strict session, the three plot totals are averaged first. The site mean is then the average of those triplicate session means. This is the most defensible number for comparing typical plot-level trash burden across sites.</p>
+        <p style="margin:0 0 8px;"><strong>SD and SE:</strong> SD shows how much those triplicate session means vary over time. SE shows how precisely the site mean is estimated across independent strict sessions.</p>
+        <p style="margin:0 0 8px;"><strong>CV:</strong> CV is SD divided by the mean. It helps compare variability across sites with different trash levels.</p>
+        <p style="margin:0;"><strong>Why this matters:</strong> The raw trash counts are still real counted items. The correction here is about comparability and independence, not about saying the counts were false.</p>
+        </div>''', unsafe_allow_html=True)
+    else:
+        st.markdown(f'''<div style="background:white;border:1px solid {C["sand3"]};border-radius:10px;padding:18px 24px;margin-bottom:22px;font-size:13px;line-height:1.85;color:{C["text"]};">
+        <div style="font-family:Cormorant Garamond,serif;font-size:1rem;font-weight:700;color:{C["green"]};margin-bottom:10px;">How to read the statistics on this page</div>
+        <p style="margin:0 0 8px;"><strong>All recorded plots view:</strong> This page is showing every recorded plot that matches the filters. That is useful for raw descriptive viewing, but repeated same-day plots can make the record look more independent than it really is.</p>
+        <p style="margin:0 0 8px;"><strong>Mean:</strong> In this view, each recorded plot/event contributes directly to the site mean.</p>
+        <p style="margin:0 0 8px;"><strong>SD and SE:</strong> These are still shown, but they are more optimistic because same-day replicate plots are included as separate observations.</p>
+        <p style="margin:0;"><strong>Recommendation:</strong> Switch back to <strong>Strict triplicate sessions only</strong> for the more conservative reporting and paper-style comparison view.</p>
+        </div>''', unsafe_allow_html=True)
 
     with st.expander(T("filter_data"), expanded=False):
-        lf=render_filters(long, kp="loc", cats=False)
+        lf=render_filters(scope_long, kp="loc", cats=False)
 
     df_all=lf.copy()
     df_all["n"]=pd.to_numeric(df_all["n"],errors="coerce").fillna(0)
-    df=keep_exact_triplicate_sessions(df_all)
-    stat_strip(long, df if len(df)>0 else df_all)
+    df=keep_exact_triplicate_sessions(df_all) if scope_is_strict else df_all.copy()
+    stat_strip(scope_long, df if len(df)>0 else df_all)
 
-    ss=build_site_stats_ns(df_all)
+    ss=build_site_stats_ns(df_all) if scope_is_strict else build_site_stats_raw(df_all)
     site_st=df.groupby(["site_label","seg"]).agg(total=("n","sum"),plot_records=("event_id","nunique"),
         mean=("n","mean"),mx=("n","max"),mn_v=("n","min"),sd=("n","std")).reset_index() if len(df)>0 else pd.DataFrame(columns=["site_label","seg","total","plot_records","mean","mx","mn_v","sd"])
     if len(site_st)>0:
@@ -2962,19 +3128,22 @@ elif page == "Locations":
         site_st["sd"]=site_st["sd"].fillna(0).round(1)
         site_st=site_st.sort_values("total",ascending=False).reset_index(drop=True)
 
-    strict_sessions_n = df[["site_label","date"]].drop_duplicates().shape[0] if len(df)>0 else 0
+    strict_sessions_n = len(strict_triplicate_sessions(df_all)) if len(df_all)>0 else 0
     if len(df)==0:
-        st.warning("No exact triplicate sessions match the current filters. This page now only reports site statistics from site-date sessions with exactly 3 plots.")
+        st.warning("No rows match the current scope and filters on this page.")
 
     grand_mean = ss["mean"].mean() if len(ss)>0 else 0
     grand_sd   = ss["sd"].mean() if len(ss)>0 else 0
     max_site_total = int(site_st["total"].max()) if len(site_st)>0 else 0
+    scope_sites_lbl = "Triplicate Sites" if scope_is_strict else "Sites in View"
+    scope_sessions_lbl = "Triplicate Sessions" if scope_is_strict else "Plot Records"
+    scope_session_val = strict_sessions_n if scope_is_strict else (df["event_id"].nunique() if len(df)>0 else 0)
     st.markdown(f"""<div class="stat-strip">
-    <div class="stat-item"><span class="stat-v">{len(ss) if len(ss)>0 else 0}</span><span class="stat-l">Triplicate Sites</span></div>
+    <div class="stat-item"><span class="stat-v">{len(ss) if len(ss)>0 else 0}</span><span class="stat-l">{scope_sites_lbl}</span></div>
     <div class="stat-item"><span class="stat-v">{max_site_total:,}</span><span class="stat-l">Max Raw Items at One Site</span></div>
     <div class="stat-item"><span class="stat-v">{grand_mean:.1f}</span><span class="stat-l">Grand Mean / Plot</span></div>
     <div class="stat-item"><span class="stat-v">±{grand_sd:.1f}</span><span class="stat-l">Mean SD Across Sites</span></div>
-    <div class="stat-item"><span class="stat-v">{strict_sessions_n:,}</span><span class="stat-l">Triplicate Sessions</span></div>
+    <div class="stat-item"><span class="stat-v">{scope_session_val:,}</span><span class="stat-l">{scope_sessions_lbl}</span></div>
     </div>""", unsafe_allow_html=True)
 
     color_legend("River Segment Colors", mode="segments")
@@ -3148,9 +3317,10 @@ elif page == "Data Table":
     page_banner(T("dt_ey"), T("dt_title"), T("dt_sub"), "https://sonoraninstitute.org/files/BHatch_02042018_1036-1600x900.jpg")
     st.markdown('<div class="body fade-up">', unsafe_allow_html=True)
 
+    scope_long, scope_is_strict = render_analysis_scope_selector(long, context_label="Data Table")
     with st.expander(T("filter_data"), expanded=True):
-        lf=render_filters(long, kp="dt", cats=True)  # cats=True enables category multiselect
-    stat_strip(long,lf)
+        lf=render_filters(scope_long, kp="dt", cats=True)  # cats=True enables category multiselect
+    stat_strip(scope_long,lf)
 
     # Two view modes—long (default) and wide (Excel-like)
     dt_view = st.radio(
@@ -3207,7 +3377,7 @@ elif page == "Data Table":
                 "Columns follow the Excel survey protocol order. "
                 "Each number = count of that item found during that event. "
                 "0 = item was not recorded (not necessarily absent). "
-                "Scroll right to see all 56 item columns."
+                "Scroll right to see all 56 item columns. The rows shown here also follow the current analysis scope selector above."
             )
         else:
             st.info("Wide format requires item-level data. Check filters.")
@@ -3230,7 +3400,7 @@ elif page == "Data Table":
     sum_cat.index=range(1,len(sum_cat)+1)
     sum_cat.columns=["Category","Total Items","# Records","% of Filtered Total"]
     st.dataframe(sum_cat, use_container_width=True, height=360)
-    tbl_note("This table summarizes the filtered records shown above. Change the filters to update both this table and the raw records.")
+    tbl_note("This table summarizes the filtered records shown above. Change the scope selector or filters to update both this table and the raw records.")
 
     section_title(T("sec_filt_loc"))
     st.markdown('<div class="sec-sub">Aggregated view of the filtered records grouped by survey location.</div>', unsafe_allow_html=True)
