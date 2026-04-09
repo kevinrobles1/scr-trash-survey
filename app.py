@@ -42,6 +42,11 @@ PHANTOM_ITEMS = {"Event Id","Date","Surveyed M2","Complete?",
     "Total Items","Total Items/M2","Total Items/m2"}
 PHANTOM_GROUPS = {"Ungrouped"}
 
+# Display/data cleanup fixes verified against the source workbook
+SITE_LABEL_FIXES = {
+    "NE Side of SCR at Tuboc Bridge": "NE Side of SCR at Tubac Bridge",
+}
+
 # Every group:item pair exactly as stored in Supabase (title-cased by migration)
 TRASH_GROUPS = {
     "Cups":           ["Styrofoam (Polar Pop)","Styrofoam (Qt)","Styrofoam (Other)","Plastic","Paper"],
@@ -186,7 +191,7 @@ TR = {
         "about_why_title":"Why Longitudinal Trash Data Matters",
         "about_team_title":"Program Team",
         "about_p1":"The Santa Cruz River is one of the most ecologically significant waterways in the American Southwest. For more than <strong>12,000 years</strong> it has sustained human communities.",
-        "about_p2":"After decades of overextraction and pollution, the river is experiencing a remarkable recovery. Today approximately <strong>38 miles of perennial flow</strong> support the return of native fish including the endangered Gila topminnow.",
+        "about_p2":"After decades of overextraction and pollution, the river is experiencing a remarkable recovery. Today approximately <strong>35 miles of perennial flow</strong> support the return of native fish including the endangered Gila topminnow.",
         "about_p3":"<strong>Trash is a direct threat to this recovery.</strong> Litter degrades water quality, entangles wildlife, fragments into microplastics, and undermines the investment in restoration.",
         "about_p4":"The Sonoran Institute trash survey program exists to <strong>quantify this threat with scientific precision</strong> — creating the longitudinal data record needed to report to regulatory agencies and secure restoration funding.",
         "about_db_p1":"The trash survey protocol uses <strong>plot-based sampling</strong>: fixed, measured areas surveyed at consistent locations. Each field visit counts and categorizes every piece of litter found using a standardized <strong>56-item, 19-category protocol</strong>.",
@@ -224,7 +229,7 @@ TR = {
         # About — hero
         "about_hero_eyebrow":"Sonoran Institute · Tucson, Arizona",
         "about_hero_title":"Santa Cruz River Trash Survey Program",
-        "about_hero_sub":"A longitudinal monitoring program tracking litter and debris along the Santa Cruz River corridor in Tucson, Arizona — building the scientific record needed to protect a living desert river.",
+        "about_hero_sub":"A longitudinal monitoring program tracking litter and debris along the Santa Cruz River corridor in Tucson, Arizona, building the scientific record needed to protect a living desert river.",
         "about_scroll":"Scroll right to see more \u2192",
         "about_photo_caption":"Santa Cruz River corridor, Tucson, AZ \u00b7 \u00a9Bill Hatcher / Sonoran Institute",
         "about_field_caption":"Field survey crew, Santa Cruz River corridor, 2019",
@@ -247,7 +252,7 @@ TR = {
         "about_quote":"The Santa Cruz River has provided life-sustaining water to humans for more than 12,000 years — and can flow again with your support.",
         "about_quote_attr":"\u2014 Sonoran Institute",
         "team_role_luke":"Program Director",
-        "team_desc_luke":"Santa Cruz River Restoration Program, Sonoran Institute",
+        "team_desc_luke":"Directs the Santa Cruz River Restoration Program, Sonoran Institute",
         "team_role_kevin":"Database Specialist \u00b7 RISE Intern",
         "team_desc_kevin":"Dashboard development, data migration, and analysis infrastructure",
         "team_name_field":"Field Survey Team",
@@ -592,6 +597,30 @@ def T(key, lang=None):
         lang = st.session_state.get("lang","en")
     return TR.get(lang,TR["en"]).get(key, TR["en"].get(key,key))
 
+def _clean_text(v):
+    if pd.isna(v): return ""
+    v = str(v).replace("\xa0", " ").strip()
+    v = re.sub(r"\s+", " ", v)
+    return v
+
+def _clean_event_label(v):
+    v = _clean_text(v)
+    # Known workbook typo where the event prefix is duplicated once
+    v = re.sub(r"(?i)^SI Clean Up SI Clean Up\s+", "SI Clean Up ", v)
+    return v
+
+def _extract_point_and_replicate(event_label):
+    """
+    Parse explicit triplicate labels from the workbook, e.g.
+    EG Rnd. 1.1, EG rnd - A031.2, EG Rnd X20.3
+    Returns (point_id, replicate_no).
+    """
+    txt = _clean_event_label(event_label)
+    m = re.search(r"([A-Za-z0-9]+)\.([123])$", txt)
+    if not m:
+        return (None, np.nan)
+    return (m.group(1).upper(), int(m.group(2)))
+
 C = dict(
     forest="#7a8f35", green="#93a445", sage="#a8b85a", mint="#ffffff",
     cream="#faf7f0", sand="#f2ede2", sand2="#e8e1d0", sand3="#d8ceba",
@@ -645,7 +674,7 @@ footer{{display:none!important;}}
 /* ── HEADER ── */
 .hdr{{background:linear-gradient(160deg,{C["forest"]} 0%,{C["green"]} 60%,{C["sage"]} 100%);
       border-bottom:none;margin-bottom:0;box-shadow:none;}}
-.hdr-in{{max-width:1480px;margin:0 auto;padding:14px 56px;
+.hdr-in{{max-width:1440px;margin:0 auto;padding:14px 64px;
          display:flex;align-items:center;justify-content:space-between;}}
 .hdr-brand{{display:flex;align-items:center;gap:18px;}}
 .hdr-logo{{height:42px;}}
@@ -715,7 +744,7 @@ div[data-testid="stVerticalBlock"]:first-of-type>.element-container:first-child 
     margin-top:0!important;padding-top:0!important;line-height:0!important;font-size:0!important;
 }}
 /* ── BODY ── */
-.body{{max-width:1480px;margin:0 auto;padding:20px 56px 80px 56px;background:{C["cream"]};}}
+.body{{max-width:1440px;margin:0 auto;padding:20px 64px 80px 64px;background:{C["cream"]};}}
 .pg-title{{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;
            color:{C["green"]};letter-spacing:-.02em;line-height:1.15;margin-bottom:6px;}}
 .pg-lead{{font-size:14px;color:{C["muted"]};line-height:1.8;max-width:780px;margin-bottom:28px;}}
@@ -845,7 +874,7 @@ div[data-testid="stExpander"] details,div[data-testid="stExpander"] summary,div[
 /* ── FOOTER ── */
 .ftr{{background:linear-gradient(160deg,{C["forest"]} 0%,#7a8f35 100%);
       padding:36px 0 28px;margin-top:0;border-top:2px solid {C["sage"]};}}
-.ftr-in{{max-width:1480px;margin:0 auto;padding:0 56px;}}
+.ftr-in{{max-width:1440px;margin:0 auto;padding:0 64px;}}
 .ftr-copy{{color:rgba(255,255,255,.4);font-size:11px;line-height:1.9;font-family:'DM Mono',monospace;}}
 .ftr-a{{color:rgba(255,255,255,.6);text-decoration:none;transition:color .15s;}}
 .ftr-a:hover{{color:{C["mint"]};}}
@@ -1376,6 +1405,43 @@ def load_data():
     if se.empty: se=pd.DataFrame()
     if wt.empty: wt=pd.DataFrame(columns=["event_id","date_recorded","total_weight_oz"])
 
+    # Workbook-informed cleanup/backfill for site metadata
+    if not se.empty:
+        if "site_label" not in se.columns:
+            for alt in ["location_description", "location", "site_name"]:
+                if alt in se.columns:
+                    se["site_label"] = se[alt]
+                    break
+        if "site_label" in se.columns:
+            se["site_label"] = se["site_label"].apply(_clean_text).replace(SITE_LABEL_FIXES)
+
+        event_col = next((c for c in ["event", "event_name", "event_label"] if c in se.columns), None)
+        if event_col is not None:
+            se[event_col] = se[event_col].apply(_clean_event_label)
+            parsed = se[event_col].apply(_extract_point_and_replicate)
+            parsed_point = parsed.apply(lambda x: x[0])
+            parsed_rep = parsed.apply(lambda x: x[1])
+
+            if "point_id" not in se.columns:
+                se["point_id"] = parsed_point
+            else:
+                se["point_id"] = se["point_id"].where(
+                    se["point_id"].notna() & (se["point_id"].astype(str).str.strip() != ""),
+                    parsed_point
+                )
+
+            if "replicate_no" not in se.columns:
+                se["replicate_no"] = parsed_rep
+            else:
+                se["replicate_no"] = pd.to_numeric(se["replicate_no"], errors="coerce")
+                se["replicate_no"] = se["replicate_no"].where(se["replicate_no"].notna(), parsed_rep)
+
+        if "replicate_no" in se.columns:
+            se["replicate_no"] = pd.to_numeric(se["replicate_no"], errors="coerce")
+        if "point_id" in se.columns:
+            se["point_id"] = se["point_id"].astype(str).str.strip()
+            se.loc[se["point_id"].isin(["", "nan", "None"]), "point_id"] = np.nan
+
     # ── Load custom categories (added by staff via Data Entry) ──
     try:
         cc = pd.DataFrame(fetch_all("custom_categories","group_name,item_name,created_by,created_at"))
@@ -1416,6 +1482,12 @@ def load_data():
 
     long["date"]=pd.to_datetime(long.get("date_site",pd.NaT),errors="coerce")
     long["site_label"]=long.get("site_label",pd.Series("Unknown",index=long.index)).fillna("Unknown")
+    long["site_label"]=long["site_label"].apply(_clean_text).replace(SITE_LABEL_FIXES)
+    if "point_id" in long.columns:
+        long["point_id"] = long["point_id"].astype(str).str.strip()
+        long.loc[long["point_id"].isin(["", "nan", "None"]), "point_id"] = np.nan
+    if "replicate_no" in long.columns:
+        long["replicate_no"] = pd.to_numeric(long["replicate_no"], errors="coerce")
     long["lat"]=pd.to_numeric(long.get("lat",np.nan),errors="coerce") if "lat" in long.columns else np.nan
     long["lon"]=pd.to_numeric(long.get("lon",np.nan),errors="coerce") if "lon" in long.columns else np.nan
 
@@ -1479,18 +1551,56 @@ def make_et(df):
 def build_site_stats_ns(df):
     """
     Build per-site summary ordered North to South by latitude.
-    Returns DataFrame with mean, SD, SE, CV, range, n_plots, total.
-    These are computed at the PLOT level (one row per event at each site).
+
+    Minimal but important correction:
+    when explicit point_id / replicate_no fields are present, adjoining
+    triplicate plots are first collapsed to one point-level estimate by
+    averaging the replicate plot totals. This keeps triplicates from being
+    treated as independent visits.
     """
     if df.empty or "site_label" not in df.columns: return pd.DataFrame()
     df2 = df.copy()
     df2["n"] = pd.to_numeric(df2["n"], errors="coerce").fillna(0)
 
-    # Event-level totals (one row per event per site)
-    ev_site = df2.groupby(["site_label","event_id","seg"],dropna=False)["n"].sum().reset_index(name="plot_total")
+    base_group = [c for c in ["site_label","seg","event_id","point_id","replicate_no"] if c in df2.columns]
+    ev_site = df2.groupby(base_group, dropna=False)["n"].sum().reset_index(name="plot_total")
 
-    # Site-level stats across events
-    ss = ev_site.groupby(["site_label","seg"],dropna=False)["plot_total"].agg(
+    if "point_id" not in ev_site.columns:
+        ev_site["point_id"] = np.nan
+    if "replicate_no" not in ev_site.columns:
+        ev_site["replicate_no"] = np.nan
+
+    ev_site["point_id"] = ev_site["point_id"].astype(str).str.strip()
+    ev_site.loc[ev_site["point_id"].isin(["", "nan", "None"]), "point_id"] = np.nan
+    ev_site["replicate_no"] = pd.to_numeric(ev_site["replicate_no"], errors="coerce")
+
+    has_trip = ev_site["point_id"].notna() & ev_site["replicate_no"].isin([1,2,3])
+
+    def _mode_or_first(s):
+        s = s.dropna().astype(str).str.strip()
+        s = s[s != ""]
+        if s.empty:
+            return np.nan
+        m = s.mode()
+        return m.iloc[0] if len(m) else s.iloc[0]
+
+    trip_units = pd.DataFrame(columns=["site_label","seg","analysis_unit","unit_total","n_reps"])
+    if has_trip.any():
+        trip_units = ev_site[has_trip].groupby("point_id", dropna=False).agg(
+            site_label=("site_label", _mode_or_first),
+            seg=("seg", _mode_or_first),
+            unit_total=("plot_total", "mean"),
+            n_reps=("plot_total", "count")
+        ).reset_index().rename(columns={"point_id":"analysis_unit"})
+
+    single_units = ev_site[~has_trip].groupby(["site_label","seg","event_id"], dropna=False).agg(
+        unit_total=("plot_total", "mean"),
+        n_reps=("plot_total", "count")
+    ).reset_index().rename(columns={"event_id":"analysis_unit"})
+
+    unit_site = pd.concat([single_units, trip_units], ignore_index=True, sort=False)
+
+    ss = unit_site.groupby(["site_label","seg"],dropna=False)["unit_total"].agg(
         n_plots="count", mean="mean", median="median",
         sd="std", total="sum", min_v="min", max_v="max"
     ).reset_index()
@@ -1499,11 +1609,9 @@ def build_site_stats_ns(df):
     ss["cv"] = np.where(ss["mean"] > 0, ss["sd"] / ss["mean"], np.nan)
     ss["range"] = ss["max_v"] - ss["min_v"]
 
-    # Attach coordinates
     coords = df2.groupby("site_label",dropna=False).agg(lat=("lat","mean"),lon=("lon","mean")).reset_index()
     ss = ss.merge(coords, on="site_label", how="left")
 
-    # North-to-south rank (higher lat = more north = rank 1)
     ss["lat_num"] = pd.to_numeric(ss["lat"], errors="coerce")
     ss_with = ss[ss["lat_num"].notna()].sort_values("lat_num", ascending=False).copy()
     ss_with["north_rank"] = range(1, len(ss_with)+1)
@@ -2876,7 +2984,7 @@ elif page == "Locations":
     <p style="margin:0 0 8px;"><strong>SD (standard deviation):</strong> How much the count varies from visit to visit. A low SD means the site is consistently trashy or consistently clean. A high SD means some visits found a lot and others found very little — suggesting the trash comes in waves, or that conditions change between surveys.</p>
     <p style="margin:0 0 8px;"><strong>SE (standard error):</strong> How reliable the mean estimate is. Smaller SE = more confident the mean is accurate. A site visited 20 times has a more reliable mean than one visited twice. Use SE to know whether to trust the average.</p>
     <p style="margin:0 0 8px;"><strong>CV (coefficient of variation %):</strong> A normalized measure of variability — SD divided by the mean, expressed as a percentage. It lets you fairly compare variability across sites with different trash levels. Under 30% = fairly consistent site. Over 100% = highly unpredictable, meaning conditions vary dramatically between surveys.</p>
-    <p style="margin:0;"><strong>Why this matters for trash:</strong> A site with a high mean AND a low CV is a chronic hotspot — it always has a lot of trash. A site with a high CV may need a different response — sporadic dumping events rather than continuous litter, which calls for source investigation rather than routine cleanup.</p>
+    <p style="margin:0 0 8px;"><strong>Triplicate handling:</strong> For the explicit triplicate study block in this database, the three adjoining 10m × 10m plots are first averaged into one point estimate before site statistics are calculated. This keeps those three plots from being treated like three independent visits.</p><p style="margin:0;"><strong>Why this matters for trash:</strong> A site with a high mean AND a low CV is a chronic hotspot. A site with a high CV may need a different response, such as source investigation instead of routine cleanup.</p>
     </div>''', unsafe_allow_html=True)
 
     with st.expander(T("filter_data"), expanded=False):
@@ -3049,12 +3157,12 @@ elif page == "Locations":
             disp=tbl_full[["site_display","seg","n_plots","mean","sd","se","cv","range","total","lat_num","lon"]].copy()
             disp["cv_pct"]=(disp["cv"]*100).round(1)
             disp=disp.drop(columns=["cv"])
-            disp=disp.rename(columns={"site_display":"Site (N→S)","seg":"Segment","n_plots":"N Events",
+            disp=disp.rename(columns={"site_display":"Site (N→S)","seg":"Segment","n_plots":"N Units",
                 "mean":"Mean","sd":"SD","se":"SE","cv_pct":"CV (%)","range":"Range",
                 "total":"Total","lat_num":"Latitude","lon":"Longitude"})
             disp=disp.round(2).reset_index(drop=True); disp.index=range(1,len(disp)+1)
             st.dataframe(disp, use_container_width=True, height=600)
-            tbl_note("N Events = number of survey events at this site. Mean ± SD computed across events. SE = SD÷√N (reliability of mean estimate). CV = SD÷Mean×100 (normalized variability). Range = Max−Min across events. Sites without GPS coordinates may not have a North→South rank.")
+            tbl_note("N Units = number of independent analysis units at this site. Legacy surveys count as one unit per event. Explicit triplicate points are averaged first, then counted as one unit. Mean ± SD, SE, CV, and Range are computed across those units. Sites without GPS coordinates may not have a North→South rank.")
         else:
             filtered_st=site_st if seg_filter2=="All" else site_st[site_st["seg"]==seg_filter2]
             disp=filtered_st[["site_label","seg","total","events","avg_per_event","mean","sd","mx","mn_v"]].copy()
