@@ -161,6 +161,12 @@ PAGES = ["Overview","Map","Trends","Categories","Locations","Data Table","Data E
 
 # ── TRANSLATIONS ─────────────────────────────────────────────────
 # Used for volunteer-facing UI and optionally full-app language toggle
+
+# Temporary helper so translation keys using L(...) do not fail during module load.
+# The real L() helper is defined later; here we only need the raw text key.
+def L(text, lang=None):
+    return text
+
 TR = {
     "en": {
         "lang_label": "Language / Idioma",
